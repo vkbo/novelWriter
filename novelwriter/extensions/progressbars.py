@@ -26,10 +26,18 @@ import logging
 from math import ceil
 
 from PyQt6.QtCore import QRect
-from PyQt6.QtGui import QBrush, QColor, QPainter, QPaintEvent, QPen
+from PyQt6.QtGui import QBrush, QColor, QPainter, QPaintEvent, QPen, QRegion
 from PyQt6.QtWidgets import QProgressBar, QWidget
 
-from novelwriter.types import QtAlignCenter, QtPaintAntiAlias, QtRoundCap, QtSizeFixed, QtSolidLine, QtTransparent
+from novelwriter import SHARED
+from novelwriter.types import (
+    QtAlignCenter,
+    QtPaintAntiAlias,
+    QtRoundCap,
+    QtSizeFixed,
+    QtSolidLine,
+    QtTransparent,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +93,7 @@ class NProgressCircle(QProgressBar):
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Paint the progress bar."""
-        progress = 100.0 * self.value() / self.maximum()
+        progress = (100.0 * self.value() / self.maximum()) if self.maximum() > 0 else 0.0
         angle = ceil(16 * 3.6 * progress)
         painter = QPainter(self)
         painter.setRenderHint(QtPaintAntiAlias, True)
@@ -120,62 +128,79 @@ class NProgressSimple(QProgressBar):
             painter.drawRect(0, 0, progress, self.height())
 
 
-class NProgressGoal(QProgressBar):
-    """Extension: Goal Progress Widget.
+class NColorRangeProgress(QProgressBar):
+    """Extension: Colour Range Progress Widget.
 
     A custom widget that paints a progress bar with custom styling and text.
     """
 
-    __slots__ = ("_bPen", "_cPen", "_cRect", "_dBrush", "_dPen", "_dRect", "_point", "_tColor", "_text")
+    __slots__ = (
+        "_bBrush",
+        "_bPen",
+        "_bRect",
+        "_lPen",
+        "_oRect",
+        "_pRange",
+        "_pScale",
+        "_point",
+        "_tColor",
+        "_tColorInv",
+        "_text",
+    )
 
     def __init__(self, parent: QWidget, width: int, height: int, point: int) -> None:
         super().__init__(parent=parent)
-        logger.debug(self.palette())
+        palette = self.palette()
+
         self._text = None
         self._point = point
-        self._dRect = QRect(0, 0, width, height)
-        self._cRect = QRect(2 * point, 2 * point, width - 2 * point, height - 2 * point)
-        self._dPen = QPen(QtTransparent)
-        self._dBrush = QBrush(QtTransparent)
-        self.setColors(
-            track=self.palette().base().color().darker(300),
-            bar=self.palette().highlight().color(),
-            text=self.palette().text().color(),
-            back=self.palette().base().color().darker(300),
-        )
+        self._oRect = QRect(0, 0, width, height)
+        self._bRect = QRect(2 * point, 2 * point, width - 2 * point, height - 2 * point)
+
+        self._pRange: dict[int, tuple[QPen, QBrush]] = {}
+        self._pScale = 1
+        self._pStart = palette.highlight().color()
+        self._pEnd = palette.highlight().color()
+        self._pMid = None
+        self.refreshTheme()
+
         self.setSizePolicy(QtSizeFixed, QtSizeFixed)
         self.setFixedWidth(width)
         self.setFixedHeight(height)
 
-    def resetColors(self) -> None:
-        """Reset the colours to the default values."""
-        self.setColors(
-            track=self.palette().base().color().darker(300),
-            bar=self.palette().highlight().color(),
-            text=self.palette().text().color(),
-            back=self.palette().base().color().darker(300),
+    def refreshTheme(self) -> None:
+        """Refresh the colours of the widget."""
+        palette = self.palette()
+
+        self._bBrush = palette.base()
+        self._bPen = QPen(self._bBrush.color())
+        self._lPen = QPen(palette.alternateBase(), 2 * self._point, QtSolidLine, QtRoundCap)
+        self._tColor = palette.text().color()
+        self._tColorInv = QColor(self._tColor)
+        self._tColorInv.setHslF(
+            self._tColorInv.hueF(),
+            self._tColorInv.saturationF(),
+            1.0 - self._tColor.lightnessF(),
+            self._tColor.alphaF(),
         )
 
-    def setColors(
-        self,
-        back: QColor | None = None,
-        track: QColor | None = None,
-        bar: QColor | None = None,
-        text: QColor | None = None,
-    ) -> None:
+        self.setBarRangeColors(self._pStart, self._pEnd, self._pMid, steps=self._pScale)
+        self.setValue(self.value())  # Triggers a redraw
+
+    def setBarColor(self, color: QColor) -> None:
         """Set the colours of the widget."""
-        if isinstance(back, QColor):
-            self._dPen = QPen(back)
-            self._dBrush = QBrush(back)
-        if isinstance(bar, QColor):
-            logger.debug("Setting bar colour: %s", bar)
-            self._cPen = QPen(QBrush(bar), 2 * self._point, QtSolidLine)
-            self._cBrush = QBrush(bar)
-        if isinstance(track, QColor):
-            logger.debug("Setting track colour: %s", track)
-            self._bPen = QPen(QBrush(track), 2 * self._point, QtSolidLine, QtRoundCap)
-        if isinstance(text, QColor):
-            self._tColor = text
+        if isinstance(color, QColor):
+            self.setBarRangeColors(color, color, steps=1)
+
+    def setBarRangeColors(self, start: QColor, end: QColor, mid: QColor | None = None, steps: int = 100) -> None:
+        """Set the colours of the progress bar."""
+        self._pRange = {}
+        self._pScale = max(steps, 1)
+        self._pStart = start
+        self._pEnd = end
+        self._pMid = mid
+        for i, color in enumerate(SHARED.theme.generateColorRange(start, end, mid, steps + 1)):
+            self._pRange[i] = (QPen(QBrush(color), 2 * self._point, QtSolidLine), QBrush(color))
 
     def setCentreText(self, text: str | None) -> None:
         """Replace the progress text with a custom string."""
@@ -184,18 +209,39 @@ class NProgressGoal(QProgressBar):
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Paint the progress bar."""
-        progress = (self.value() / self.maximum()) if self.maximum() > 0 else 0
+        progress = (self.value() / self.maximum()) if self.maximum() > 0 else 0.0
         painter = QPainter(self)
         painter.setRenderHint(QtPaintAntiAlias, True)
 
-        painter.setPen(self._bPen)
-        painter.setBrush(self._dBrush)
-        painter.drawRect(self._dRect)
+        # Draw background
+        painter.setPen(self._lPen)
+        painter.setBrush(self._bBrush)
+        painter.drawRect(self._oRect)
 
-        painter.setPen(self._cPen)
-        painter.setBrush(self._cBrush)
-        x, y = self._cRect.topLeft().x(), self._cRect.topLeft().y()
-        painter.drawRect(x, y, ceil(self._cRect.width() * progress), self._cRect.height())
+        # Draw progress bar
+        pen, brush = self._pRange.get(int(progress * self._pScale), (self._bPen, self._bBrush))
+        painter.setPen(pen)
+        painter.setBrush(brush)
+        barRect = QRect(
+            self._bRect.topLeft().x(),
+            self._bRect.topLeft().y(),
+            ceil(self._bRect.width() * progress),
+            self._bRect.height(),
+        )
+        painter.drawRect(barRect)
 
+        # Draw text twice, always centred on the full bar rect so it doesn't shift,
+        # clipped to the bar/track regions to get the two-colour split.
+        text = self._text or f"{(progress * 100):.1f} %"
+
+        painter.save()
+        painter.setClipRect(barRect)
+        painter.setPen(self._tColorInv)
+        painter.drawText(self._bRect, QtAlignCenter, text)
+        painter.restore()
+
+        painter.save()
+        painter.setClipRegion(QRegion(self._oRect).subtracted(QRegion(barRect)))
         painter.setPen(self._tColor)
-        painter.drawText(self._cRect, QtAlignCenter, self._text or f"{(progress * 100):.1f} %")
+        painter.drawText(self._bRect, QtAlignCenter, text)
+        painter.restore()
