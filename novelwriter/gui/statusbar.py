@@ -71,11 +71,7 @@ class GuiMainStatus(QStatusBar):
         self.sessBar.setValue(0)
         self.sessBar.setMaximum(1)
         self.sessBar.setVisible(False)
-        self.sessBar.setBarRangeColors(
-            start=SHARED.theme.getBaseColor("red"),
-            mid=SHARED.theme.getBaseColor("yellow"),
-            end=SHARED.theme.getBaseColor("green"),
-        )
+        self.sessBar.setBarRangeColors(start="red", mid="yellow", end="green")
         self.addPermanentWidget(self.sessBar)
 
         # The Project Progress Bar
@@ -83,7 +79,7 @@ class GuiMainStatus(QStatusBar):
         self.projBar.setValue(0)
         self.projBar.setMaximum(1)
         self.projBar.setVisible(False)
-        self.projBar.setBarColor(SHARED.theme.getBaseColor("blue"))
+        self.projBar.setBarColor("blue")
         self.addPermanentWidget(self.projBar)
 
         # The Spell Checker Language
@@ -187,6 +183,7 @@ class GuiMainStatus(QStatusBar):
         colUnsaved = SHARED.theme.getBaseColor("red")
         self.docIcon.setColors(colNone, colSaved, colUnsaved)
         self.projIcon.setColors(colNone, colSaved, colUnsaved)
+
         self.sessBar.refreshTheme()
         self.projBar.refreshTheme()
 

@@ -95,7 +95,7 @@ def testNColorRangeProgress_Main(qtbot, mockGUI):
         dialog.show()
 
     progress.setMaximum(100)
-    progress.setBarRangeColors(start=QColor(255, 0, 0), end=QColor(0, 255, 0), mid=QColor(255, 255, 0))
+    progress.setBarRangeColors(start="#ff0000", end="#00ff00", mid="#ffff00")
     for i in range(0, 101, 5):
         progress.setValue(i)
         sleep(0.0025)
@@ -107,7 +107,7 @@ def testNColorRangeProgress_Main(qtbot, mockGUI):
     assert progress._pRange is before
 
     # A fixed, single colour range
-    progress.setBarColor(QColor(0, 0, 255))
+    progress.setBarColor("#0000ff")
     progress.setValue(50)
     sleep(0.0025)
 

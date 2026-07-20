@@ -37,6 +37,7 @@ from novelwriter.types import (
     QtSizeFixed,
     QtSolidLine,
     QtTransparent,
+    QtWhite,
 )
 
 logger = logging.getLogger(__name__)
@@ -134,23 +135,10 @@ class NColorRangeProgress(QProgressBar):
     A custom widget that paints a progress bar with custom styling and text.
     """
 
-    __slots__ = (
-        "_bBrush",
-        "_bPen",
-        "_bRect",
-        "_lPen",
-        "_oRect",
-        "_pRange",
-        "_pScale",
-        "_point",
-        "_tColor",
-        "_tColorInv",
-        "_text",
-    )
+    __slots__ = ("_bBrush", "_bPen", "_bRect", "_lPen", "_oRect", "_pRange", "_pScale", "_point", "_tColor", "_text")
 
     def __init__(self, parent: QWidget, width: int, height: int, point: int) -> None:
         super().__init__(parent=parent)
-        palette = self.palette()
 
         self._text = None
         self._point = point
@@ -159,8 +147,8 @@ class NColorRangeProgress(QProgressBar):
 
         self._pRange: dict[int, tuple[QPen, QBrush]] = {}
         self._pScale = 1
-        self._pStart = palette.highlight().color()
-        self._pEnd = palette.highlight().color()
+        self._pStart = "blue"
+        self._pEnd = "blue"
         self._pMid = None
         self.refreshTheme()
 
@@ -176,23 +164,16 @@ class NColorRangeProgress(QProgressBar):
         self._bPen = QPen(self._bBrush.color())
         self._lPen = QPen(palette.alternateBase(), 2 * self._point, QtSolidLine, QtRoundCap)
         self._tColor = palette.text().color()
-        self._tColorInv = QColor(self._tColor)
-        self._tColorInv.setHslF(
-            self._tColorInv.hueF(),
-            self._tColorInv.saturationF(),
-            1.0 - self._tColor.lightnessF(),
-            self._tColor.alphaF(),
-        )
 
         self.setBarRangeColors(self._pStart, self._pEnd, self._pMid, steps=self._pScale)
         self.setValue(self.value())  # Triggers a redraw
 
-    def setBarColor(self, color: QColor) -> None:
+    def setBarColor(self, color: str) -> None:
         """Set the colours of the widget."""
-        if isinstance(color, QColor):
+        if isinstance(color, str):
             self.setBarRangeColors(color, color, steps=1)
 
-    def setBarRangeColors(self, start: QColor, end: QColor, mid: QColor | None = None, steps: int = 20) -> None:
+    def setBarRangeColors(self, start: str, end: str, mid: str | None = None, steps: int = 20) -> None:
         """Set the colours of the progress bar."""
         self._pRange = {}
         self._pScale = max(steps, 1)
@@ -237,7 +218,7 @@ class NColorRangeProgress(QProgressBar):
 
         painter.save()
         painter.setClipRect(barRect)
-        painter.setPen(self._tColorInv)
+        painter.setPen(QtWhite)
         painter.drawText(self._bRect, QtAlignCenter, text)
         painter.restore()
 

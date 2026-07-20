@@ -644,39 +644,37 @@ class GuiTheme:
             return QColor(*result)
         return default
 
-    def generateColorRange(
-        self,
-        start: QColor,
-        end: QColor,
-        mid: QColor | None = None,
-        steps: int = 10,
-    ) -> list[QColor]:
+    def generateColorRange(self, start: str, end: str, mid: str | None = None, steps: int = 10) -> list[QColor]:
         """Generate a range of colours between start and end, optionally passing through mid."""
         result: list[QColor] = []
         scale = max(steps - 1, 1)
-        if mid is None:
+        colS = self.parseColor(start)
+        colE = self.parseColor(end)
+        colM = self.parseColor(mid) if mid is not None else None
+
+        if colM is None:
             for i in range(steps):
                 t = i / scale
-                r = round(start.red() + (end.red() - start.red()) * t)
-                g = round(start.green() + (end.green() - start.green()) * t)
-                b = round(start.blue() + (end.blue() - start.blue()) * t)
-                a = round(start.alpha() + (end.alpha() - start.alpha()) * t)
+                r = round(colS.red() + (colE.red() - colS.red()) * t)
+                g = round(colS.green() + (colE.green() - colS.green()) * t)
+                b = round(colS.blue() + (colE.blue() - colS.blue()) * t)
+                a = round(colS.alpha() + (colE.alpha() - colS.alpha()) * t)
                 result.append(QColor(r, g, b, a))
         else:
             for i in range(steps):
                 t = i / scale
                 if t < 0.5:
                     t *= 2
-                    r = round(start.red() + (mid.red() - start.red()) * t)
-                    g = round(start.green() + (mid.green() - start.green()) * t)
-                    b = round(start.blue() + (mid.blue() - start.blue()) * t)
-                    a = round(start.alpha() + (mid.alpha() - start.alpha()) * t)
+                    r = round(colS.red() + (colM.red() - colS.red()) * t)
+                    g = round(colS.green() + (colM.green() - colS.green()) * t)
+                    b = round(colS.blue() + (colM.blue() - colS.blue()) * t)
+                    a = round(colS.alpha() + (colM.alpha() - colS.alpha()) * t)
                 else:
                     t = (t - 0.5) * 2
-                    r = round(mid.red() + (end.red() - mid.red()) * t)
-                    g = round(mid.green() + (end.green() - mid.green()) * t)
-                    b = round(mid.blue() + (end.blue() - mid.blue()) * t)
-                    a = round(mid.alpha() + (end.alpha() - mid.alpha()) * t)
+                    r = round(colM.red() + (colE.red() - colM.red()) * t)
+                    g = round(colM.green() + (colE.green() - colM.green()) * t)
+                    b = round(colM.blue() + (colE.blue() - colM.blue()) * t)
+                    a = round(colM.alpha() + (colE.alpha() - colM.alpha()) * t)
                 result.append(QColor(r, g, b, a))
         return result
 
