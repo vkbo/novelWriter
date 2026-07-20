@@ -653,9 +653,10 @@ class GuiTheme:
     ) -> list[QColor]:
         """Generate a range of colours between start and end, optionally passing through mid."""
         result: list[QColor] = []
+        scale = max(steps - 1, 1)
         if mid is None:
             for i in range(steps):
-                t = i / steps
+                t = i / scale
                 r = round(start.red() + (end.red() - start.red()) * t)
                 g = round(start.green() + (end.green() - start.green()) * t)
                 b = round(start.blue() + (end.blue() - start.blue()) * t)
@@ -663,7 +664,7 @@ class GuiTheme:
                 result.append(QColor(r, g, b, a))
         else:
             for i in range(steps):
-                t = i / steps
+                t = i / scale
                 if t < 0.5:
                     t *= 2
                     r = round(start.red() + (mid.red() - start.red()) * t)

@@ -27,7 +27,7 @@ import pytest
 
 from PyQt6.QtGui import QColor
 
-from novelwriter.extensions.progressbars import NProgressCircle, NProgressSimple
+from novelwriter.extensions.progressbars import NColorRangeProgress, NProgressCircle, NProgressSimple
 
 from tests.helpers import SimpleDialog
 
@@ -80,5 +80,38 @@ def testNProgressSimple_Main(qtbot):
         progress.setValue(i)
         sleep(0.0025)
         assert progress.value() == i
+
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testNColorRangeProgress_Main(qtbot, mockGUI):
+    """Test the NColorRangeProgress class."""
+    dialog = SimpleDialog()
+    progress = NColorRangeProgress(dialog, 200, 20, 2)
+
+    with qtbot.waitExposed(dialog):
+        # This ensures the paint event is executed
+        dialog.show()
+
+    progress.setMaximum(100)
+    progress.setBarRangeColors(start=QColor(255, 0, 0), end=QColor(0, 255, 0), mid=QColor(255, 255, 0))
+    for i in range(0, 101, 5):
+        progress.setValue(i)
+        sleep(0.0025)
+        assert progress.value() == i
+
+    # A fixed, single colour range
+    progress.setBarColor(QColor(0, 0, 255))
+    progress.setValue(50)
+    sleep(0.0025)
+
+    # Custom centre text
+    progress.setCentreText("Done!")
+    assert progress._text == "Done!"
+    sleep(0.0025)
+
+    # A theme refresh re-applies the current colour range settings
+    progress.refreshTheme()
 
     # qtbot.stop()
