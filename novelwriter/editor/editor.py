@@ -1412,11 +1412,19 @@ class GuiDocEditor(QTextEdit):
         return super().inputMethodQuery(query)
 
     def insertFromMimeData(self, source: QMimeData | None) -> None:
-        """Overload mime data insertion in the document."""
+        """Overload mime data insertion in the document.
+
+        * Blocks empty inserts, see #2598
+        * Ensures line height is applied, see #2874
+        """
         if source and source.hasText():
-            # Block empty inserts (Issue #2598)
             logger.debug("Inserted text into document")
-            super().insertFromMimeData(source)
+            cursor = self.textCursor()
+            cursor.beginEditBlock()
+            cursor.insertText(source.text())
+            cursor.endEditBlock()
+            self.setTextCursor(cursor)
+            self.ensureCursorVisible(centre=False)
 
     ##
     #  Public Slots
