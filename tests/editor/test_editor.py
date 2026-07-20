@@ -2847,9 +2847,7 @@ def testGuiDocEditor_LineHeightPaste(qtbot, nwGUI, projPath, mockRnd):
     mime.setText("Pasted first line.\nPasted second line.\nPasted third line.")
     docEditor.insertFromMimeData(mime)
 
-    assert docEditor.getText().startswith(
-        "Pasted first line.\nPasted second line.\nPasted third line."
-    )
+    assert docEditor.getText().startswith("Pasted first line.\nPasted second line.\nPasted third line.")
     assert allBlocksHaveLineHeight(150)
 
 
