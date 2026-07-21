@@ -2852,6 +2852,33 @@ def testGuiDocEditor_LineHeightPaste(qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiDocEditor_InsertFromMimeData_Markdown(qtbot, nwGUI, projPath, mockRnd):
+    """Test that pasting Markdown mime data is converted to
+    novelWriter's own text format before being inserted, and that a
+    Markdown paste that converts to an empty string is a no-op.
+    """
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+    docEditor = nwGUI.docEditor
+
+    assert docEditor.loadText(C.hSceneDoc) is True
+    docEditor.setCursorPosition(0)
+
+    mime = QMimeData()
+    mime.setData(nwConst.MIME_MARKDOWN, b"# Title\n\nSome **bold** text.\n")
+    docEditor.insertFromMimeData(mime)
+
+    assert docEditor.getText().startswith("# Title\n\nSome **bold** text.")
+
+    text = docEditor.getText()
+    emptyMd = QMimeData()
+    emptyMd.setData(nwConst.MIME_MARKDOWN, b"")
+    docEditor.insertFromMimeData(emptyMd)
+
+    assert docEditor.getText() == text
+
+
+@pytest.mark.gui
 def testGuiDocEditor_LineHeightDoubleReturn(qtbot, nwGUI, projPath, mockRnd):
     """Test that a blank-line paragraph break (two consecutive Return
     presses) works normally with a non-default line height set on

@@ -104,6 +104,7 @@ class ToQTextDocument(Tokenizer):
         "_fHead",
         "_fixedHeadings",
         "_hWeight",
+        "_iHead",
         "_init",
         "_mHead",
         "_mIndent",
@@ -152,6 +153,7 @@ class ToQTextDocument(Tokenizer):
         self._mHead: dict[BlockTyp, tuple[float, float]] = {}
         self._sHead: dict[BlockTyp, float] = {}
         self._fHead: dict[BlockTyp, int] = {}
+        self._iHead: dict[BlockTyp, int] = {}
         self._mText: tuple[float, float] = (1.0, 1.0)
         self._mMeta: tuple[float, float] = (1.0, 1.0)
         self._mSep: tuple[float, float] = (1.0, 1.0)
@@ -252,6 +254,14 @@ class ToQTextDocument(Tokenizer):
             BlockTyp.HEAD2: 3,
             BlockTyp.HEAD3: 2,
             BlockTyp.HEAD4: 1,
+        }
+        self._iHead = {
+            BlockTyp.TITLE: 0,
+            BlockTyp.PART: 1,
+            BlockTyp.HEAD1: 1,
+            BlockTyp.HEAD2: 2,
+            BlockTyp.HEAD3: 3,
+            BlockTyp.HEAD4: 4,
         }
 
         self._mText = (fPx * self._marginText[0], fPx * self._marginText[1])
@@ -535,6 +545,7 @@ class ToQTextDocument(Tokenizer):
         bFmt = QTextBlockFormat(rFmt)
         bFmt.setTopMargin(mTop)
         bFmt.setBottomMargin(mBottom)
+        bFmt.setHeadingLevel(self._iHead.get(hType, 0))
 
         hCol = self._colorHeads and hType != BlockTyp.TITLE
         cFmt = QTextCharFormat(self._charFmt)

@@ -157,7 +157,7 @@ class FromQTextDocument:
         offset = 0
         it = block.begin()
         while not it.atEnd():
-            if (frag := it.fragment()).isValid():
+            if (frag := it.fragment()).isValid():  # pragma: no branch
                 text = frag.text()
                 parts.append(self._formatFragment(text, offset, blockText, frag.charFormat()))
                 offset += len(text)
