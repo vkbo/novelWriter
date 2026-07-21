@@ -28,10 +28,11 @@ from pathlib import Path
 from typing import NamedTuple
 
 from PyQt6.QtCore import QAbstractListModel, QModelIndex, QObject, QPoint, QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QAction, QCloseEvent, QKeyEvent, QPainter, QPaintEvent, QPen, QShortcut
+from PyQt6.QtGui import QAction, QCloseEvent, QKeyEvent, QPainter, QPaintEvent, QPalette, QPen, QShortcut
 from PyQt6.QtWidgets import (
     QApplication,
     QFormLayout,
+    QFrame,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -59,7 +60,6 @@ from novelwriter.types import (
     QtAlignLeft,
     QtAlignRightTop,
     QtDisplayRole,
-    QtHexArgb,
     QtKeyDown,
     QtKeyEnter,
     QtKeyReturn,
@@ -265,6 +265,12 @@ class _OpenProjectPage(QWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
+        # Panel Background
+        base = self.palette().base().color()
+        base.setAlpha(PANEL_ALPHA)
+        bPalette = self.palette()
+        bPalette.setColor(QPalette.ColorRole.Base, base)
+
         # List View
         self.listModel = _ProjectListModel(self)
         self.itemDelegate = _ProjectListItem(self)
@@ -273,6 +279,8 @@ class _OpenProjectPage(QWidget):
         self.listWidget.setItemDelegate(self.itemDelegate)
         self.listWidget.setModel(self.listModel)
         self.listWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.listWidget.setFrameStyle(QFrame.Shape.NoFrame)
+        self.listWidget.setPalette(bPalette)
         self.listWidget.clicked.connect(self._projectSelected)
         self.listWidget.doubleClicked.connect(self._projectDoubleClicked)
         self.listWidget.customContextMenuRequested.connect(self._openContextMenu)
@@ -287,6 +295,9 @@ class _OpenProjectPage(QWidget):
 
         self.selectedPath = QLineEdit(self)
         self.selectedPath.setReadOnly(True)
+        self.selectedPath.setFrame(False)
+        self.selectedPath.setPalette(bPalette)
+        self.selectedPath.setTextMargins(4, 4, 4, 4)
         self.selectedPath.addAction(self.aMissing, QLineEdit.ActionPosition.TrailingPosition)
         self._trPath = self.tr("Path")
 
@@ -308,14 +319,6 @@ class _OpenProjectPage(QWidget):
         self.setLayout(self.outerBox)
 
         self._selectFirstItem()
-
-        base = self.palette().base().color()
-        base.setAlpha(PANEL_ALPHA)
-        baseCol = base.name(QtHexArgb)
-        self.setStyleSheet(
-            f"QListView {{border: none; background: {baseCol};}} "
-            f"QLineEdit {{border: none; background: {baseCol}; padding: 4px;}} "
-        )
 
     ##
     #  Events
@@ -561,11 +564,14 @@ class _NewProjectPage(QWidget):
 
         base = self.palette().base().color()
         base.setAlpha(PANEL_ALPHA)
-        baseCol = base.name(QtHexArgb)
-        self.setStyleSheet(
-            f"QScrollArea {{border: none; background: {baseCol};}} "
-            f"_NewProjectForm {{border: none; background: {baseCol};}} "
-        )
+
+        panelPalette = self.palette()
+        panelPalette.setColor(QPalette.ColorRole.Base, base)
+        panelPalette.setColor(QPalette.ColorRole.Window, base)
+
+        self.scrollArea.setFrameStyle(QFrame.Shape.NoFrame)
+        self.scrollArea.setPalette(panelPalette)
+        self.projectForm.setPalette(panelPalette)
 
     ##
     #  Public Slots
