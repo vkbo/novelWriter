@@ -130,10 +130,6 @@ VALID_MAP: dict[str, set[str]] = {
     "GuiProjectSearch": {
         "searchFilters",
     },
-    "GuiPasteDialog": {
-        "winWidth",
-        "winHeight",
-    },
 }
 
 
