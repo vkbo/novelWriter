@@ -65,9 +65,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         "_minRules",
         "_tHandle",
         "_txtRules",
+        "_withBlockData",
     )
 
-    def __init__(self, document: QTextDocument) -> None:
+    def __init__(self, document: QTextDocument, withBlockData: bool = True) -> None:
         super().__init__(document)
 
         logger.debug("Create: GuiDocHighlighter")
@@ -75,6 +76,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._tHandle = None
         self._isNovel = False
         self._isInactive = False
+        self._withBlockData = withBlockData
 
         self._hStyles: dict[str, QTextCharFormat] = {}
         self._minRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
@@ -258,6 +260,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self._isInactive = item.isInactiveClass()
         logger.debug("Syntax highlighter enabled for item '%s'", tHandle)
 
+    def enableDetached(self) -> None:
+        """Enable highlighting for a document not tied to a project
+        item, such as a standalone preview.
+        """
+        self._tHandle = ""
+        self._isNovel = True
+        self._isInactive = False
+
     ##
     #  Methods
     ##
@@ -338,12 +348,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             # We never want to run the spell checker on keyword/values,
             # so we clear the cached check text and force a return here,
             # but the tag positions are kept for the hover card
-            data = self.currentBlockUserData()
-            if not isinstance(data, TextBlockData):
-                data = TextBlockData()
-                self.setCurrentBlockUserData(data)
-            data.clear()
-            data.setMetaData(meta)
+            if self._withBlockData:
+                data = self.currentBlockUserData()
+                if not isinstance(data, TextBlockData):
+                    data = TextBlockData()
+                    self.setCurrentBlockUserData(data)
+                data.clear()
+                data.setMetaData(meta)
             return
 
         elif text.startswith(("# ", "#! ", "## ", "##! ", "### ", "###! ", "#### ")):
@@ -460,12 +471,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                                     cFmt.merge(hFmt)
                                     self.setFormat(x, 1, cFmt)
 
-        data = self.currentBlockUserData()
-        if not isinstance(data, TextBlockData):
-            data = TextBlockData()
-            self.setCurrentBlockUserData(data)
-
-        data.processText(text, offset, utf16Map)
+        if self._withBlockData:
+            data = self.currentBlockUserData()
+            if not isinstance(data, TextBlockData):
+                data = TextBlockData()
+                self.setCurrentBlockUserData(data)
+            data.processText(text, offset, utf16Map)
 
         return
 

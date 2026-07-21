@@ -26,9 +26,12 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QTimer, pyqtSlot
+from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QApplication, QDialogButtonBox, QHBoxLayout, QTextEdit, QVBoxLayout, QWidget
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
+from novelwriter.common import fontMatcher
+from novelwriter.editor.highlighter import GuiDocHighlighter
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
@@ -72,6 +75,7 @@ class GuiPasteDialog(NDialog):
         self.richView = QTextEdit(self)
         self.richView.setReadOnly(True)
         self.richView.setHtml(html)
+        self._applyTextTheme(self.richView)
 
         # Plain Text Result
         self.plainTitle = NColorLabel(
@@ -85,6 +89,11 @@ class GuiPasteDialog(NDialog):
         self.plainEdit.setAcceptRichText(False)
         self.plainEdit.setPlaceholderText(self.tr("Converting ..."))
         self.plainEdit.setEnabled(False)
+        self._applyTextTheme(self.plainEdit)
+
+        if plainDoc := self.plainEdit.document():
+            self.highlighter = GuiDocHighlighter(plainDoc, withBlockData=False)
+            self.highlighter.enableDetached()
 
         # Conversion Progress
         self.convProgress = NProgressSimple(self)
@@ -208,3 +217,25 @@ class GuiPasteDialog(NDialog):
         options.setValue("GuiPasteDialog", "winWidth", self.width())
         options.setValue("GuiPasteDialog", "winHeight", self.height())
         options.saveSettings()
+
+    def _applyTextTheme(self, widget: QTextEdit) -> None:
+        """Set the text font and syntax background colours on a
+        document panel to match the main editor.
+        """
+        syntax = SHARED.theme.syntaxTheme
+        font = fontMatcher(CONFIG.textFont)
+        widget.setFont(font)
+        if document := widget.document():
+            document.setDefaultFont(font)
+
+        palette = widget.palette()
+        palette.setColor(QPalette.ColorRole.Window, syntax.back)
+        palette.setColor(QPalette.ColorRole.Base, syntax.back)
+        palette.setColor(QPalette.ColorRole.Text, syntax.text)
+        widget.setPalette(palette)
+
+        if viewport := widget.viewport():
+            vPalette = viewport.palette()
+            vPalette.setColor(QPalette.ColorRole.Base, syntax.back)
+            vPalette.setColor(QPalette.ColorRole.Text, syntax.text)
+            viewport.setPalette(vPalette)
