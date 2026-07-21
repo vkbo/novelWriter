@@ -1438,7 +1438,7 @@ class GuiDocEditor(QTextEdit):
             document.setMarkdown(data)
 
         if document is not None:
-            text = FromQTextDocument(document).convertText().strip()
+            text = FromQTextDocument(document).convertText().strip("\n")
         elif source.hasText():
             text = source.text()
         else:
