@@ -75,6 +75,7 @@ from novelwriter.common import (
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwStyles, nwUnicode
 from novelwriter.core.document import ProjectDocument
 from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.dialogs.pastedialog import GuiPasteDialog
 from novelwriter.editor.completer import CommandCompleter
 from novelwriter.editor.editfooter import GuiDocEditFooter
 from novelwriter.editor.editheader import GuiDocEditHeader
@@ -1416,8 +1417,19 @@ class GuiDocEditor(QTextEdit):
 
         * Blocks empty inserts, see #2598
         * Ensures line height is applied, see #2874
+        * Redirects rich text paste through the paste dialog
         """
-        if source and source.hasText():
+        if source and source.hasHtml():
+            logger.debug("Redirecting rich text paste to dialog")
+            text, accepted = GuiPasteDialog.getText(self, source.html())
+            if accepted and text:
+                cursor = self.textCursor()
+                cursor.beginEditBlock()
+                cursor.insertText(text)
+                cursor.endEditBlock()
+                self.setTextCursor(cursor)
+                self.ensureCursorVisible(centre=False)
+        elif source and source.hasText():
             logger.debug("Inserted text into document")
             cursor = self.textCursor()
             cursor.beginEditBlock()
