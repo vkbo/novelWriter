@@ -266,10 +266,10 @@ class _OpenProjectPage(QWidget):
         super().__init__(parent=parent)
 
         # Panel Background
-        base = self.palette().base().color()
-        base.setAlpha(PANEL_ALPHA)
-        bPalette = self.palette()
-        bPalette.setColor(QPalette.ColorRole.Base, base)
+        baseCol = self.palette().base().color()
+        baseCol.setAlpha(PANEL_ALPHA)
+        basePalette = self.palette()
+        basePalette.setColor(QPalette.ColorRole.Base, baseCol)
 
         # List View
         self.listModel = _ProjectListModel(self)
@@ -280,7 +280,7 @@ class _OpenProjectPage(QWidget):
         self.listWidget.setModel(self.listModel)
         self.listWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.listWidget.setFrameStyle(QFrame.Shape.NoFrame)
-        self.listWidget.setPalette(bPalette)
+        self.listWidget.setPalette(basePalette)
         self.listWidget.clicked.connect(self._projectSelected)
         self.listWidget.doubleClicked.connect(self._projectDoubleClicked)
         self.listWidget.customContextMenuRequested.connect(self._openContextMenu)
@@ -296,7 +296,7 @@ class _OpenProjectPage(QWidget):
         self.selectedPath = QLineEdit(self)
         self.selectedPath.setReadOnly(True)
         self.selectedPath.setFrame(False)
-        self.selectedPath.setPalette(bPalette)
+        self.selectedPath.setPalette(basePalette)
         self.selectedPath.setTextMargins(4, 4, 4, 4)
         self.selectedPath.addAction(self.aMissing, QLineEdit.ActionPosition.TrailingPosition)
         self._trPath = self.tr("Path")
