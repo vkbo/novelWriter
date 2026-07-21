@@ -23,12 +23,12 @@ from __future__ import annotations
 
 import logging
 
-from PyQt6.QtGui import QTextDocument
 from PyQt6.QtWidgets import QDialogButtonBox, QHBoxLayout, QTextEdit, QVBoxLayout, QWidget
 
 from novelwriter import SHARED
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
+from novelwriter.formats.fromqdoc import FromQTextDocument
 from novelwriter.types import QtAccepted, QtRoleAccept, QtRoleReject
 
 logger = logging.getLogger(__name__)
@@ -55,7 +55,7 @@ class GuiPasteDialog(NDialog):
         # Plain Text Result
         self.plainEdit = QTextEdit(self)
         self.plainEdit.setAcceptRichText(False)
-        self.plainEdit.setPlainText(self._toMarkdown(html))
+        self.plainEdit.setPlainText(self._toMarkdown())
 
         self.splitBox = QHBoxLayout()
         self.splitBox.addWidget(self.richView, 1)
@@ -105,12 +105,11 @@ class GuiPasteDialog(NDialog):
     #  Internal Functions
     ##
 
-    def _toMarkdown(self, html: str) -> str:
-        """Convert a HTML fragment to Markdown text.
-
-        This is a simple first pass using Qt's built-in converter. A
-        more advanced Markdown converter may replace this later.
-        """
-        document = QTextDocument()
-        document.setHtml(html)
-        return document.toMarkdown().strip()
+    def _toMarkdown(self) -> str:
+        """Convert the rich text preview to novelWriter's text format."""
+        if not (document := self.richView.document()):
+            return ""  # pragma: no cover
+        converter = FromQTextDocument(document)
+        for _ in converter.convert():
+            pass
+        return converter.result().strip()
