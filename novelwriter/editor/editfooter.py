@@ -57,6 +57,9 @@ class GuiDocEditFooter(QWidget):
         self._trLineCount = self.tr("Line: {0} ({1})")
         self._trSelectCount = self.tr("Selected: {0}")
 
+        self._lineNo = -1
+        self._linePc = -1
+
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -209,10 +212,12 @@ class GuiDocEditFooter(QWidget):
     def updateLineCount(self, cursor: QTextCursor) -> None:
         """Update the line and document position counter."""
         if document := cursor.document():  # pragma: no branch
-            cPos = cursor.position() + 1
-            cLine = cursor.blockNumber() + 1
-            cCount = max(document.characterCount(), 1)
-            self.linesText.setText(self._trLineCount.format(f"{cLine:n}", f"{100 * cPos // cCount:d}\u202f%"))
+            lineNo = cursor.blockNumber() + 1
+            linePc = 100 * (cursor.position() + 1) // max(document.characterCount(), 1)
+            if lineNo != self._lineNo or linePc != self._linePc:
+                self.linesText.setText(self._trLineCount.format(f"{lineNo:n}", f"{linePc:d}\u202f%"))
+                self._lineNo = lineNo
+                self._linePc = linePc
 
     def updateMainCount(self, count: int, selection: bool) -> None:
         """Update main counter information."""
