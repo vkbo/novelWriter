@@ -149,6 +149,44 @@ def testProjectData_AutoReplace(mockGUI):
 
 
 @pytest.mark.core
+def testProjectData_DailyTargetCurrent(monkeypatch, mockGUI):
+    """Test the setDailyTargetCurrent setter. A stored reference count
+    must only be restored when it was recorded on the same day; a count
+    from any other day is stale and must be discarded so it cannot leak
+    into today's progress calculation.
+    """
+    monkeypatch.setattr(projectdata, "date", _FakeDate)
+    _FakeDate._today = date(2026, 7, 22)
+
+    project = MockProject()
+    data = ProjectData(project)  # type: ignore
+
+    # A record from the same day is restored as-is
+    data.setDailyTargetCurrent(60, "2026-07-22")
+    assert data.dailyLastCount == 60
+    assert data._dailyLastDate == date(2026, 7, 22)
+
+    # A record from an earlier day is stale and discarded, and the date
+    # is bumped to today so it isn't mistaken for a fresh record later
+    data.setDailyTargetCurrent(100, "2026-07-20")
+    assert data.dailyLastCount == 0
+    assert data._dailyLastDate == date(2026, 7, 22)
+
+    # A missing/invalid date is treated the same as a stale record
+    data.setDailyTargetCurrent(100, None)
+    assert data.dailyLastCount == 0
+    assert data._dailyLastDate == date(2026, 7, 22)
+
+    # End-to-end: a project file with a daily target set two days ago is
+    # loaded. The stale count must not offset today's progress
+    data = ProjectData(project)  # type: ignore
+    data.setInitCounts(wNovel=500)
+    data.setDailyTargetCurrent(100, "2026-07-20")
+    data.setDailyProgress(500)
+    assert data.dailyProgress == 0
+
+
+@pytest.mark.core
 def testProjectData_DailyProgress(monkeypatch, mockGUI):
     """Test the setDailyProgress setter. The daily progress and the
     remaining project word count must survive across sessions on the
@@ -156,6 +194,7 @@ def testProjectData_DailyProgress(monkeypatch, mockGUI):
     new day.
     """
     monkeypatch.setattr(projectdata, "date", _FakeDate)
+    _FakeDate._today = date(2026, 7, 20)
 
     project = MockProject()
     data = ProjectData(project)  # type: ignore
