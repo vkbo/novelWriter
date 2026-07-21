@@ -25,7 +25,8 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtWidgets import QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout, QWidget
+from PyQt6.QtGui import QPalette
+from PyQt6.QtWidgets import QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatLink, readTextFile
@@ -33,7 +34,7 @@ from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignRightTop, QtHexArgb, QtRoleDestruct
+from novelwriter.types import QtAlignRightTop, QtRoleDestruct
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -52,6 +53,10 @@ class GuiAbout(NDialog):
 
         self.setWindowTitle(self.tr("About novelWriter"))
         self.resize(700, 500)
+
+        baseCol = self.palette().window().color()
+        basePalette = self.palette()
+        basePalette.setColor(QPalette.ColorRole.Base, baseCol)
 
         # Logo and Banner
         self.nwImage = SHARED.theme.getDecoration("nw-text", h=36)
@@ -77,6 +82,8 @@ class GuiAbout(NDialog):
 
         self.txtCredits = QTextBrowser(self)
         self.txtCredits.setOpenExternalLinks(True)
+        self.txtCredits.setFrameStyle(QFrame.Shape.NoFrame)
+        self.txtCredits.setPalette(basePalette)
         self.txtCredits.setViewportMargins(0, 8, 8, 0)
 
         # Buttons
@@ -106,7 +113,6 @@ class GuiAbout(NDialog):
         self.setLayout(self.outerBox)
         self.setSizeGripEnabled(True)
 
-        self._setStyleSheet()
         self._fillCreditsPage()
 
         logger.debug("Ready: GuiAbout")
@@ -134,8 +140,3 @@ class GuiAbout(NDialog):
             self.txtCredits.setHtml(html)
         else:
             self.txtCredits.setHtml("Error loading credits text ...")
-
-    def _setStyleSheet(self) -> None:
-        """Set stylesheet text document."""
-        baseCol = self.palette().window().color().name(QtHexArgb)
-        self.txtCredits.setStyleSheet(f"QTextBrowser {{border: none; background: {baseCol};}} ")

@@ -102,7 +102,7 @@ def testInit_CreateApp(caplog, monkeypatch, fncPath):
     monkeypatch.setattr("PyQt6.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
     monkeypatch.setattr("PyQt6.QtWidgets.QApplication.exec", lambda *a: 0)
 
-    app = _createApp("Fusion")
+    app = _createApp()
     assert isinstance(app, QApplication)
 
 
@@ -132,7 +132,7 @@ def testInit_Options(monkeypatch, fncPath):
 
     # Defaults
     with pytest.raises(SystemExit) as ex:
-        main([f"--config={fncPath}", f"--data={fncPath}", "--style=Fusion", "--meminfo"])
+        main([f"--config={fncPath}", f"--data={fncPath}", "--meminfo"])
     assert ex.value.code == 0
     assert CONFIG.memInfo is True
 

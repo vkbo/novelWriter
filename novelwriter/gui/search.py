@@ -242,7 +242,7 @@ class GuiProjectSearch(QWidget):
         colBase = palette.base().color().name(QtHexArgb)
         colFocus = palette.highlight().color().name(QtHexArgb)
 
-        self.setStyleSheet(
+        self.searchText.setStyleSheet(
             f"QLineEdit {{border: 1px solid {colBase}; padding: 2px;}} "
             f"QLineEdit:focus {{border: 1px solid {colFocus};}} "
         )

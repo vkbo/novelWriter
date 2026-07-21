@@ -26,7 +26,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QEvent, QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QPainter, QPaintEvent, QPalette
+from PyQt6.QtGui import QColor, QPainter, QPaintEvent, QPalette
 from PyQt6.QtWidgets import (
     QApplication,
     QComboBox,
@@ -39,6 +39,7 @@ from PyQt6.QtWidgets import (
     QSpinBox,
     QSplitter,
     QSplitterHandle,
+    QTabWidget,
     QToolButton,
     QTreeView,
     QWidget,
@@ -380,6 +381,31 @@ class NIconToggleButton(QToolButton):
         """Refresh the icon for theme updates."""
         if self._icon:  # pragma: no branch
             self.setIcon(SHARED.theme.getToggleIcon(self._icon, self._size.width(), self._size.height()))
+
+
+class NTabWidget(QTabWidget):
+    """Custom: Modified QTabWidget.
+
+    A tab widget that highlights the currently selected tab's label
+    using the app theme.
+    """
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+        self.setDocumentMode(True)
+        self.currentChanged.connect(self._updateTabColors)
+
+    def refreshTheme(self) -> None:
+        """Refresh the tab colours for theme updates."""
+        self._updateTabColors(self.currentIndex())
+
+    @pyqtSlot(int)
+    def _updateTabColors(self, index: int) -> None:
+        """Highlight the currently selected tab with the theme highlight colour."""
+        if tabBar := self.tabBar():  # pragma: no branch
+            hCol = self.palette().highlight().color()
+            for i in range(tabBar.count()):
+                tabBar.setTabTextColor(i, hCol if i == index else QColor())
 
 
 class NClickableLabel(QLabel):
