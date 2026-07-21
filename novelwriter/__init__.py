@@ -92,7 +92,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
 
     # Valid Input Options
     shortOpt = "hvidc"
-    longOpt = ["help", "version", "info", "debug", "color", "style=", "config=", "data=", "meminfo"]
+    longOpt = ["help", "version", "info", "debug", "color", "config=", "data=", "meminfo"]
 
     helpMsg = (
         f"novelWriter {__version__} ({__date__})\n"
@@ -118,7 +118,6 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         " -d, --debug    Print debug output. Includes --info.\n"
         " -c, --color    Add ANSI colors to log output.\n"
         "     --meminfo  Show memory usage information in the status bar.\n"
-        "     --style=   Sets Qt style flag. Defaults to 'Fusion'.\n"
         "     --config=  Alternative config file.\n"
         "     --data=    Alternative user data path.\n"
     )
@@ -129,7 +128,6 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     fmtLong = False
     confPath = None
     dataPath = None
-    qtStyle = "Fusion"
     cmdOpen = None
 
     # Parse Options
@@ -160,8 +158,6 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             fmtColor = not NO_COLOR
         elif inOpt == "--meminfo":
             CONFIG.memInfo = True
-        elif inOpt == "--style":
-            qtStyle = inArg
         elif inOpt == "--config":
             confPath = inArg
         elif inOpt == "--data":
@@ -250,7 +246,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     from novelwriter.guimain import GuiMain
 
     # Create App
-    app = _createApp(qtStyle)
+    app = _createApp()
 
     # Connect the exception handler before making the main GUI
     sys.excepthook = exceptionHandler
@@ -279,12 +275,12 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     sys.exit(app.exec())
 
 
-def _createApp(style: str) -> QApplication:
+def _createApp() -> QApplication:
     """Create the app. This is done in a function to make it easier to
     block app creation during testing.
     """
     app = QApplication([CONFIG.appName])
-    app.setStyle(style)
+    app.setStyle("Fusion")
     app.setApplicationName(CONFIG.appName)
     app.setApplicationVersion(__version__)
     app.setOrganizationDomain(__domain__)
