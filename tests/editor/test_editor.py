@@ -2719,6 +2719,14 @@ def testGuiDocEditor_InternalSlotEdgeCases(qtbot, nwGUI, projPath, mockRnd):
     cursor = docEditor._autoSelect()
     assert cursor.selectedText() != ""
 
+    # Copying a selection must only put plain text on the clipboard,
+    # not also HTML, regardless of the widget's rich text rendering
+    docEditor.setPlainText("first\n\nsecond")
+    docEditor.docAction(nwDocAction.SEL_ALL)
+    mime = docEditor.createMimeDataFromSelection()
+    assert mime.hasHtml() is False
+    assert mime.text() == "first\n\nsecond"
+
 
 @pytest.mark.gui
 def testGuiDocEditor_UpdateDocMargins(qtbot, nwGUI, projPath, mockRnd):
