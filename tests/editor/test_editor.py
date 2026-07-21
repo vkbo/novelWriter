@@ -2719,6 +2719,14 @@ def testGuiDocEditor_InternalSlotEdgeCases(qtbot, nwGUI, projPath, mockRnd):
     cursor = docEditor._autoSelect()
     assert cursor.selectedText() != ""
 
+    # Copying a selection must only put plain text on the clipboard,
+    # not also HTML, regardless of the widget's rich text rendering
+    docEditor.setPlainText("first\n\nsecond")
+    docEditor.docAction(nwDocAction.SEL_ALL)
+    mime = docEditor.createMimeDataFromSelection()
+    assert mime.hasHtml() is False
+    assert mime.text() == "first\n\nsecond"
+
 
 @pytest.mark.gui
 def testGuiDocEditor_UpdateDocMargins(qtbot, nwGUI, projPath, mockRnd):
@@ -2876,6 +2884,20 @@ def testGuiDocEditor_InsertFromMimeData_Markdown(qtbot, nwGUI, projPath, mockRnd
     docEditor.insertFromMimeData(emptyMd)
 
     assert docEditor.getText() == text
+
+    # A rich text (HTML) paste with a meaningful leading space (as a
+    # non-breaking space, which is how rich text sources encode a
+    # leading space that would otherwise collapse in HTML) must only
+    # have the blank line added by the HTML-to-text conversion
+    # stripped, not the leading space itself
+    docEditor.replaceText("A cat.")
+    docEditor.setCursorPosition(1)
+
+    htmlMime = QMimeData()
+    htmlMime.setHtml("<p>&nbsp;big</p>")
+    docEditor.insertFromMimeData(htmlMime)
+
+    assert docEditor.getText().startswith("A\u00a0big cat.")
 
 
 @pytest.mark.gui

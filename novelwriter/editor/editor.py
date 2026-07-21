@@ -1412,6 +1412,14 @@ class GuiDocEditor(QTextEdit):
             return variant
         return super().inputMethodQuery(query)
 
+    def createMimeDataFromSelection(self) -> QMimeData:
+        """Overload mime data creation for copy/cut so that only plain
+        text is put on the clipboard, and not also HTML.
+        """
+        data = QMimeData()
+        data.setText(self.getSelectedText())
+        return data
+
     def insertFromMimeData(self, source: QMimeData | None) -> None:
         """Overload mime data insertion in the document."""
         if not source:
@@ -1430,7 +1438,7 @@ class GuiDocEditor(QTextEdit):
             document.setMarkdown(data)
 
         if document is not None:
-            text = FromQTextDocument(document).convertText().strip()
+            text = FromQTextDocument(document).convertText().strip("\n")
         elif source.hasText():
             text = source.text()
         else:
