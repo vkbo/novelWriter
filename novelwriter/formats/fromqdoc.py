@@ -45,7 +45,10 @@ SHORTCODES = {
     "sub": (nwShortcode.SUB_O, nwShortcode.SUB_C),
 }
 
-MARKDOWN_FMTS = ("underline", "sub", "sup", "strike", "italic", "bold")
+
+# Nesting order for wrapping active formats, innermost first. Italic
+# must be innermost of the three Markdown-eligible formats.
+MARKDOWN_FMTS = ("underline", "sub", "sup", "italic", "strike", "bold")
 MARKDOWN_TAGS = {
     "italic": "_",
     "strike": "~~",
