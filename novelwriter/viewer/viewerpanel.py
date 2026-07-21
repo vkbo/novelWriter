@@ -31,7 +31,6 @@ from PyQt6.QtWidgets import (
     QAbstractItemView,
     QFrame,
     QMenu,
-    QTabWidget,
     QToolButton,
     QTreeWidget,
     QTreeWidgetItem,
@@ -43,8 +42,8 @@ from novelwriter import SHARED
 from novelwriter.common import checkInt, qtAddAction
 from novelwriter.constants import nwLabels, nwLists, nwStyles, trConst
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass
-from novelwriter.extensions.modified import NIconToolButton
-from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
+from novelwriter.extensions.modified import NIconToolButton, NTabWidget
+from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import QtDecorationRole, QtHeaderFixed, QtHeaderToContents, QtUserRole
 
 if TYPE_CHECKING:
@@ -84,7 +83,7 @@ class GuiDocViewerPanel(QWidget):
         self.optsButton.setMenu(self.optsMenu)
         self.optsButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
-        self.mainTabs = QTabWidget(self)
+        self.mainTabs = NTabWidget(self)
         self.mainTabs.addTab(self.tabBackRefs, self.tr("References"))
         self.mainTabs.setCornerWidget(self.optsButton, Qt.Corner.TopLeftCorner)
 
@@ -115,7 +114,7 @@ class GuiDocViewerPanel(QWidget):
         logger.debug("Theme Update: GuiDocViewerPanel")
 
         self.optsButton.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON))
-        self.mainTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
+        self.mainTabs.refreshTheme()
         if not init:
             self.optsButton.refreshTheme()
             self.tabBackRefs.updateTheme()

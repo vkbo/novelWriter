@@ -48,7 +48,6 @@ from PyQt6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QSplitter,
-    QTabWidget,
     QTextBrowser,
     QTreeWidget,
     QTreeWidgetItem,
@@ -60,12 +59,12 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatInt, formatPercent, fuzzyTime
 from novelwriter.constants import nwHeadFmt, nwLabels, nwStats, nwUnicode, trStats
 from novelwriter.enum import nwStandardButton
-from novelwriter.extensions.modified import NIconToolButton, NToolDialog
+from novelwriter.extensions.modified import NIconToolButton, NTabWidget, NToolDialog
 from novelwriter.extensions.progressbars import NProgressCircle
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.formats.tokenizer import HeadingFormatter
 from novelwriter.formats.toqdoc import ToQTextDocument
-from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
+from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.manuscript.buildsettings import BuildCollection, BuildSettings
 from novelwriter.manuscript.docbuild import DocumentBuilder
 from novelwriter.manuscript.manusbuild import GuiManuscriptBuild
@@ -169,7 +168,7 @@ class GuiManuscript(NToolDialog):
         self.buildStats = _StatisticsWidget(self)
         self.buildStats.setExpandedState(SHARED.project.options.getList("GuiManuscript", "statsExpanded", []))
 
-        self.detailsTabs = QTabWidget(self)
+        self.detailsTabs = NTabWidget(self)
         self.detailsTabs.addTab(self.buildDetails, self.tr("Details"))
         self.detailsTabs.addTab(self.buildOutline, self.tr("Outline"))
         self.detailsTabs.addTab(self.buildStats, self.tr("Statistics"))
@@ -303,7 +302,7 @@ class GuiManuscript(NToolDialog):
         self.tbCopy.setStyleSheet(buttonStyle)
         self.tbEdit.setStyleSheet(buttonStyle)
 
-        self.detailsTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
+        self.detailsTabs.refreshTheme()
 
         self.buildDetails.updateTheme()
         self.buildOutline.updateTheme()

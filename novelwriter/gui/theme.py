@@ -66,7 +66,6 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-STYLES_FLAT_TABS = "flatTabWidget"
 STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
@@ -777,14 +776,6 @@ class GuiTheme:
         text = palette.text().color()
         text.setAlpha(48)
         tCol = text.name(QtHexArgb)
-        hCol = palette.highlight().color().name(QtHexArgb)
-
-        # Flat Tab Widget and Tab Bar:
-        self._styleSheets[STYLES_FLAT_TABS] = (
-            "QTabWidget::pane {border: 0;} "
-            "QTabWidget QTabBar::tab {border: 0; padding: 4px 8px;} "
-            f"QTabWidget QTabBar::tab:selected {{color: {hCol};}} "
-        )
 
         # Minimal Tool Button
         self._styleSheets[STYLES_MIN_TOOLBUTTON] = (
