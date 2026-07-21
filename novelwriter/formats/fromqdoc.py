@@ -1,6 +1,6 @@
 """
 novelWriter – QTextDocument to Text Converter
-==============================================
+=============================================
 
 This file is a part of novelWriter
 Copyright (C) 2026 Veronica Berglyd Olsen and novelWriter contributors
@@ -32,8 +32,6 @@ from novelwriter.constants import nwShortcode, nwUnicode
 from novelwriter.types import QtAlignHCenter, QtAlignRight, QtVAlignSub, QtVAlignSuper
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
-
     from PyQt6.QtGui import QTextBlock
 
 logger = logging.getLogger(__name__)
@@ -94,24 +92,19 @@ class FromQTextDocument:
     #  Methods
     ##
 
-    def doConvert(self) -> Iterator[int]:
+    def convertText(self) -> str:
         """Convert the document one block at a time. Yields the number
         of blocks processed so far as a progress counter.
         """
         self._result = []
-        count = 0
         block = self._document.begin()
         while block.isValid():
             if (level := block.blockFormat().headingLevel()) > 0:
                 self._addHeading(block, level)
             else:
                 self._addParagraph(block)
-            count += 1
-            yield count
             block = block.next()
 
-    def resultText(self) -> str:
-        """Return the converted text as a single string."""
         return "\n".join(self._result)
 
     ##
@@ -152,7 +145,7 @@ class FromQTextDocument:
         hard line break, or a single space.
         """
         if self._preserveSoftBreak:
-            return text.replace(nwUnicode.U_LSEP, "  \n")
+            return text.replace(nwUnicode.U_LSEP, "\n")
         return text.replace(nwUnicode.U_LSEP, " ")
 
     def _formatBlock(self, block: QTextBlock) -> str:

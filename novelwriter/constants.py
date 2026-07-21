@@ -58,6 +58,7 @@ class nwConst:
 
     # Mime Types
     MIME_HANDLE = "text/vnd.novelwriter.handle"
+    MIME_MARKDOWN = "text/markdown"
 
     # Gui Settings
     STATUS_MSG_TIMEOUT = 15000  # milliseconds
