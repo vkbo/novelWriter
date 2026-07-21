@@ -1,5 +1,5 @@
 """
-novelWriter – Text Counting Functions
+novelWriter - Text Counting Functions
 =====================================
 
 This file is a part of novelWriter

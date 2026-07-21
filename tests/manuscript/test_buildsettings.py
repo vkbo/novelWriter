@@ -1,5 +1,5 @@
 """
-novelWriter – Manuscript Build Settings Tests
+novelWriter - Manuscript Build Settings Tests
 =============================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Markdown Text Converter
+novelWriter - Markdown Text Converter
 =====================================
 
 This file is a part of novelWriter

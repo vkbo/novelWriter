@@ -1,5 +1,5 @@
 """
-novelWriter – Project Storage
+novelWriter - Project Storage
 =============================
 
 This file is a part of novelWriter

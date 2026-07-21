@@ -1,5 +1,5 @@
 """
-novelWriter – DocX Text Converter
+novelWriter - DocX Text Converter
 =================================
 
 This file is a part of novelWriter

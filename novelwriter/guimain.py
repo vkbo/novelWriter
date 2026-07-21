@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Main Window
+novelWriter - GUI Main Window
 =============================
 
 This file is a part of novelWriter

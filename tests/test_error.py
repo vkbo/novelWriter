@@ -1,5 +1,5 @@
 """
-novelWriter – Error Handler Tests
+novelWriter - Error Handler Tests
 =================================
 
 This file is a part of novelWriter

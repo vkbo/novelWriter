@@ -1,5 +1,5 @@
 """
-novelWriter – About Dialog Tests
+novelWriter - About Dialog Tests
 ================================
 
 This file is a part of novelWriter

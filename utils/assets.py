@@ -1,5 +1,5 @@
 """
-novelWriter – Assets
+novelWriter - Assets
 ====================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Wheel Event Filter Tests
+novelWriter - Wheel Event Filter Tests
 ======================================
 
 This file is a part of novelWriter

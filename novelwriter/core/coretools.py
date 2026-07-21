@@ -1,5 +1,5 @@
 """
-novelWriter – Project Document Tools
+novelWriter - Project Document Tools
 ====================================
 
 This file is a part of novelWriter

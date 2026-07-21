@@ -1,5 +1,5 @@
 """
-novelWriter – Custom Widget: Switch
+novelWriter - Custom Widget: Switch
 ===================================
 
 This file is a part of novelWriter

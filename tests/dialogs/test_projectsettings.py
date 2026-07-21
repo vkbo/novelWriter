@@ -1,5 +1,5 @@
 """
-novelWriter – Project Settings Dialog Tests
+novelWriter - Project Settings Dialog Tests
 ===========================================
 
 This file is a part of novelWriter

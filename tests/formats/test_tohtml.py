@@ -1,5 +1,5 @@
 """
-novelWriter – HTML Format Tests
+novelWriter - HTML Format Tests
 ===============================
 
 This file is a part of novelWriter

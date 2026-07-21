@@ -1,5 +1,5 @@
 """
-novelWriter – Test Suite Mocked Classes
+novelWriter - Test Suite Mocked Classes
 =======================================
 
 This file is a part of novelWriter

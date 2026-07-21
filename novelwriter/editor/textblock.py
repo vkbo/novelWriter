@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Text Block Data
+novelWriter - GUI Text Block Data
 =================================
 
 This file is a part of novelWriter

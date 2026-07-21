@@ -1,5 +1,5 @@
 """
-novelWriter – Text Tokenizer Tests
+novelWriter - Text Tokenizer Tests
 ==================================
 
 This file is a part of novelWriter

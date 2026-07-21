@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Doc Split Dialog
+novelWriter - GUI Doc Split Dialog
 ==================================
 
 This file is a part of novelWriter

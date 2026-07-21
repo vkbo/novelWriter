@@ -1,5 +1,5 @@
 """
-novelWriter – Test Suite Helpers
+novelWriter - Test Suite Helpers
 ================================
 
 This file is a part of novelWriter

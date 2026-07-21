@@ -1,5 +1,5 @@
 """
-novelWriter – Merge Dialog Tests
+novelWriter - Merge Dialog Tests
 ================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Custom Widget: Config Layout
+novelWriter - Custom Widget: Config Layout
 ==========================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Project Data
+novelWriter - Project Data
 ==========================
 
 This file is a part of novelWriter

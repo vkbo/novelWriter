@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Status Bar Tests
+novelWriter - GUI Status Bar Tests
 ==================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Outline Tests
+novelWriter - GUI Outline Tests
 ===============================
 
 This file is a part of novelWriter

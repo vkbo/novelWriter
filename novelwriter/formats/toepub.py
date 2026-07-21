@@ -1,5 +1,5 @@
 """
-novelWriter – EPUB Converter
+novelWriter - EPUB Converter
 ============================
 
 This file is a part of novelWriter

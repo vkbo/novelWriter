@@ -1,5 +1,5 @@
 """
-novelWriter – DocX Format Tests
+novelWriter - DocX Format Tests
 ===============================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – SwitchBox Extension Tests
+novelWriter - SwitchBox Extension Tests
 =======================================
 
 This file is a part of novelWriter

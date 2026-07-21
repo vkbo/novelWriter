@@ -1,5 +1,5 @@
 """
-novelWriter – Version Info Widget Tests
+novelWriter - Version Info Widget Tests
 =======================================
 
 This file is a part of novelWriter

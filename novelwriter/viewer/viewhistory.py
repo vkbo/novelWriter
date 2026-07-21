@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Viewer History
+novelWriter - GUI Viewer History
 ================================
 
 This file is a part of novelWriter

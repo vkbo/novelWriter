@@ -1,5 +1,5 @@
 """
-novelWriter – Binary Dist Tools
+novelWriter - Binary Dist Tools
 ===============================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Custom Widget: Status LED
+novelWriter - Custom Widget: Status LED
 =======================================
 
 This file is a part of novelWriter

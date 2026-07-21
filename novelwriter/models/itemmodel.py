@@ -1,5 +1,5 @@
 """
-novelWriter – Project Item Model
+novelWriter - Project Item Model
 ================================
 
 This file is a part of novelWriter

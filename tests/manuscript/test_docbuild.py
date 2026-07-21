@@ -1,5 +1,5 @@
 """
-novelWriter – Manuscript Builder Tests
+novelWriter - Manuscript Builder Tests
 ======================================
 
 This file is a part of novelWriter

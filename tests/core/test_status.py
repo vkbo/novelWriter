@@ -1,5 +1,5 @@
 """
-novelWriter – Project Status Tests
+novelWriter - Project Status Tests
 ==================================
 
 This file is a part of novelWriter

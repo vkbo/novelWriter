@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Preferences
+novelWriter - GUI Preferences
 =============================
 
 This file is a part of novelWriter

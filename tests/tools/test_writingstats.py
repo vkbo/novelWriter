@@ -1,5 +1,5 @@
 """
-novelWriter – Writing Stats Dialog Tests
+novelWriter - Writing Stats Dialog Tests
 ========================================
 
 This file is a part of novelWriter

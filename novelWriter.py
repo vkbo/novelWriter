@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-novelWriter – Start Script
+novelWriter - Start Script
 ==========================
 """  # noqa
 

@@ -1,5 +1,5 @@
 """
-novelWriter – Quotes Dialog Tests
+novelWriter - Quotes Dialog Tests
 =================================
 
 This file is a part of novelWriter

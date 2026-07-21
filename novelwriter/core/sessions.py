@@ -1,5 +1,5 @@
 """
-novelWriter – Project Session Log
+novelWriter - Project Session Log
 =================================
 
 This file is a part of novelWriter

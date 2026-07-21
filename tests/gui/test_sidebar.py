@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Side Bar Tests
+novelWriter - GUI Side Bar Tests
 ================================
 
 This file is a part of novelWriter

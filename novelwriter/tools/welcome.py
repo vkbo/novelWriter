@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Welcome Dialog
+novelWriter - GUI Welcome Dialog
 ================================
 
 This file is a part of novelWriter

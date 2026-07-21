@@ -1,5 +1,5 @@
 """
-novelWriter – Project Document
+novelWriter - Project Document
 ==============================
 
 This file is a part of novelWriter

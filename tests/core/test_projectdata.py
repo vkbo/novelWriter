@@ -1,5 +1,5 @@
 """
-novelWriter – Project Data Tests
+novelWriter - Project Data Tests
 ================================
 
 This file is a part of novelWriter

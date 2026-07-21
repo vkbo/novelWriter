@@ -1,5 +1,5 @@
 """
-novelWriter – Constants
+novelWriter - Constants
 =======================
 
 This file is a part of novelWriter

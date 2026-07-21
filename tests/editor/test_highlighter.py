@@ -1,5 +1,5 @@
 """
-novelWriter – Syntax Highlighter Tests
+novelWriter - Syntax Highlighter Tests
 ======================================
 
 This file is a part of novelWriter

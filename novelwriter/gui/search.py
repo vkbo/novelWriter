@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Project Search
+novelWriter - GUI Project Search
 ================================
 
 This file is a part of novelWriter

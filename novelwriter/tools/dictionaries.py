@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Dictionary Downloader
+novelWriter - GUI Dictionary Downloader
 =======================================
 
 This file is a part of novelWriter

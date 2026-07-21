@@ -1,5 +1,5 @@
 """
-novelWriter – Exception Handling
+novelWriter - Exception Handling
 ================================
 
 This file is a part of novelWriter

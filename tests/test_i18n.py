@@ -1,5 +1,5 @@
 """
-novelWriter – GUI i18n Tests
+novelWriter - GUI i18n Tests
 ============================
 
 This file is a part of novelWriter

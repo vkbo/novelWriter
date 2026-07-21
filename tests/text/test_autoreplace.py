@@ -1,5 +1,5 @@
 """
-novelWriter – GUI TextAutoReplace Tests
+novelWriter - GUI TextAutoReplace Tests
 =======================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Item Details Tests
+novelWriter - GUI Item Details Tests
 ====================================
 
 This file is a part of novelWriter

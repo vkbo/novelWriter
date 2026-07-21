@@ -1,5 +1,5 @@
 """
-novelWriter – ConfigLayout Extension Tests
+novelWriter - ConfigLayout Extension Tests
 ==========================================
 
 This file is a part of novelWriter

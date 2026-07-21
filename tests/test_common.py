@@ -1,5 +1,5 @@
 """
-novelWriter – Common Functions Tests
+novelWriter - Common Functions Tests
 ====================================
 
 This file is a part of novelWriter

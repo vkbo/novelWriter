@@ -1,5 +1,5 @@
 """
-novelWriter – Build Settings
+novelWriter - Build Settings
 ============================
 
 This file is a part of novelWriter

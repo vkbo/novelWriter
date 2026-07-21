@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Editor Footer
+novelWriter - GUI Editor Footer
 ===============================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Config Class
+novelWriter - Config Class
 ==========================
 
 This file is a part of novelWriter

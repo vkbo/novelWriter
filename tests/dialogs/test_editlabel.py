@@ -1,5 +1,5 @@
 """
-novelWriter – Edit Label Dialog Tests
+novelWriter - Edit Label Dialog Tests
 =====================================
 
 This file is a part of novelWriter

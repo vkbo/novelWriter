@@ -1,5 +1,5 @@
 """
-novelWriter – Project Index Data
+novelWriter - Project Index Data
 ================================
 
 This file is a part of novelWriter

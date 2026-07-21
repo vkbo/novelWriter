@@ -1,5 +1,5 @@
 """
-novelWriter – Main GUI Windows Tests
+novelWriter - Main GUI Windows Tests
 ====================================
 
 This file is a part of novelWriter

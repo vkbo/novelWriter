@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Main Menu Tests
+novelWriter - GUI Main Menu Tests
 =================================
 
 This file is a part of novelWriter

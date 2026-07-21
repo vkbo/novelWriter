@@ -1,5 +1,5 @@
 """
-novelWriter – Hover Card Tests
+novelWriter - Hover Card Tests
 ==============================
 
 This file is a part of novelWriter

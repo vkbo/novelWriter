@@ -1,5 +1,5 @@
 """
-novelWriter – Splash Screen
+novelWriter - Splash Screen
 ===========================
 
 This file is a part of novelWriter

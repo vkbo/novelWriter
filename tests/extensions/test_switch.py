@@ -1,5 +1,5 @@
 """
-novelWriter – Switch Tests
+novelWriter - Switch Tests
 ==========================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Project Storage Tests
+novelWriter - Project Storage Tests
 ===================================
 
 This file is a part of novelWriter

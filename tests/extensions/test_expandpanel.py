@@ -1,5 +1,5 @@
 """
-novelWriter – ExpandPanel Extension Tests
+novelWriter - ExpandPanel Extension Tests
 =========================================
 
 This file is a part of novelWriter

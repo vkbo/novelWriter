@@ -1,5 +1,5 @@
 """
-novelWriter – Project Search Tool
+novelWriter - Project Search Tool
 =================================
 
 This file is a part of novelWriter

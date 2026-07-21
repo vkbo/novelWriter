@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Project Tree Tests
+novelWriter - GUI Project Tree Tests
 ====================================
 
 This file is a part of novelWriter

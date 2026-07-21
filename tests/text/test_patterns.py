@@ -1,5 +1,5 @@
 """
-novelWriter – Text Patterns Tests
+novelWriter - Text Patterns Tests
 =================================
 
 This file is a part of novelWriter

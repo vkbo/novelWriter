@@ -1,5 +1,5 @@
 """
-novelWriter – Custom Widget: Expandable Panel
+novelWriter - Custom Widget: Expandable Panel
 =============================================
 
 This file is a part of novelWriter

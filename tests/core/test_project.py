@@ -1,5 +1,5 @@
 """
-novelWriter – NWProject Tests
+novelWriter - NWProject Tests
 =============================
 
 This file is a part of novelWriter

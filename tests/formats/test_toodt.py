@@ -1,5 +1,5 @@
 """
-novelWriter – Open Document Format Tests
+novelWriter - Open Document Format Tests
 ========================================
 
 This file is a part of novelWriter

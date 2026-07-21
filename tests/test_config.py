@@ -1,5 +1,5 @@
 """
-novelWriter – Config Tests
+novelWriter - Config Tests
 ==========================
 
 This file is a part of novelWriter

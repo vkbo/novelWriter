@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Item Details Panel
+novelWriter - GUI Item Details Panel
 ====================================
 
 This file is a part of novelWriter

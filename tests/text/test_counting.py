@@ -1,5 +1,5 @@
 """
-novelWriter – Text Counter Tests
+novelWriter - Text Counter Tests
 ================================
 
 This file is a part of novelWriter

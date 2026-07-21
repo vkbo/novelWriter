@@ -1,5 +1,5 @@
 """
-novelWriter – QTextDocument Converter
+novelWriter - QTextDocument Converter
 =====================================
 
 This file is a part of novelWriter

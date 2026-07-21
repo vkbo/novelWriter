@@ -1,5 +1,5 @@
 """
-novelWriter – Index Data Tests
+novelWriter - Index Data Tests
 ==============================
 
 This file is a part of novelWriter

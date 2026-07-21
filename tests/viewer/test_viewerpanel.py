@@ -1,5 +1,5 @@
 """
-novelWriter – Document Viewer Panel Tests
+novelWriter - Document Viewer Panel Tests
 =========================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Manuscript Build Dialog Tests
+novelWriter - Manuscript Build Dialog Tests
 ===========================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Text Formats Tests
+novelWriter - Text Formats Tests
 ================================
 
 This file is a part of novelWriter
