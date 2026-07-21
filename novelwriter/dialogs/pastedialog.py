@@ -190,11 +190,11 @@ class GuiPasteDialog(NDialog):
         self.convProgress.setValue(0)
         QApplication.processEvents()
 
-        for count in converter.convert():
+        for count in converter.doConvert():
             self.convProgress.setValue(count)
             QApplication.processEvents()
 
-        self.plainEdit.setPlainText(converter.result().strip())
+        self.plainEdit.setPlainText(converter.resultText().strip())
         self.plainEdit.setEnabled(True)
         self.plainEdit.setFocus()
         self.btnInsert.setEnabled(True)

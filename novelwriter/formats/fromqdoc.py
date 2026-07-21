@@ -29,6 +29,7 @@ from PyQt6.QtGui import QFont, QTextCharFormat, QTextDocument
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwShortcode, nwUnicode
+from novelwriter.types import QtAlignHCenter, QtAlignRight, QtVAlignSub, QtVAlignSuper
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -47,6 +48,22 @@ SHORTCODES = {
 }
 
 MARKDOWN_FMTS = ("underline", "sub", "sup", "strike", "italic", "bold")
+MARKDOWN_TAGS = {
+    "italic": "_",
+    "strike": "~~",
+}
+
+
+def _markdownTag(name: str) -> str:
+    """Return the Markdown tag for a given format name."""
+    if name == "bold":
+        return "*" if CONFIG.singleStarBold else "**"
+    return MARKDOWN_TAGS.get(name, "")
+
+
+def _isWordChar(char: str) -> bool:
+    """Check if a character counts as a word character."""
+    return char.isalnum() or char == "_"
 
 
 class FromQTextDocument:
@@ -55,9 +72,17 @@ class FromQTextDocument:
     __slots__ = ("_document", "_preserveSoftBreak", "_result")
 
     def __init__(self, document: QTextDocument) -> None:
+
+        # Internal Variables
         self._document = document
         self._result: list[str] = []
-        self._preserveSoftBreak = False
+
+        # Settings
+        self._preserveSoftBreak = True
+
+    ##
+    #  Setters
+    ##
 
     def setPreserveSoftBreak(self, state: bool) -> None:
         """Set whether soft line breaks should be preserved as hard
@@ -65,7 +90,11 @@ class FromQTextDocument:
         """
         self._preserveSoftBreak = state
 
-    def convert(self) -> Iterator[int]:
+    ##
+    #  Methods
+    ##
+
+    def doConvert(self) -> Iterator[int]:
         """Convert the document one block at a time. Yields the number
         of blocks processed so far as a progress counter.
         """
@@ -81,7 +110,7 @@ class FromQTextDocument:
             yield count
             block = block.next()
 
-    def result(self) -> str:
+    def resultText(self) -> str:
         """Return the converted text as a single string."""
         return "\n".join(self._result)
 
@@ -103,8 +132,20 @@ class FromQTextDocument:
         """Add a regular text block to the result."""
         text = self._formatBlock(block)
         if text.strip():
-            self._result.append(text)
+            self._result.append(self._applyAlignment(block, text))
         self._result.append("")
+
+    def _applyAlignment(self, block: QTextBlock, text: str) -> str:
+        """Wrap right-aligned or centred paragraphs in novelWriter's
+        alignment markers. Left alignment is the default and is left
+        as-is.
+        """
+        align = block.blockFormat().alignment()
+        if align & QtAlignHCenter:
+            return f">> {text} <<"
+        elif align & QtAlignRight:
+            return f">> {text}"
+        return text
 
     def _resolveSoftBreaks(self, text: str) -> str:
         """Convert soft line break characters to either a Markdown
@@ -143,15 +184,15 @@ class FromQTextDocument:
 
         coreStart = start + len(lead)
         coreEnd = coreStart + len(core)
-        cleanEdges = (coreStart == 0 or not self._isWordChar(blockText[coreStart - 1])) and (
-            coreEnd >= len(blockText) or not self._isWordChar(blockText[coreEnd])
+        cleanEdges = (coreStart == 0 or not _isWordChar(blockText[coreStart - 1])) and (
+            coreEnd >= len(blockText) or not _isWordChar(blockText[coreEnd])
         )
 
         align = cFormat.verticalAlignment()
         active = {
             "underline": cFormat.fontUnderline(),
-            "sub": align == QTextCharFormat.VerticalAlignment.AlignSubScript,
-            "sup": align == QTextCharFormat.VerticalAlignment.AlignSuperScript,
+            "sub": align == QtVAlignSub,
+            "sup": align == QtVAlignSuper,
             "strike": cFormat.fontStrikeOut(),
             "italic": cFormat.fontItalic(),
             "bold": cFormat.fontWeight() >= QFont.Weight.Bold,
@@ -161,24 +202,10 @@ class FromQTextDocument:
             if not active[name]:
                 continue
             if name in ("bold", "italic", "strike") and cleanEdges:
-                tag = self._markdownTag(name)
+                tag = _markdownTag(name)
                 core = f"{tag}{core}{tag}"
             else:
                 cOpen, cClose = SHORTCODES[name]
                 core = f"{cOpen}{core}{cClose}"
 
         return f"{lead}{core}{trail}"
-
-    @staticmethod
-    def _markdownTag(name: str) -> str:
-        """Return the Markdown tag for a given format name."""
-        if name == "bold":
-            return "*" if CONFIG.singleStarBold else "**"
-        elif name == "italic":
-            return "_"
-        return "~~"
-
-    @staticmethod
-    def _isWordChar(char: str) -> bool:
-        """Check if a character counts as a word character."""
-        return char.isalnum() or char == "_"
