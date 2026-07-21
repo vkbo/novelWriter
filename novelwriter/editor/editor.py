@@ -96,6 +96,7 @@ from novelwriter.enum import (
     nwVimMode,
 )
 from novelwriter.extensions.eventfilters import WheelEventFilter
+from novelwriter.formats.fromqdoc import FromQTextDocument
 from novelwriter.text.autoreplace import TextAutoReplace
 from novelwriter.text.counting import standardCounter
 from novelwriter.text.formats import processHeading
@@ -1412,16 +1413,35 @@ class GuiDocEditor(QTextEdit):
         return super().inputMethodQuery(query)
 
     def insertFromMimeData(self, source: QMimeData | None) -> None:
-        """Overload mime data insertion in the document.
+        """Overload mime data insertion in the document."""
+        if not source:
+            # Blocks empty inserts, see #2598
+            return
 
-        * Blocks empty inserts, see #2598
-        * Ensures line height is applied, see #2874
-        """
-        if source and source.hasText():
+        document = None
+        if source.hasHtml():
+            logger.debug("Converting rich text paste")
+            document = QTextDocument()
+            document.setHtml(source.html())
+        elif source.hasFormat(nwConst.MIME_MARKDOWN):
+            logger.debug("Converting Markdown paste")
+            data = source.data(nwConst.MIME_MARKDOWN).data().decode("utf-8", errors="replace")
+            document = QTextDocument()
+            document.setMarkdown(data)
+
+        if document is not None:
+            text = FromQTextDocument(document).convertText().strip()
+        elif source.hasText():
+            text = source.text()
+        else:
+            return
+
+        if text:
+            # Ensures line height is applied, see #2874
             logger.debug("Inserted text into document")
             cursor = self.textCursor()
             cursor.beginEditBlock()
-            cursor.insertText(source.text())
+            cursor.insertText(text)
             cursor.endEditBlock()
             self.setTextCursor(cursor)
             self.ensureCursorVisible(centre=False)

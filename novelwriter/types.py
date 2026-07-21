@@ -35,6 +35,7 @@ T_MsgSeverity = Literal["info", "warning", "error"]
 
 QtAlignAbsolute = Qt.AlignmentFlag.AlignAbsolute
 QtAlignCenter = Qt.AlignmentFlag.AlignCenter
+QtAlignHCenter = Qt.AlignmentFlag.AlignHCenter
 QtAlignCenterTop = Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop
 QtAlignJustify = Qt.AlignmentFlag.AlignJustify
 QtAlignLeft = Qt.AlignmentFlag.AlignLeft
