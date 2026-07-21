@@ -23,13 +23,21 @@ from __future__ import annotations
 
 import logging
 
-from PyQt6.QtWidgets import QDialogButtonBox, QHBoxLayout, QTextEdit, QVBoxLayout, QWidget
+from typing import TYPE_CHECKING
+
+from PyQt6.QtCore import QTimer, pyqtSlot
+from PyQt6.QtWidgets import QApplication, QDialogButtonBox, QHBoxLayout, QTextEdit, QVBoxLayout, QWidget
 
 from novelwriter import SHARED
 from novelwriter.enum import nwStandardButton
+from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
+from novelwriter.extensions.progressbars import NProgressSimple
 from novelwriter.formats.fromqdoc import FromQTextDocument
 from novelwriter.types import QtAccepted, QtRoleAccept, QtRoleReject
+
+if TYPE_CHECKING:
+    from PyQt6.QtGui import QShowEvent
 
 logger = logging.getLogger(__name__)
 
@@ -47,22 +55,47 @@ class GuiPasteDialog(NDialog):
         self.setMinimumWidth(600)
         self.setMinimumHeight(400)
 
+        options = SHARED.project.options
+        self.resize(
+            options.getInt("GuiPasteDialog", "winWidth", 800),
+            options.getInt("GuiPasteDialog", "winHeight", 600),
+        )
+
         # Rich Text Preview
+        self.richTitle = NColorLabel(
+            self.tr("Pasted Text"),
+            self,
+            color=SHARED.theme.helpText,
+            scale=NColorLabel.HEADER_SCALE,
+        )
+
         self.richView = QTextEdit(self)
         self.richView.setReadOnly(True)
         self.richView.setHtml(html)
 
         # Plain Text Result
+        self.plainTitle = NColorLabel(
+            self.tr("Converted Text"),
+            self,
+            color=SHARED.theme.helpText,
+            scale=NColorLabel.HEADER_SCALE,
+        )
+
         self.plainEdit = QTextEdit(self)
         self.plainEdit.setAcceptRichText(False)
-        self.plainEdit.setPlainText(self._toMarkdown())
+        self.plainEdit.setPlaceholderText(self.tr("Converting ..."))
+        self.plainEdit.setEnabled(False)
 
-        self.splitBox = QHBoxLayout()
-        self.splitBox.addWidget(self.richView, 1)
-        self.splitBox.addWidget(self.plainEdit, 1)
+        # Conversion Progress
+        self.convProgress = NProgressSimple(self)
+        self.convProgress.setMinimum(0)
+        self.convProgress.setValue(0)
+        self.convProgress.setTextVisible(False)
+        self.convProgress.setFixedHeight(4)
 
         # Buttons
         self.btnInsert = SHARED.theme.getStandardButton(nwStandardButton.INSERT, self)
+        self.btnInsert.setEnabled(False)
         self.btnInsert.clicked.connect(self.accept)
 
         self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
@@ -73,9 +106,29 @@ class GuiPasteDialog(NDialog):
         self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Assemble
+        self.richBox = QVBoxLayout()
+        self.richBox.addWidget(self.richTitle, 0)
+        self.richBox.addWidget(self.richView, 1)
+        self.richBox.setSpacing(4)
+        self.richBox.setContentsMargins(0, 0, 0, 0)
+
+        self.plainBox = QVBoxLayout()
+        self.plainBox.addWidget(self.plainTitle, 0)
+        self.plainBox.addWidget(self.plainEdit, 1)
+        self.plainBox.setSpacing(4)
+        self.plainBox.setContentsMargins(8, 0, 0, 0)
+
+        self.splitBox = QHBoxLayout()
+        self.splitBox.addLayout(self.richBox, 1)
+        self.splitBox.addLayout(self.plainBox, 1)
+        self.splitBox.setSpacing(4)
+        self.splitBox.setContentsMargins(0, 0, 0, 0)
+
         self.outerBox = QVBoxLayout()
-        self.outerBox.setSpacing(12)
         self.outerBox.addLayout(self.splitBox, 1)
+        self.outerBox.addSpacing(2)
+        self.outerBox.addWidget(self.convProgress, 0)
+        self.outerBox.addSpacing(8)
         self.outerBox.addWidget(self.btnBox, 0)
 
         self.setLayout(self.outerBox)
@@ -96,20 +149,62 @@ class GuiPasteDialog(NDialog):
         """Pop the dialog and return the result."""
         dialog = cls(parent, html)
         dialog.exec()
+        dialog._saveSettings()
         text = dialog.text
         accepted = dialog.result() == QtAccepted
         dialog.softDelete()
         return text, accepted
 
     ##
+    #  Events
+    ##
+
+    def showEvent(self, event: QShowEvent) -> None:
+        """Kick off the conversion once the dialog is visible."""
+        super().showEvent(event)
+        QTimer.singleShot(0, self._runConversion)
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _runConversion(self) -> None:
+        """Convert the rich text preview to novelWriter's text format,
+        updating the progress bar as it goes.
+        """
+        if not (document := self.richView.document()):
+            return
+
+        converter = FromQTextDocument(document)
+        self.convProgress.setMaximum(max(document.blockCount(), 1))
+        self.convProgress.setValue(0)
+        QApplication.processEvents()
+
+        for count in converter.convert():
+            self.convProgress.setValue(count)
+            QApplication.processEvents()
+
+        self.plainEdit.setPlainText(converter.result().strip())
+        self.plainEdit.setEnabled(True)
+        self.plainEdit.setFocus()
+        self.btnInsert.setEnabled(True)
+
+        QTimer.singleShot(3000, self._resetProgress)
+
+    @pyqtSlot()
+    def _resetProgress(self) -> None:
+        """Set the progress bar back to 0."""
+        self.convProgress.setValue(0)
+
+    ##
     #  Internal Functions
     ##
 
-    def _toMarkdown(self) -> str:
-        """Convert the rich text preview to novelWriter's text format."""
-        if not (document := self.richView.document()):
-            return ""  # pragma: no cover
-        converter = FromQTextDocument(document)
-        for _ in converter.convert():
-            pass
-        return converter.result().strip()
+    def _saveSettings(self) -> None:
+        """Save the dialog's GUI settings."""
+        logger.debug("Saving State: GuiPasteDialog")
+        options = SHARED.project.options
+        options.setValue("GuiPasteDialog", "winWidth", self.width())
+        options.setValue("GuiPasteDialog", "winHeight", self.height())
+        options.saveSettings()
