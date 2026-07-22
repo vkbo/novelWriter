@@ -96,7 +96,7 @@ def testConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     """Test config initialisation."""
     conf = Config()
 
-    confFile = fncPath / nwFiles.CONF_FILE
+    confFile = fncPath / nwFiles.CONF_FILE_OLD
     testFile = tstPaths.outDir / "baseConfig_novelwriter.conf"
     compFile = tstPaths.refDir / "baseConfig_novelwriter.conf"
 

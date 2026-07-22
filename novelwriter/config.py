@@ -759,10 +759,13 @@ class Config:
 
         logger.debug("Loading config file")
 
-        conf = NConfigParser()
-        cnfPath = self._confPath / nwFiles.CONF_FILE
-
-        if not safeExists(cnfPath):
+        # if safeExists(path := self._confPath / nwFiles.CONF_FILE):
+        #     cnfPath = path
+        #     conf = NTomlParser()
+        if safeExists(path := self._confPath / nwFiles.CONF_FILE_OLD):
+            cnfPath = path
+            conf = NConfigParser()
+        else:
             # Initial file, so we just create one from defaults
             self.setGuiFont(None)
             self.setTextFont(None)
@@ -783,112 +786,112 @@ class Config:
         # Main
         sec = "Main"
         self.setGuiFont(conf.rdStr(sec, "font", ""))
-        self.lightTheme = conf.rdStr(sec, "lighttheme", self.lightTheme)
-        self.darkTheme = conf.rdStr(sec, "darktheme", self.darkTheme)
-        self.themeMode = conf.rdEnum(sec, "thememode", self.themeMode)
+        self.lightTheme = conf.rdStr(sec, "lightTheme", self.lightTheme)
+        self.darkTheme = conf.rdStr(sec, "darkTheme", self.darkTheme)
+        self.themeMode = conf.rdEnum(sec, "themeMode", self.themeMode)
         self.iconTheme = conf.rdStr(sec, "icons", self.iconTheme)
-        self.iconColTree = conf.rdStr(sec, "iconcoltree", self.iconColTree)
-        self.iconColDocs = conf.rdBool(sec, "iconcoldocs", self.iconColDocs)
+        self.iconColTree = conf.rdStr(sec, "iconColTree", self.iconColTree)
+        self.iconColDocs = conf.rdBool(sec, "iconColDocs", self.iconColDocs)
         self.guiLocale = conf.rdStr(sec, "localisation", self.guiLocale)
-        self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
-        self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
-        self.lastNotes = conf.rdStr(sec, "lastnotes", self.lastNotes)
-        self.nativeFont = conf.rdBool(sec, "nativefont", self.nativeFont)
-        self.useCharCount = conf.rdBool(sec, "usecharcount", self.useCharCount)
-        self.vimMode = conf.rdBool(sec, "vimmode", self.vimMode)
+        self.hideVScroll = conf.rdBool(sec, "hideVScroll", self.hideVScroll)
+        self.hideHScroll = conf.rdBool(sec, "hideHScroll", self.hideHScroll)
+        self.lastNotes = conf.rdStr(sec, "lastNotes", self.lastNotes)
+        self.nativeFont = conf.rdBool(sec, "nativeFont", self.nativeFont)
+        self.useCharCount = conf.rdBool(sec, "useCharCount", self.useCharCount)
+        self.vimMode = conf.rdBool(sec, "vimMode", self.vimMode)
 
         # Sizes
         sec = "Sizes"
-        self.mainWinSize = conf.rdIntList(sec, "mainwindow", self.mainWinSize)
+        self.mainWinSize = conf.rdIntList(sec, "mainWindow", self.mainWinSize)
         self.welcomeWinSize = conf.rdIntList(sec, "welcome", self.welcomeWinSize)
         self.prefsWinSize = conf.rdIntList(sec, "preferences", self.prefsWinSize)
-        self.fontWinSize = conf.rdIntList(sec, "fontselect", self.fontWinSize)
-        self.mainPanePos = conf.rdIntList(sec, "mainpane", self.mainPanePos)
-        self.viewPanePos = conf.rdIntList(sec, "viewpane", self.viewPanePos)
-        self.outlinePanePos = conf.rdIntList(sec, "outlinepane", self.outlinePanePos)
-        self.searchPanePos = conf.rdIntList(sec, "searchpane", self.searchPanePos)
-        self.moveMainWin = conf.rdBool(sec, "movemainwin", self.moveMainWin)
+        self.fontWinSize = conf.rdIntList(sec, "fontSelect", self.fontWinSize)
+        self.mainPanePos = conf.rdIntList(sec, "mainPane", self.mainPanePos)
+        self.viewPanePos = conf.rdIntList(sec, "viewPane", self.viewPanePos)
+        self.outlinePanePos = conf.rdIntList(sec, "outlinePane", self.outlinePanePos)
+        self.searchPanePos = conf.rdIntList(sec, "searchPane", self.searchPanePos)
+        self.moveMainWin = conf.rdBool(sec, "moveMainWin", self.moveMainWin)
 
         # Project
         sec = "Project"
-        self.autoSaveProj = conf.rdInt(sec, "autosaveproject", self.autoSaveProj)
-        self.autoSaveDoc = conf.rdInt(sec, "autosavedoc", self.autoSaveDoc)
-        self.emphLabels = conf.rdBool(sec, "emphlabels", self.emphLabels)
-        self._backupPath = conf.rdPath(sec, "backuppath", self._backupPath)
-        self.backupOnClose = conf.rdBool(sec, "backuponclose", self.backupOnClose)
-        self.backupInterval = conf.rdStr(sec, "backupinterval", self.backupInterval)
-        self.askBeforeBackup = conf.rdBool(sec, "askbeforebackup", self.askBeforeBackup)
-        self.askBeforeExit = conf.rdBool(sec, "askbeforeexit", self.askBeforeExit)
-        self._lastAuthor = conf.rdStr(sec, "lastauthor", self._lastAuthor)
+        self.autoSaveProj = conf.rdInt(sec, "autoSaveProject", self.autoSaveProj)
+        self.autoSaveDoc = conf.rdInt(sec, "autoSaveDoc", self.autoSaveDoc)
+        self.emphLabels = conf.rdBool(sec, "emphLabels", self.emphLabels)
+        self._backupPath = conf.rdPath(sec, "backupPath", self._backupPath)
+        self.backupOnClose = conf.rdBool(sec, "backupOnClose", self.backupOnClose)
+        self.backupInterval = conf.rdStr(sec, "backupInterval", self.backupInterval)
+        self.askBeforeBackup = conf.rdBool(sec, "askBeforeBackup", self.askBeforeBackup)
+        self.askBeforeExit = conf.rdBool(sec, "askBeforeExit", self.askBeforeExit)
+        self._lastAuthor = conf.rdStr(sec, "lastAuthor", self._lastAuthor)
 
         # Editor
         sec = "Editor"
-        self.setTextFont(conf.rdStr(sec, "textfont", ""))
+        self.setTextFont(conf.rdStr(sec, "textFont", ""))
         self.textWidth = conf.rdInt(sec, "width", self.textWidth)
         self.textMargin = conf.rdInt(sec, "margin", self.textMargin)
-        self.tabWidth = conf.rdInt(sec, "tabwidth", self.tabWidth)
-        self.lineHeight = conf.rdFlt(sec, "lineheight", self.lineHeight)
-        self.cursorWidth = conf.rdInt(sec, "cursorwidth", self.cursorWidth)
-        self.lineHighlight = conf.rdBool(sec, "linehighlight", self.lineHighlight)
-        self.focusWidth = conf.rdInt(sec, "focuswidth", self.focusWidth)
-        self.hideFocusFooter = conf.rdBool(sec, "hidefocusfooter", self.hideFocusFooter)
+        self.tabWidth = conf.rdInt(sec, "tabWidth", self.tabWidth)
+        self.lineHeight = conf.rdFlt(sec, "lineHeight", self.lineHeight)
+        self.cursorWidth = conf.rdInt(sec, "cursorWidth", self.cursorWidth)
+        self.lineHighlight = conf.rdBool(sec, "lineHighlight", self.lineHighlight)
+        self.focusWidth = conf.rdInt(sec, "focusWidth", self.focusWidth)
+        self.hideFocusFooter = conf.rdBool(sec, "hideFocusFooter", self.hideFocusFooter)
         self.doJustify = conf.rdBool(sec, "justify", self.doJustify)
-        self.autoSelect = conf.rdBool(sec, "autoselect", self.autoSelect)
-        self.doReplace = conf.rdBool(sec, "autoreplace", self.doReplace)
-        self.doReplaceSQuote = conf.rdBool(sec, "repsquotes", self.doReplaceSQuote)
-        self.doReplaceDQuote = conf.rdBool(sec, "repdquotes", self.doReplaceDQuote)
-        self.doReplaceDash = conf.rdBool(sec, "repdash", self.doReplaceDash)
-        self.doReplaceDots = conf.rdBool(sec, "repdots", self.doReplaceDots)
-        self.autoScroll = conf.rdBool(sec, "autoscroll", self.autoScroll)
-        self.autoScrollPos = conf.rdInt(sec, "autoscrollpos", self.autoScrollPos)
-        self.scrollPastEnd = conf.rdBool(sec, "scrollpastend", self.scrollPastEnd)
-        self.fmtSQuoteOpen = conf.rdStr(sec, "fmtsquoteopen", self.fmtSQuoteOpen)
-        self.fmtSQuoteClose = conf.rdStr(sec, "fmtsquoteclose", self.fmtSQuoteClose)
-        self.fmtDQuoteOpen = conf.rdStr(sec, "fmtdquoteopen", self.fmtDQuoteOpen)
-        self.fmtDQuoteClose = conf.rdStr(sec, "fmtdquoteclose", self.fmtDQuoteClose)
-        self.fmtPadBefore = conf.rdStr(sec, "fmtpadbefore", self.fmtPadBefore)
-        self.fmtPadAfter = conf.rdStr(sec, "fmtpadafter", self.fmtPadAfter)
-        self.fmtPadThin = conf.rdBool(sec, "fmtpadthin", self.fmtPadThin)
-        self.spellLanguage = conf.rdStr(sec, "spellcheck", self.spellLanguage)
-        self.showTabsNSpaces = conf.rdBool(sec, "showtabsnspaces", self.showTabsNSpaces)
-        self.showLineEndings = conf.rdBool(sec, "showlineendings", self.showLineEndings)
-        self.showMultiSpaces = conf.rdBool(sec, "showmultispaces", self.showMultiSpaces)
-        self.scaleHeadings = conf.rdBool(sec, "scaleheadings", self.scaleHeadings)
-        self.singleStarBold = conf.rdBool(sec, "singlestarbold", self.singleStarBold)
-        self.incNotesWCount = conf.rdBool(sec, "incnoteswcount", self.incNotesWCount)
-        self.showFullPath = conf.rdBool(sec, "showfullpath", self.showFullPath)
-        self.dialogStyle = conf.rdInt(sec, "dialogstyle", self.dialogStyle)
-        self.allowOpenDial = conf.rdBool(sec, "allowopendial", self.allowOpenDial)
-        dialogLine = conf.rdStr(sec, "dialogline", self.dialogLine)
-        narratorBreak = conf.rdStr(sec, "narratorbreak", self.narratorBreak)
-        narratorDialog = conf.rdStr(sec, "narratordialog", self.narratorDialog)
-        self.altDialogOpen = conf.rdStr(sec, "altdialogopen", self.altDialogOpen)
-        self.altDialogClose = conf.rdStr(sec, "altdialogclose", self.altDialogClose)
-        self.highlightEmph = conf.rdBool(sec, "highlightemph", self.highlightEmph)
-        self.dottedModCodes = conf.rdBool(sec, "dottedmodcodes", self.dottedModCodes)
-        self.stopWhenIdle = conf.rdBool(sec, "stopwhenidle", self.stopWhenIdle)
-        self.userIdleTime = conf.rdInt(sec, "useridletime", self.userIdleTime)
+        self.autoSelect = conf.rdBool(sec, "autoSelect", self.autoSelect)
+        self.doReplace = conf.rdBool(sec, "autoReplace", self.doReplace)
+        self.doReplaceSQuote = conf.rdBool(sec, "repSQuotes", self.doReplaceSQuote)
+        self.doReplaceDQuote = conf.rdBool(sec, "repDQuotes", self.doReplaceDQuote)
+        self.doReplaceDash = conf.rdBool(sec, "repDash", self.doReplaceDash)
+        self.doReplaceDots = conf.rdBool(sec, "repDots", self.doReplaceDots)
+        self.autoScroll = conf.rdBool(sec, "autoScroll", self.autoScroll)
+        self.autoScrollPos = conf.rdInt(sec, "autoScrollPos", self.autoScrollPos)
+        self.scrollPastEnd = conf.rdBool(sec, "scrollPastEnd", self.scrollPastEnd)
+        self.fmtSQuoteOpen = conf.rdStr(sec, "fmtSQuoteOpen", self.fmtSQuoteOpen)
+        self.fmtSQuoteClose = conf.rdStr(sec, "fmtSQuoteClose", self.fmtSQuoteClose)
+        self.fmtDQuoteOpen = conf.rdStr(sec, "fmtDQuoteOpen", self.fmtDQuoteOpen)
+        self.fmtDQuoteClose = conf.rdStr(sec, "fmtDQuoteClose", self.fmtDQuoteClose)
+        self.fmtPadBefore = conf.rdStr(sec, "fmtPadBefore", self.fmtPadBefore)
+        self.fmtPadAfter = conf.rdStr(sec, "fmtPadAfter", self.fmtPadAfter)
+        self.fmtPadThin = conf.rdBool(sec, "fmtPadThin", self.fmtPadThin)
+        self.spellLanguage = conf.rdStr(sec, "spellCheck", self.spellLanguage)
+        self.showTabsNSpaces = conf.rdBool(sec, "showTabsNSpaces", self.showTabsNSpaces)
+        self.showLineEndings = conf.rdBool(sec, "showLineEndings", self.showLineEndings)
+        self.showMultiSpaces = conf.rdBool(sec, "showMultiSpaces", self.showMultiSpaces)
+        self.scaleHeadings = conf.rdBool(sec, "scaleHeadings", self.scaleHeadings)
+        self.singleStarBold = conf.rdBool(sec, "singleStarBold", self.singleStarBold)
+        self.incNotesWCount = conf.rdBool(sec, "incNotesWCount", self.incNotesWCount)
+        self.showFullPath = conf.rdBool(sec, "showFullPath", self.showFullPath)
+        self.dialogStyle = conf.rdInt(sec, "dialogStyle", self.dialogStyle)
+        self.allowOpenDial = conf.rdBool(sec, "allowOpenDial", self.allowOpenDial)
+        dialogLine = conf.rdStr(sec, "dialogLine", self.dialogLine)
+        narratorBreak = conf.rdStr(sec, "narratorBreak", self.narratorBreak)
+        narratorDialog = conf.rdStr(sec, "narratorDialog", self.narratorDialog)
+        self.altDialogOpen = conf.rdStr(sec, "altDialogOpen", self.altDialogOpen)
+        self.altDialogClose = conf.rdStr(sec, "altDialogClose", self.altDialogClose)
+        self.highlightEmph = conf.rdBool(sec, "highlightEmph", self.highlightEmph)
+        self.dottedModCodes = conf.rdBool(sec, "dottedModCodes", self.dottedModCodes)
+        self.stopWhenIdle = conf.rdBool(sec, "stopWhenIdle", self.stopWhenIdle)
+        self.userIdleTime = conf.rdInt(sec, "userIdleTime", self.userIdleTime)
 
         # State
         sec = "State"
-        self.showDetailsPanel = conf.rdBool(sec, "showdetailspanel", self.showDetailsPanel)
-        self.showViewerPanel = conf.rdBool(sec, "showviewerpanel", self.showViewerPanel)
-        self.showEditToolBar = conf.rdBool(sec, "showedittoolbar", self.showEditToolBar)
-        self.showSessionTime = conf.rdBool(sec, "showsessiontime", self.showSessionTime)
-        self.viewComments = conf.rdBool(sec, "viewcomments", self.viewComments)
-        self.viewSynopsis = conf.rdBool(sec, "viewsynopsis", self.viewSynopsis)
-        self.viewNotes = conf.rdBool(sec, "viewnotes", self.viewNotes)
-        self.searchAuto = conf.rdBool(sec, "searchauto", self.searchAuto)
-        self.searchCase = conf.rdBool(sec, "searchcase", self.searchCase)
-        self.searchWord = conf.rdBool(sec, "searchword", self.searchWord)
-        self.searchRegEx = conf.rdBool(sec, "searchregex", self.searchRegEx)
-        self.searchLoop = conf.rdBool(sec, "searchloop", self.searchLoop)
-        self.searchNextFile = conf.rdBool(sec, "searchnextfile", self.searchNextFile)
-        self.searchMatchCap = conf.rdBool(sec, "searchmatchcap", self.searchMatchCap)
-        self.searchProjAuto = conf.rdBool(sec, "searchprojauto", self.searchProjAuto)
-        self.searchProjCase = conf.rdBool(sec, "searchprojcase", self.searchProjCase)
-        self.searchProjWord = conf.rdBool(sec, "searchprojword", self.searchProjWord)
-        self.searchProjRegEx = conf.rdBool(sec, "searchprojregex", self.searchProjRegEx)
+        self.showDetailsPanel = conf.rdBool(sec, "showDetailsPanel", self.showDetailsPanel)
+        self.showViewerPanel = conf.rdBool(sec, "showViewerPanel", self.showViewerPanel)
+        self.showEditToolBar = conf.rdBool(sec, "showEditToolBar", self.showEditToolBar)
+        self.showSessionTime = conf.rdBool(sec, "showSessionTime", self.showSessionTime)
+        self.viewComments = conf.rdBool(sec, "viewComments", self.viewComments)
+        self.viewSynopsis = conf.rdBool(sec, "viewSynopsis", self.viewSynopsis)
+        self.viewNotes = conf.rdBool(sec, "viewNotes", self.viewNotes)
+        self.searchAuto = conf.rdBool(sec, "searchAuto", self.searchAuto)
+        self.searchCase = conf.rdBool(sec, "searchCase", self.searchCase)
+        self.searchWord = conf.rdBool(sec, "searchWord", self.searchWord)
+        self.searchRegEx = conf.rdBool(sec, "searchRegEx", self.searchRegEx)
+        self.searchLoop = conf.rdBool(sec, "searchLoop", self.searchLoop)
+        self.searchNextFile = conf.rdBool(sec, "searchNextFile", self.searchNextFile)
+        self.searchMatchCap = conf.rdBool(sec, "searchMatchCap", self.searchMatchCap)
+        self.searchProjAuto = conf.rdBool(sec, "searchProjAuto", self.searchProjAuto)
+        self.searchProjCase = conf.rdBool(sec, "searchProjCase", self.searchProjCase)
+        self.searchProjWord = conf.rdBool(sec, "searchProjWord", self.searchProjWord)
+        self.searchProjRegEx = conf.rdBool(sec, "searchProjRegEx", self.searchProjRegEx)
 
         # Check Values
         # ============
@@ -923,116 +926,116 @@ class Config:
 
         conf["Main"] = {
             "font": self.guiFont.toString(),
-            "lighttheme": str(self.lightTheme),
-            "darktheme": str(self.darkTheme),
-            "thememode": self.themeMode.name,
+            "lightTheme": str(self.lightTheme),
+            "darkTheme": str(self.darkTheme),
+            "themeMode": self.themeMode.name,
             "icons": str(self.iconTheme),
-            "iconcoltree": str(self.iconColTree),
-            "iconcoldocs": str(self.iconColDocs),
+            "iconColTree": str(self.iconColTree),
+            "iconColDocs": str(self.iconColDocs),
             "localisation": str(self.guiLocale),
-            "hidevscroll": str(self.hideVScroll),
-            "hidehscroll": str(self.hideHScroll),
-            "lastnotes": str(self.lastNotes),
-            "nativefont": str(self.nativeFont),
-            "usecharcount": str(self.useCharCount),
-            "vimmode": str(self.vimMode),
+            "hideVScroll": str(self.hideVScroll),
+            "hideHScroll": str(self.hideHScroll),
+            "lastNotes": str(self.lastNotes),
+            "nativeFont": str(self.nativeFont),
+            "useCharCount": str(self.useCharCount),
+            "vimMode": str(self.vimMode),
         }
 
         conf["Sizes"] = {
-            "mainwindow": self._packList(self.mainWinSize),
+            "mainWindow": self._packList(self.mainWinSize),
             "welcome": self._packList(self.welcomeWinSize),
             "preferences": self._packList(self.prefsWinSize),
-            "fontselect": self._packList(self.fontWinSize),
-            "mainpane": self._packList(self.mainPanePos),
-            "viewpane": self._packList(self.viewPanePos),
-            "outlinepane": self._packList(self.outlinePanePos),
-            "searchpane": self._packList(self.searchPanePos),
-            "movemainwin": str(self.moveMainWin),
+            "fontSelect": self._packList(self.fontWinSize),
+            "mainPane": self._packList(self.mainPanePos),
+            "viewPane": self._packList(self.viewPanePos),
+            "outlinePane": self._packList(self.outlinePanePos),
+            "searchPane": self._packList(self.searchPanePos),
+            "moveMainWin": str(self.moveMainWin),
         }
 
         conf["Project"] = {
-            "autosaveproject": str(self.autoSaveProj),
-            "autosavedoc": str(self.autoSaveDoc),
-            "emphlabels": str(self.emphLabels),
-            "backuppath": str(self._backupPath),
-            "backuponclose": str(self.backupOnClose),
-            "backupinterval": str(self.backupInterval),
-            "askbeforebackup": str(self.askBeforeBackup),
-            "askbeforeexit": str(self.askBeforeExit),
-            "lastauthor": str(self._lastAuthor),
+            "autoSaveProject": str(self.autoSaveProj),
+            "autoSaveDoc": str(self.autoSaveDoc),
+            "emphLabels": str(self.emphLabels),
+            "backupPath": str(self._backupPath),
+            "backupOnClose": str(self.backupOnClose),
+            "backupInterval": str(self.backupInterval),
+            "askBeforeBackup": str(self.askBeforeBackup),
+            "askBeforeExit": str(self.askBeforeExit),
+            "lastAuthor": str(self._lastAuthor),
         }
 
         conf["Editor"] = {
-            "textfont": self.textFont.toString(),
+            "textFont": self.textFont.toString(),
             "width": str(self.textWidth),
             "margin": str(self.textMargin),
-            "tabwidth": str(self.tabWidth),
-            "lineheight": str(self.lineHeight),
-            "cursorwidth": str(self.cursorWidth),
+            "tabWidth": str(self.tabWidth),
+            "lineHeight": str(self.lineHeight),
+            "cursorWidth": str(self.cursorWidth),
             "lineHighlight": str(self.lineHighlight),
-            "focuswidth": str(self.focusWidth),
-            "hidefocusfooter": str(self.hideFocusFooter),
+            "focusWidth": str(self.focusWidth),
+            "hideFocusFooter": str(self.hideFocusFooter),
             "justify": str(self.doJustify),
-            "autoselect": str(self.autoSelect),
-            "autoreplace": str(self.doReplace),
-            "repsquotes": str(self.doReplaceSQuote),
-            "repdquotes": str(self.doReplaceDQuote),
-            "repdash": str(self.doReplaceDash),
-            "repdots": str(self.doReplaceDots),
-            "autoscroll": str(self.autoScroll),
-            "autoscrollpos": str(self.autoScrollPos),
-            "scrollpastend": str(self.scrollPastEnd),
-            "fmtsquoteopen": str(self.fmtSQuoteOpen),
-            "fmtsquoteclose": str(self.fmtSQuoteClose),
-            "fmtdquoteopen": str(self.fmtDQuoteOpen),
-            "fmtdquoteclose": str(self.fmtDQuoteClose),
-            "fmtpadbefore": str(self.fmtPadBefore),
-            "fmtpadafter": str(self.fmtPadAfter),
-            "fmtpadthin": str(self.fmtPadThin),
-            "spellcheck": str(self.spellLanguage),
-            "showtabsnspaces": str(self.showTabsNSpaces),
-            "showlineendings": str(self.showLineEndings),
-            "showmultispaces": str(self.showMultiSpaces),
-            "scaleheadings": str(self.scaleHeadings),
-            "singlestarbold": str(self.singleStarBold),
-            "incnoteswcount": str(self.incNotesWCount),
-            "showfullpath": str(self.showFullPath),
-            "dialogstyle": str(self.dialogStyle),
-            "allowopendial": str(self.allowOpenDial),
-            "dialogline": str(self.dialogLine),
-            "narratorbreak": str(self.narratorBreak),
-            "narratordialog": str(self.narratorDialog),
-            "altdialogopen": str(self.altDialogOpen),
-            "altdialogclose": str(self.altDialogClose),
-            "highlightemph": str(self.highlightEmph),
-            "dottedmodcodes": str(self.dottedModCodes),
-            "stopwhenidle": str(self.stopWhenIdle),
-            "useridletime": str(self.userIdleTime),
+            "autoSelect": str(self.autoSelect),
+            "autoReplace": str(self.doReplace),
+            "repSQuotes": str(self.doReplaceSQuote),
+            "repDQuotes": str(self.doReplaceDQuote),
+            "repDash": str(self.doReplaceDash),
+            "repDots": str(self.doReplaceDots),
+            "autoScroll": str(self.autoScroll),
+            "autoScrollPos": str(self.autoScrollPos),
+            "scrollPastEnd": str(self.scrollPastEnd),
+            "fmtSQuoteOpen": str(self.fmtSQuoteOpen),
+            "fmtSQuoteClose": str(self.fmtSQuoteClose),
+            "fmtDQuoteOpen": str(self.fmtDQuoteOpen),
+            "fmtDQuoteClose": str(self.fmtDQuoteClose),
+            "fmtPadBefore": str(self.fmtPadBefore),
+            "fmtPadAfter": str(self.fmtPadAfter),
+            "fmtPadThin": str(self.fmtPadThin),
+            "spellCheck": str(self.spellLanguage),
+            "showTabsNSpaces": str(self.showTabsNSpaces),
+            "showLineEndings": str(self.showLineEndings),
+            "showMultiSpaces": str(self.showMultiSpaces),
+            "scaleHeadings": str(self.scaleHeadings),
+            "singleStarBold": str(self.singleStarBold),
+            "incNotesWCount": str(self.incNotesWCount),
+            "showFullPath": str(self.showFullPath),
+            "dialogStyle": str(self.dialogStyle),
+            "allowOpenDial": str(self.allowOpenDial),
+            "dialogLine": str(self.dialogLine),
+            "narratorBreak": str(self.narratorBreak),
+            "narratorDialog": str(self.narratorDialog),
+            "altDialogOpen": str(self.altDialogOpen),
+            "altDialogClose": str(self.altDialogClose),
+            "highlightEmph": str(self.highlightEmph),
+            "dottedModCodes": str(self.dottedModCodes),
+            "stopWhenIdle": str(self.stopWhenIdle),
+            "userIdleTime": str(self.userIdleTime),
         }
 
         conf["State"] = {
-            "showdetailspanel": str(self.showDetailsPanel),
-            "showviewerpanel": str(self.showViewerPanel),
-            "showedittoolbar": str(self.showEditToolBar),
-            "showsessiontime": str(self.showSessionTime),
-            "viewcomments": str(self.viewComments),
-            "viewsynopsis": str(self.viewSynopsis),
-            "viewnotes": str(self.viewNotes),
-            "searchauto": str(self.searchAuto),
-            "searchcase": str(self.searchCase),
-            "searchword": str(self.searchWord),
-            "searchregex": str(self.searchRegEx),
-            "searchloop": str(self.searchLoop),
-            "searchnextfile": str(self.searchNextFile),
-            "searchmatchcap": str(self.searchMatchCap),
-            "searchprojauto": str(self.searchProjAuto),
-            "searchprojcase": str(self.searchProjCase),
-            "searchprojword": str(self.searchProjWord),
-            "searchprojregex": str(self.searchProjRegEx),
+            "showDetailsPanel": str(self.showDetailsPanel),
+            "showViewerPanel": str(self.showViewerPanel),
+            "showEditToolBar": str(self.showEditToolBar),
+            "showSessionTime": str(self.showSessionTime),
+            "viewComments": str(self.viewComments),
+            "viewSynopsis": str(self.viewSynopsis),
+            "viewNotes": str(self.viewNotes),
+            "searchAuto": str(self.searchAuto),
+            "searchCase": str(self.searchCase),
+            "searchWord": str(self.searchWord),
+            "searchRegEx": str(self.searchRegEx),
+            "searchLoop": str(self.searchLoop),
+            "searchNextFile": str(self.searchNextFile),
+            "searchMatchCap": str(self.searchMatchCap),
+            "searchProjAuto": str(self.searchProjAuto),
+            "searchProjCase": str(self.searchProjCase),
+            "searchProjWord": str(self.searchProjWord),
+            "searchProjRegEx": str(self.searchProjRegEx),
         }
 
         # Write config file
-        cnfPath = self._confPath / nwFiles.CONF_FILE
+        cnfPath = self._confPath / nwFiles.CONF_FILE_OLD
         try:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
                 conf.write(outFile)
