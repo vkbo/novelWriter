@@ -134,20 +134,20 @@ def testGuiTheme_ScanThemes(monkeypatch, tstPaths):
     files = []
 
     # Invalid path should be handled silently
-    _listContent(files, None, ".conf")  # type: ignore
+    _listContent(files, None, ".toml")  # type: ignore
     assert len(files) == 0
 
     # A path that doesn't exist is handled silently
-    _listContent(files, tstPaths.cnfDir / "does_not_exist", ".conf")
+    _listContent(files, tstPaths.cnfDir / "does_not_exist", ".toml")
     assert len(files) == 0
 
     # Load built-in themes
-    _listContent(files, CONFIG.assetPath("themes"), ".conf")
+    _listContent(files, CONFIG.assetPath("themes"), ".toml")
     assert len(files) > 0
 
     # Block reading theme files
     with monkeypatch.context() as mp:
-        mp.setattr(ConfigParser, "read", causeOSError)
+        mp.setattr("builtins.open", causeOSError)
         theme._scanThemes(files)
         assert theme.colourThemes == {}
 
@@ -164,8 +164,8 @@ def testGuiTheme_ScanThemes(monkeypatch, tstPaths):
     assert light.dark is False
 
     # A theme file with an invalid or missing mode is skipped
-    badTheme = tstPaths.cnfDir / "themes" / "bad.conf"
-    badTheme.write_text("[Main]\nname = Bad Theme\nmode = sideways\n", encoding="utf-8")
+    badTheme = tstPaths.cnfDir / "themes" / "bad.toml"
+    badTheme.write_text('[Main]\nname = "Bad Theme"\nmode = "sideways"\n', encoding="utf-8")
     theme._scanThemes([*files, badTheme])
     assert "Bad Theme" not in [entry.name for entry in theme.colourThemes.values()]
 
@@ -180,7 +180,7 @@ def testGuiTheme_LoadThemes(monkeypatch):
 
     # Load built-in themes
     files = []
-    _listContent(files, CONFIG.assetPath("themes"), ".conf")
+    _listContent(files, CONFIG.assetPath("themes"), ".toml")
     theme._scanThemes(files)
     assert DEF_GUI_LIGHT in theme._allThemes
     assert DEF_GUI_DARK in theme._allThemes
@@ -239,7 +239,7 @@ def testGuiTheme_LoadThemes(monkeypatch):
 
     # Force reload, but fail parsing
     with monkeypatch.context() as mp:
-        mp.setattr(ConfigParser, "read", causeOSError)
+        mp.setattr("builtins.open", causeOSError)
         CONFIG.darkTheme = DEF_GUI_DARK
         CONFIG.themeMode = nwTheme.DARK
         theme.loadTheme(force=True)
@@ -266,36 +266,36 @@ def testGuiTheme_SpecialColors(tstPaths):
     theme = GuiTheme()
     theme.iconCache = MagicMock()
 
-    testTheme: Path = tstPaths.cnfDir / "themes" / "test.conf"
+    testTheme: Path = tstPaths.cnfDir / "themes" / "test.toml"
     testTheme.write_text(
         (
             "[Main]\n"
-            "name = Test\n"
-            "mode = light\n"
+            'name = "Test"\n'
+            'mode = "light"\n'
             "\n"
             "[Base]\n"
-            "default = #cccccc\n"
-            "faded   = #949494\n"
-            "red     = #ff0000\n"
-            "orange  = #ff7f00\n"
-            "yellow  = #ffff00\n"
-            "green   = #00ff00\n"
-            "cyan    = #00ffff\n"
-            "blue    = #0000ff\n"
-            "purple  = #ff00ff\n"
+            'default = "#cccccc"\n'
+            'faded   = "#949494"\n'
+            'red     = "#ff0000"\n'
+            'orange  = "#ff7f00"\n'
+            'yellow  = "#ffff00"\n'
+            'green   = "#00ff00"\n'
+            'cyan    = "#00ffff"\n'
+            'blue    = "#0000ff"\n'
+            'purple  = "#ff00ff"\n'
             "\n"
             "[Project]\n"
-            "root    = blue\n"
-            "folder  = yellow\n"
-            "file    = default\n"
-            "title   = green\n"
-            "chapter = red\n"
-            "scene   = blue\n"
-            "note    = yellow\n"
+            'root    = "blue"\n'
+            'folder  = "yellow"\n'
+            'file    = "default"\n'
+            'title   = "green"\n'
+            'chapter = "red"\n'
+            'scene   = "blue"\n'
+            'note    = "yellow"\n'
             "\n"
             "[Palette]\n"
-            "window  = #000000\n"
-            "text    = #ffffff\n"
+            'window  = "#000000"\n'
+            'text    = "#ffffff"\n'
         ),
         encoding="utf-8",
     )
@@ -354,9 +354,9 @@ def testGuiTheme_SpecialColors(tstPaths):
 
     # A theme file missing the Main, Base, Project and Palette sections
     # does not crash, and simply skips setting those colours
-    minimalTheme: Path = tstPaths.cnfDir / "themes" / "minimal.conf"
+    minimalTheme: Path = tstPaths.cnfDir / "themes" / "minimal.toml"
     minimalTheme.write_text(
-        ("[Icon]\ntool = #123456\n\n[GUI]\nsyntaxfile = None\n"),
+        ('[Icon]\ntool = "#123456"\n\n[GUI]\nsyntaxfile = "None"\n'),
         encoding="utf-8",
     )
     theme._allThemes["minimal"] = ThemeEntry("Minimal", False, minimalTheme)
@@ -688,7 +688,7 @@ def testGuiTheme_LoadDecorations(monkeypatch):
 
 
 THEMES = []
-_listContent(THEMES, CONFIG.assetPath("themes"), ".conf")
+_listContent(THEMES, CONFIG.assetPath("themes"), ".toml")
 
 
 @pytest.mark.gui
