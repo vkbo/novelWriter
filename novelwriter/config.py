@@ -935,7 +935,7 @@ class Config:
         config: T_ConfData = {}
 
         config["Meta"] = {
-            "timestamp": formatTimeStamp(time()),
+            "timeStamp": formatTimeStamp(time()),
         }
 
         config["Main"] = {
@@ -1258,7 +1258,13 @@ class NTomlParser:
         """Read and parse TOML data from a file, mirroring write()."""
         with open(path, mode="r", encoding="utf-8") as fileObj:
             data = tomllib.loads(fileObj.read())
-        self._data = {k: v for k, v in data.items() if isinstance(v, dict)}
+
+        self._data = {}
+        for section, values in data.items():
+            if not isinstance(values, dict):
+                logger.error("Invalid config section '%s', expected key/value pairs", section)
+                continue
+            self._data[section] = values
 
     def write(self, path: Path, data: T_ConfData) -> None:
         """Write a dict of sections to a file in TOML format.
