@@ -28,9 +28,7 @@ import uuid
 import weakref
 import xml.etree.ElementTree as ET
 
-from configparser import ConfigParser
 from datetime import date, datetime
-from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar
 from urllib.parse import urljoin
@@ -814,79 +812,3 @@ def openExternalPath(path: Path) -> bool:
         QDesktopServices.openUrl(QUrl(urljoin("file:", pathname2url(str(path)))))
         return True
     return False
-
-
-##
-#  Classes
-##
-
-_T_Enum = TypeVar("_T_Enum", bound=Enum)
-
-
-class NConfigParser(ConfigParser):
-    """Common: Adapted Config Parser.
-
-    This is a subclass of the standard config parser that adds type safe
-    helper functions, and support for lists. It also turns off
-    interpolation, which would require % symbols to be escaped (#2455).
-    """
-
-    def __init__(self) -> None:
-        super().__init__(interpolation=None)
-
-    def rdStr(self, section: str, option: str, default: str) -> str:
-        """Read string value."""
-        return self.get(section, option, fallback=default)
-
-    def rdInt(self, section: str, option: str, default: int) -> int:
-        """Read integer value."""
-        try:
-            return self.getint(section, option, fallback=default)
-        except ValueError:
-            logger.error("Could not read '%s':'%s' from config", section, option)
-        return default
-
-    def rdFlt(self, section: str, option: str, default: float) -> float:
-        """Read float value."""
-        try:
-            return self.getfloat(section, option, fallback=default)
-        except ValueError:
-            logger.error("Could not read '%s':'%s' from config", section, option)
-        return default
-
-    def rdBool(self, section: str, option: str, default: bool) -> bool:
-        """Read boolean value."""
-        try:
-            return self.getboolean(section, option, fallback=default)
-        except ValueError:
-            logger.error("Could not read '%s':'%s' from config", section, option)
-        return default
-
-    def rdPath(self, section: str, option: str, default: Path) -> Path:
-        """Read a Path value."""
-        return checkPath(self.get(section, option, fallback=default), default)
-
-    def rdStrList(self, section: str, option: str, default: list[str]) -> list[str]:
-        """Read string list."""
-        result = default.copy() if isinstance(default, list) else []
-        if self.has_option(section, option):
-            data = self.get(section, option, fallback="").split(",")
-            for i in range(min(len(data), len(result))):
-                result[i] = data[i].strip()
-        return result
-
-    def rdIntList(self, section: str, option: str, default: list[int]) -> list[int]:
-        """Read integer list."""
-        result = default.copy() if isinstance(default, list) else []
-        if self.has_option(section, option):
-            data = self.get(section, option, fallback="").split(",")
-            for i in range(min(len(data), len(result))):
-                result[i] = checkInt(data[i].strip(), result[i])
-        return result
-
-    def rdEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
-        """Read enum value."""
-        if self.has_option(section, option):
-            data = self.get(section, option, fallback="")
-            return type(default).__members__.get(data.upper(), default)
-        return default

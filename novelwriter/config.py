@@ -47,7 +47,6 @@ from PyQt6.QtGui import QFont, QFontDatabase, QFontMetrics
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
-    NConfigParser,
     checkInt,
     checkPath,
     describeFont,
@@ -63,6 +62,7 @@ from novelwriter.common import (
 from novelwriter.constants import nwFiles, nwQuotes, nwUnicode, trStats
 from novelwriter.enum import nwTheme
 from novelwriter.error import formatException, logException
+from novelwriter.text.conffile import NConfigParser
 
 if TYPE_CHECKING:
     from datetime import datetime
