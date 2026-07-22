@@ -1253,7 +1253,7 @@ class NTomlParser:
         self._data: T_ConfData = {}
 
     def read(self, path: Path) -> None:
-        """Read and parse TOML data from a file, mirroring write()."""
+        """Read and parse TOML data from a file."""
         with open(path, mode="r", encoding="utf-8") as fileObj:
             data = tomllib.loads(fileObj.read())
 
@@ -1265,12 +1265,7 @@ class NTomlParser:
             self._data[section] = values
 
     def write(self, path: Path, data: T_ConfData) -> None:
-        """Write a dict of sections to a file in TOML format.
-
-        The dict must map section names to dicts of key/value pairs.
-        Any top-level entry that isn't a dict is not a valid section,
-        and is skipped with a logged error.
-        """
+        """Write a dict of sections to a file in TOML format."""
         with open(path, mode="w", encoding="utf-8") as fileObj:
             for section, values in data.items():
                 if not isinstance(values, dict):
