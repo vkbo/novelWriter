@@ -1,5 +1,5 @@
 """
-novelWriter - GUI Viewer History
+novelWriter - GUI Editor History
 ================================
 
 This file is a part of novelWriter
@@ -28,7 +28,7 @@ from typing import TYPE_CHECKING
 from novelwriter import CONFIG
 
 if TYPE_CHECKING:
-    from novelwriter.viewer.viewer import GuiDocViewer
+    from novelwriter.editor.viewer import GuiDocViewer
 
 logger = logging.getLogger(__name__)
 
