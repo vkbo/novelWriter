@@ -821,13 +821,13 @@ def testGuiTheme_CheckTheme(theme):
             "link",
             "linkVisited",
             "accent",
-            "toggle",
-            "searchMatch",
         ],
         "GUI": [
             "helpText",
             "fadedText",
             "errorText",
+            "toggle",
+            "searchMatch",
         ],
         "Syntax": [
             "background",
