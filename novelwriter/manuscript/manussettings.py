@@ -338,7 +338,7 @@ class _FilterTab(NFixedPage):
 
         self._statusFlags: dict[int, QIcon] = {
             self.F_NONE: QIcon(),
-            self.F_FILTERED: SHARED.theme.getIcon("filter:altAction"),
+            self.F_FILTERED: SHARED.theme.getIcon("filter:action2"),
             self.F_INCLUDED: SHARED.theme.getIcon("pin:action"),
             self.F_EXCLUDED: SHARED.theme.getIcon("exclude:reject"),
         }
@@ -446,7 +446,7 @@ class _FilterTab(NFixedPage):
         logger.debug("Theme Update: _FilterTab, init=%s", init)
 
         if not init:
-            self._statusFlags[self.F_FILTERED] = SHARED.theme.getIcon("filter:altAction")
+            self._statusFlags[self.F_FILTERED] = SHARED.theme.getIcon("filter:action2")
             self._statusFlags[self.F_INCLUDED] = SHARED.theme.getIcon("pin:action")
             self._statusFlags[self.F_EXCLUDED] = SHARED.theme.getIcon("exclude:reject")
             self.loadContent()

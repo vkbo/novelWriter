@@ -429,7 +429,7 @@ class GuiPreferences(NDialog):
 
         # Backup Path
         self.backupPath = CONFIG.backupPath()
-        self.backupGetPath = QPushButton(SHARED.theme.getIcon("browse:systemio"), self.tr("Browse"), self)
+        self.backupGetPath = QPushButton(SHARED.theme.getIcon("browse:system"), self.tr("Browse"), self)
         self.backupGetPath.setIconSize(iSz)
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.mainForm.addRow(

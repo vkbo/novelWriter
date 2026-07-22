@@ -630,7 +630,7 @@ class _NewProjectForm(QWidget):
         self.projPath = QLineEdit(self)
         self.projPath.setReadOnly(True)
 
-        self.browsePath = NIconToolButton(self, iSz, "browse:systemio")
+        self.browsePath = NIconToolButton(self, iSz, "browse:system")
         self.browsePath.setToolTip(self.tr("Browse for new project path"))
         self.browsePath.clicked.connect(self._doBrowse)
 
