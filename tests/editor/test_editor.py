@@ -988,6 +988,12 @@ def testGuiDocEditor_UpdateSyntaxColors(qtbot, monkeypatch, nwGUI, projPath, moc
     assert isinstance(data, TextBlockData)
     assert data.formatErrors != []
 
+    # Build a spell error selection
+    SHARED.project.data.setSpellCheck(True)
+    data._spellErrors = [(0, 1, "A")]
+    docEditor._updateCheckSelections()
+    assert docEditor._spellSelections != []
+
     # Build a search match selection
     docEditor.highlightSearchSelections([blockPos], [blockPos + 1])
     assert len(docEditor._searchSelections) == 1
@@ -1000,6 +1006,7 @@ def testGuiDocEditor_UpdateSyntaxColors(qtbot, monkeypatch, nwGUI, projPath, moc
     # Change the theme colours and refresh the syntax colours only,
     # without moving the cursor or editing the document
     SHARED.theme.syntaxTheme.error = QColor(1, 2, 3)
+    SHARED.theme.syntaxTheme.spell = QColor(10, 11, 12)
     SHARED.theme.searchCol = QColor(4, 5, 6)
     SHARED.theme.syntaxTheme.line = QColor(7, 8, 9)
     docEditor.updateSyntaxColors()
@@ -1010,6 +1017,13 @@ def testGuiDocEditor_UpdateSyntaxColors(qtbot, monkeypatch, nwGUI, projPath, moc
         if s.format.underlineStyle() == QTextCharFormat.UnderlineStyle.SingleUnderline
     )
     assert formatSel.format.underlineColor() == QColor(1, 2, 3)
+
+    spellSel = next(
+        s
+        for s in docEditor.extraSelections()
+        if s.format.underlineStyle() == QTextCharFormat.UnderlineStyle.SpellCheckUnderline
+    )
+    assert spellSel.format.underlineColor() == QColor(10, 11, 12)
 
     searchSel = next(
         s
