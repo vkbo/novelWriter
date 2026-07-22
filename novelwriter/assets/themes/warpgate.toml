@@ -65,13 +65,13 @@ highlightedText = "base"
 link            = "green"
 linkVisited     = "green"
 accent          = "green"
-toggle          = "cyan:80"
-searchMatch     = "green:128"
 
 [GUI]
-helpText  = "faded"
-fadedText = "faded"
-errorText = "red"
+helpText    = "faded"
+fadedText   = "faded"
+errorText   = "red"
+toggle      = "cyan:80"
+searchMatch = "green:128"
 
 [Syntax]
 background     = "base"

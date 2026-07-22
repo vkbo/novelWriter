@@ -492,14 +492,14 @@ class GuiTheme:
             self._setPalette(section, "link", QPalette.ColorRole.Link)
             self._setPalette(section, "linkVisited", QPalette.ColorRole.LinkVisited)
             self.accentCol = self._readColor(section, "accent")  # Special handling 'til Qt 6.6
-            self.toggleCol = self._readColor(section, "toggle")
-            self.searchCol = self._readColor(section, "searchMatch")
 
         # GUI
         if section := data.get("GUI"):
             self.helpText = self._readColor(section, "helpText")
             self.fadedText = self._readColor(section, "fadedText")
             self.errorText = self._readColor(section, "errorText")
+            self.toggleCol = self._readColor(section, "toggle")
+            self.searchCol = self._readColor(section, "searchMatch")
 
         # Syntax
         self.syntaxTheme = SyntaxColors()
