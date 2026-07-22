@@ -1242,13 +1242,11 @@ _T_Enum = TypeVar("_T_Enum", bound=Enum)
 
 
 class NTomlParser:
-    """Common: Adapted Toml Parser.
+    """Core: Toml Config Parser.
 
-    This class mirrors the functionality of NConfigParser, but reads and
-    writes the TOML format instead. Unlike the ini format, TOML has native
-    support for the data types used here, so values are stored and
-    returned as their native types rather than as strings. Only a flat
-    structure of [section] tables containing key/value pairs is supported.
+    This is a wrapper around the standard tomllib module, and assumes a
+    two level section and key/value structure. It has type safe getters
+    for all the supported types.
     """
 
     def __init__(self) -> None:
@@ -1366,11 +1364,13 @@ class NTomlParser:
 
 
 class NConfigParser(ConfigParser):
-    """Common: Adapted Config Parser.
+    """Core: Adapted Config Parser.
 
     This is a subclass of the standard config parser that adds type safe
     helper functions, and support for lists. It also turns off
     interpolation, which would require % symbols to be escaped (#2455).
+
+    It is kept for backwards compatibility with old config files.
     """
 
     def __init__(self) -> None:
