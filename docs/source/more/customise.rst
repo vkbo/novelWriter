@@ -14,8 +14,8 @@ Colour Themes
 =============
 
 Adding your own colour themes is relatively easy, although it requires that you manually edit
-config files with colour values. The themes are defined by simple plain text config files with meta
-data and colour settings.
+config files with colour values. The themes are defined in plain text files with meta data and
+colour settings, using the toml format,
 
 In order to make your own versions, first copy one of the existing files to your local computer and
 modify it as you like.
@@ -43,110 +43,110 @@ set as ``name`` inside the file.
 The Theme File Format
 ---------------------
 
-A colour theme ``.conf`` file consists of the following settings:
+A colour theme ``.toml`` file consists of the following settings:
 
-.. code-block:: cfg
+.. code-block:: toml
    :caption: The theme file for the "Default Light Theme"
 
    [Main]
-   name   = Default Light Theme
-   mode   = light
-   author = Veronica Berglyd Olsen
-   credit = Veronica Berglyd Olsen
-   url    = https://github.com/vkbo/novelWriter
+   name   = "Default Light Theme"
+   mode   = "light"
+   author = "Veronica Berglyd Olsen"
+   credit = "Veronica Berglyd Olsen"
+   url    = "https://github.com/vkbo/novelWriter"
 
    [Base]
-   base    = #fcfcfc
-   default = #303030
-   faded   = #6c6c6c
-   red     = #a62a2d
-   orange  = #b36829
-   yellow  = #a39c34
-   green   = #296629
-   cyan    = #269999
-   blue    = #3a70a6
-   purple  = #b35ab3
+   base    = "#fcfcfc"
+   default = "#303030"
+   faded   = "#6c6c6c"
+   red     = "#a62a2d"
+   orange  = "#b36829"
+   yellow  = "#a39c34"
+   green   = "#296629"
+   cyan    = "#269999"
+   blue    = "#3a70a6"
+   purple  = "#b35ab3"
 
    [Project]
-   root     = blue
-   folder   = yellow
-   file     = default
-   title    = green
-   chapter  = red
-   scene    = blue
-   note     = yellow
-   active   = green
-   inactive = red
-   disabled = faded
+   root     = "blue"
+   folder   = "yellow"
+   file     = "default"
+   title    = "green"
+   chapter  = "red"
+   scene    = "blue"
+   note     = "yellow"
+   active   = "green"
+   inactive = "red"
+   disabled = "faded"
 
    [Icon]
-   tool      = default
-   sidebar   = default
-   accept    = green
-   reject    = red
-   action    = blue
-   altaction = orange
-   apply     = green
-   create    = yellow
-   destroy   = faded
-   reset     = green
-   add       = green
-   change    = green
-   remove    = red
-   shortcode = default
-   markdown  = orange
-   systemio  = yellow
-   info      = blue
-   warning   = orange
-   error     = red
+   tool      = "default"
+   sidebar   = "default"
+   accept    = "green"
+   reject    = "red"
+   action    = "blue"
+   altAction = "orange"
+   apply     = "green"
+   create    = "yellow"
+   destroy   = "faded"
+   reset     = "green"
+   add       = "green"
+   change    = "green"
+   remove    = "red"
+   shortcode = "default"
+   markdown  = "orange"
+   systemIO  = "yellow"
+   info      = "blue"
+   warning   = "orange"
+   error     = "red"
 
    [Palette]
-   window          = base:D105
-   windowtext      = default
-   base            = base
-   alternatebase   = #e0e0e0
-   text            = default
-   tooltipbase     = #ffffc0
-   tooltiptext     = #15150d
-   button          = #efefef
-   buttontext      = default
-   brighttext      = base
-   highlight       = #3087c6
-   highlightedtext = base
-   link            = blue
-   linkvisited     = blue
-   accent          = #3087c6
-   toggle          = blue:96
-   searchmatch     = orange:96
+   window          = "base:D105"
+   windowText      = "default"
+   base            = "base"
+   alternateBase   = "#e0e0e0"
+   text            = "default"
+   tooltipBase     = "#ffffc0"
+   tooltipText     = "#15150d"
+   button          = "#efefef"
+   buttonText      = "default"
+   brightText      = "base"
+   highlight       = "#3087c6"
+   highlightedText = "base"
+   link            = "blue"
+   linkVisited     = "blue"
+   accent          = "#3087c6"
+   toggle          = "blue:96"
+   searchMatch     = "orange:96"
 
    [GUI]
-   helpmeet  = #5c5c5c
-   fadedtext = #6c6c6c
-   errortext = red
+   helpText  = "#5c5c5c"
+   fadedText = "#6c6c6c"
+   errorText = "red"
 
    [Syntax]
-   background     = base
-   text           = default
-   line           = default:32
-   link           = blue
-   headertext     = green
-   headertag      = green:L135
-   emphasis       = orange
-   whitespace     = orange:64
-   dialog         = blue
-   altdialog      = red
-   note           = yellow:D125
-   hidden         = faded
-   shortcode      = blue
-   keyword        = red
-   tag            = green
-   value          = green
-   optional       = blue
-   spellcheckline = red
-   errorline      = green
-   replacetag     = green
-   modifier       = blue
-   texthighlight  = yellow:72
+   background     = "base"
+   text           = "default"
+   line           = "default:32"
+   link           = "blue"
+   headerText     = "green"
+   headerTag      = "green:L135"
+   emphasis       = "orange"
+   whitespace     = "orange:64"
+   dialog         = "blue"
+   altDialog      = "red"
+   note           = "yellow:D125"
+   hidden         = "faded"
+   shortcode      = "blue"
+   keyword        = "red"
+   tag            = "green"
+   value          = "green"
+   optional       = "blue"
+   spellCheckLine = "red"
+   errorLine      = "green"
+   replaceTag     = "green"
+   modifier       = "blue"
+   textHighlight  = "yellow:72"
 
 
 Theme Sections
@@ -204,7 +204,30 @@ There are several ways to enter colour values:
    if the theme is included in the app, but not for user themes.
 
 .. versionadded:: 26.2
-   The ``toggle`` and ``searchmatch`` settings were added to the ``[Palette]`` section.
+   The ``toggle`` and ``searchMatch`` settings were added to the ``[Palette]`` section. The file
+   format was also converted from conf to toml, and a number of the colour settings were renamed to
+   camelCase format. The following values were renamed:
+
+   * ``altaction`` to ``altAction``
+   * ``systemio`` to ``systemIO``
+   * ``windowtext`` to ``windowText``
+   * ``alternatebase`` to ``alternateBase``
+   * ``tooltipbase`` to ``tooltipBase``
+   * ``tooltiptext`` to ``tooltipText``
+   * ``buttontext`` to ``buttonText``
+   * ``brighttext`` to ``brightText``
+   * ``highlightedtext`` to ``highlightedText``
+   * ``linkvisited`` to ``linkVisited``
+   * ``helptext`` to ``helpText``
+   * ``fadedtext`` to ``fadedText``
+   * ``errortext`` to ``errorText``
+   * ``headertext`` to ``headerText``
+   * ``headertag`` to ``headerTag``
+   * ``altdialog`` to ``altDialog``
+   * ``spellcheckline`` to ``spellCheckLine``
+   * ``errorline`` to ``errorLine``
+   * ``replacetag`` to ``replaceTag``
+   * ``texthighlight`` to ``textHighlight``
 
 
 Icon Themes

@@ -22,8 +22,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
+import tomllib
 
-from configparser import ConfigParser
 from pathlib import Path
 from unittest.mock import MagicMock, Mock
 
@@ -92,6 +92,40 @@ def testGuiTheme_ParseColor():
     assert theme.parseColor("255, 0, 0, 127").getRgb() == (255, 0, 0, 127)
     assert theme.parseColor("255, 0, 0, 127, 42").getRgb() == (255, 0, 0, 127)  # Truncated
 
+    # Out-of-range numbers must not crash with an OverflowError
+    huge = "9" * 30
+    assert theme.parseColor(f"red:{huge}").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor(f"grey:L{huge}").getRgb() == (255, 255, 255, 255)
+    assert theme.parseColor(f"grey:D{huge}").getRgb() == (1, 1, 1, 255)
+    assert theme.parseColor(f"{huge}, 0, 0").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor(f"-{huge}, 0, 0").getRgb() == (0, 0, 0, 255)
+    assert theme.parseColor(f"0, 0, 0, {huge}").getRgb() == (0, 0, 0, 255)
+
+
+@pytest.mark.gui
+def testGuiTheme_ReadColor():
+    """Test that _readColor tolerates non-string values from a parsed
+    TOML theme file without crashing.
+    """
+    theme = GuiTheme()
+    theme._qColors["red"] = QColor(255, 0, 0)
+
+    # A well-formed string value still works as expected
+    assert theme._readColor({"key": "red"}, "key").getRgb() == (255, 0, 0, 255)
+
+    # A missing key falls back to the "default" name, which is unknown
+    assert theme._readColor({}, "key").getRgb() == (0, 0, 0, 255)
+
+    # TOML native types other than strings must not raise when coerced,
+    # and instead resolve to some harmless fallback colour
+    assert theme._readColor({"key": 42}, "key").getRgb() == (0, 0, 0, 255)
+    assert theme._readColor({"key": 3.14}, "key").getRgb() == (0, 0, 0, 255)
+    assert theme._readColor({"key": True}, "key").getRgb() == (0, 0, 0, 255)
+    assert theme._readColor({"key": False}, "key").getRgb() == (0, 0, 0, 255)
+    assert theme._readColor({"key": [1, 2, 3]}, "key").getRgb() == (0, 2, 0, 255)
+    assert theme._readColor({"key": {"r": 1, "g": 2}}, "key").getRgb() == (0, 0, 0, 255)
+    assert theme._readColor({"key": []}, "key").getRgb() == (0, 0, 0, 255)
+
 
 @pytest.mark.gui
 def testGuiTheme_GenerateColorRange():
@@ -134,20 +168,20 @@ def testGuiTheme_ScanThemes(monkeypatch, tstPaths):
     files = []
 
     # Invalid path should be handled silently
-    _listContent(files, None, ".conf")  # type: ignore
+    _listContent(files, None, ".toml")  # type: ignore
     assert len(files) == 0
 
     # A path that doesn't exist is handled silently
-    _listContent(files, tstPaths.cnfDir / "does_not_exist", ".conf")
+    _listContent(files, tstPaths.cnfDir / "does_not_exist", ".toml")
     assert len(files) == 0
 
     # Load built-in themes
-    _listContent(files, CONFIG.assetPath("themes"), ".conf")
+    _listContent(files, CONFIG.assetPath("themes"), ".toml")
     assert len(files) > 0
 
     # Block reading theme files
     with monkeypatch.context() as mp:
-        mp.setattr(ConfigParser, "read", causeOSError)
+        mp.setattr("builtins.open", causeOSError)
         theme._scanThemes(files)
         assert theme.colourThemes == {}
 
@@ -164,8 +198,8 @@ def testGuiTheme_ScanThemes(monkeypatch, tstPaths):
     assert light.dark is False
 
     # A theme file with an invalid or missing mode is skipped
-    badTheme = tstPaths.cnfDir / "themes" / "bad.conf"
-    badTheme.write_text("[Main]\nname = Bad Theme\nmode = sideways\n", encoding="utf-8")
+    badTheme = tstPaths.cnfDir / "themes" / "bad.toml"
+    badTheme.write_text('[Main]\nname = "Bad Theme"\nmode = "sideways"\n', encoding="utf-8")
     theme._scanThemes([*files, badTheme])
     assert "Bad Theme" not in [entry.name for entry in theme.colourThemes.values()]
 
@@ -180,7 +214,7 @@ def testGuiTheme_LoadThemes(monkeypatch):
 
     # Load built-in themes
     files = []
-    _listContent(files, CONFIG.assetPath("themes"), ".conf")
+    _listContent(files, CONFIG.assetPath("themes"), ".toml")
     theme._scanThemes(files)
     assert DEF_GUI_LIGHT in theme._allThemes
     assert DEF_GUI_DARK in theme._allThemes
@@ -239,7 +273,7 @@ def testGuiTheme_LoadThemes(monkeypatch):
 
     # Force reload, but fail parsing
     with monkeypatch.context() as mp:
-        mp.setattr(ConfigParser, "read", causeOSError)
+        mp.setattr("builtins.open", causeOSError)
         CONFIG.darkTheme = DEF_GUI_DARK
         CONFIG.themeMode = nwTheme.DARK
         theme.loadTheme(force=True)
@@ -266,36 +300,36 @@ def testGuiTheme_SpecialColors(tstPaths):
     theme = GuiTheme()
     theme.iconCache = MagicMock()
 
-    testTheme: Path = tstPaths.cnfDir / "themes" / "test.conf"
+    testTheme: Path = tstPaths.cnfDir / "themes" / "test.toml"
     testTheme.write_text(
         (
             "[Main]\n"
-            "name = Test\n"
-            "mode = light\n"
+            'name = "Test"\n'
+            'mode = "light"\n'
             "\n"
             "[Base]\n"
-            "default = #cccccc\n"
-            "faded   = #949494\n"
-            "red     = #ff0000\n"
-            "orange  = #ff7f00\n"
-            "yellow  = #ffff00\n"
-            "green   = #00ff00\n"
-            "cyan    = #00ffff\n"
-            "blue    = #0000ff\n"
-            "purple  = #ff00ff\n"
+            'default = "#cccccc"\n'
+            'faded   = "#949494"\n'
+            'red     = "#ff0000"\n'
+            'orange  = "#ff7f00"\n'
+            'yellow  = "#ffff00"\n'
+            'green   = "#00ff00"\n'
+            'cyan    = "#00ffff"\n'
+            'blue    = "#0000ff"\n'
+            'purple  = "#ff00ff"\n'
             "\n"
             "[Project]\n"
-            "root    = blue\n"
-            "folder  = yellow\n"
-            "file    = default\n"
-            "title   = green\n"
-            "chapter = red\n"
-            "scene   = blue\n"
-            "note    = yellow\n"
+            'root    = "blue"\n'
+            'folder  = "yellow"\n'
+            'file    = "default"\n'
+            'title   = "green"\n'
+            'chapter = "red"\n'
+            'scene   = "blue"\n'
+            'note    = "yellow"\n'
             "\n"
             "[Palette]\n"
-            "window  = #000000\n"
-            "text    = #ffffff\n"
+            'window  = "#000000"\n'
+            'text    = "#ffffff"\n'
         ),
         encoding="utf-8",
     )
@@ -354,9 +388,9 @@ def testGuiTheme_SpecialColors(tstPaths):
 
     # A theme file missing the Main, Base, Project and Palette sections
     # does not crash, and simply skips setting those colours
-    minimalTheme: Path = tstPaths.cnfDir / "themes" / "minimal.conf"
+    minimalTheme: Path = tstPaths.cnfDir / "themes" / "minimal.toml"
     minimalTheme.write_text(
-        ("[Icon]\ntool = #123456\n\n[GUI]\nsyntaxfile = None\n"),
+        ('[Icon]\ntool = "#123456"\n\n[GUI]\nsyntaxfile = "None"\n'),
         encoding="utf-8",
     )
     theme._allThemes["minimal"] = ThemeEntry("Minimal", False, minimalTheme)
@@ -688,7 +722,7 @@ def testGuiTheme_LoadDecorations(monkeypatch):
 
 
 THEMES = []
-_listContent(THEMES, CONFIG.assetPath("themes"), ".conf")
+_listContent(THEMES, CONFIG.assetPath("themes"), ".toml")
 
 
 @pytest.mark.gui
@@ -714,11 +748,11 @@ def testGuiTheme_CheckTheme(theme):
     assert themes.isDarkTheme == current.dark
 
     # Check completeness
-    parser = ConfigParser()
-    parser.read(current.path, encoding="utf-8")
+    with open(current.path, mode="rb") as fileObj:
+        data = tomllib.load(fileObj)
 
     sections = ["Main", "Base", "Project", "Icon", "Palette", "GUI", "Syntax"]
-    assert sorted(parser.sections()) == sorted(sections)
+    assert sorted(data.keys()) == sorted(sections)
 
     structure = {
         "Main": [
@@ -756,7 +790,7 @@ def testGuiTheme_CheckTheme(theme):
             "accept",
             "reject",
             "action",
-            "altaction",
+            "altAction",
             "apply",
             "create",
             "destroy",
@@ -766,46 +800,46 @@ def testGuiTheme_CheckTheme(theme):
             "remove",
             "shortcode",
             "markdown",
-            "systemio",
+            "systemIO",
             "info",
             "warning",
             "error",
         ],
         "Palette": [
             "window",
-            "windowtext",
+            "windowText",
             "base",
-            "alternatebase",
+            "alternateBase",
             "text",
-            "tooltipbase",
-            "tooltiptext",
+            "tooltipBase",
+            "tooltipText",
             "button",
-            "buttontext",
-            "brighttext",
+            "buttonText",
+            "brightText",
             "highlight",
-            "highlightedtext",
+            "highlightedText",
             "link",
-            "linkvisited",
+            "linkVisited",
             "accent",
             "toggle",
-            "searchmatch",
+            "searchMatch",
         ],
         "GUI": [
-            "helptext",
-            "fadedtext",
-            "errortext",
+            "helpText",
+            "fadedText",
+            "errorText",
         ],
         "Syntax": [
             "background",
             "text",
             "line",
             "link",
-            "headertext",
-            "headertag",
+            "headerText",
+            "headerTag",
             "emphasis",
             "whitespace",
             "dialog",
-            "altdialog",
+            "altDialog",
             "hidden",
             "note",
             "shortcode",
@@ -813,23 +847,23 @@ def testGuiTheme_CheckTheme(theme):
             "tag",
             "value",
             "optional",
-            "spellcheckline",
-            "errorline",
-            "replacetag",
+            "spellCheckLine",
+            "errorLine",
+            "replaceTag",
             "modifier",
-            "texthighlight",
+            "textHighlight",
         ],
     }
     optional = ["credit", "url"]
     missing = []
     for section, options in structure.items():
-        missing.extend(opt for opt in options if opt not in parser[section])
+        missing.extend(opt for opt in options if opt not in data[section])
     assert missing == [], "Missing options in theme file"
 
     # Check deprecated
     deprecated = []
     for section in sections:
-        deprecated.extend(opt for opt in parser[section] if opt not in structure[section] and opt not in optional)
+        deprecated.extend(opt for opt in data[section] if opt not in structure[section] and opt not in optional)
     assert deprecated == [], "Deprecated options in theme file"
 
 
