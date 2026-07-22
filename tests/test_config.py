@@ -34,9 +34,10 @@ from PyQt6.QtCore import QRect
 from PyQt6.QtGui import QFontDatabase
 
 from novelwriter import CONFIG
-from novelwriter.config import Config, RecentPaths, RecentProjects
+from novelwriter.config import Config, NConfigParser, NTomlParser, RecentPaths, RecentProjects
 from novelwriter.constants import nwFiles
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwItemClass, nwTheme
 
 from tests.helpers import cmpFiles, writeFile
 from tests.mocked import MockApp, causeOSError
@@ -97,8 +98,8 @@ def testConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     conf = Config()
 
     confFile = fncPath / nwFiles.CONF_FILE
-    testFile = tstPaths.outDir / "baseConfig_novelwriter.conf"
-    compFile = tstPaths.refDir / "baseConfig_novelwriter.conf"
+    testFile = tstPaths.outDir / "config_novelwriter.toml"
+    compFile = tstPaths.refDir / "config_novelwriter.toml"
 
     # Make sure we don't have any old conf file
     if confFile.is_file():
@@ -114,13 +115,12 @@ def testConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     # Check that we have a default file
     copyfile(confFile, testFile)
     ignore = (
-        "timestamp",
-        "lastnotes",
-        "localisation",
-        "lastpath",
-        "backuppath",
+        "timeStamp",
         "font",
-        "textfont",
+        "localisation",
+        "lastNotes",
+        "textFont",
+        "backupPath",
     )
     assert cmpFiles(testFile, compFile, ignStart=ignore)
     conf.errorText()  # This clears the error cache
@@ -546,3 +546,269 @@ def testConfig_IOError(monkeypatch):
         config = Config()
         mp.setattr(Path, "is_dir", causeOSError)
         config.initConfig()
+
+
+@pytest.mark.base
+def testConfig_NConfigParser(fncPath):
+    """Test the NConfigParser subclass."""
+    conf = fncPath / "test.cfg"
+    writeFile(
+        conf,
+        (
+            "[main]\n"
+            "stropt = value\n"
+            "intopt1 = 42\n"
+            "intopt2 = 42.43\n"
+            "boolopt1 = true\n"
+            "boolopt2 = TRUE\n"
+            "boolopt3 = 1\n"
+            "boolopt4 = 0\n"
+            "list1 = a, b, c\n"
+            "list2 = 17, 18, 19\n"
+            "float1 = 4.2\n"
+            "enum1 = NOVEL\n"
+            f"path1 = {fncPath}\n"
+        ),
+    )
+
+    parser = NConfigParser()
+    parser.read(conf)
+
+    # Readers
+    # =======
+
+    # Read String
+    assert parser.getStr("main", "stropt", "stuff") == "value"
+    assert parser.getStr("main", "boolopt1", "stuff") == "true"
+    assert parser.getStr("main", "intopt1", "stuff") == "42"
+
+    assert parser.getStr("nope", "stropt", "stuff") == "stuff"
+    assert parser.getStr("main", "blabla", "stuff") == "stuff"
+
+    # Read Boolean
+    assert parser.getBool("main", "boolopt1", None) is True  # type: ignore
+    assert parser.getBool("main", "boolopt2", None) is True  # type: ignore
+    assert parser.getBool("main", "boolopt3", None) is True  # type: ignore
+    assert parser.getBool("main", "boolopt4", None) is False  # type: ignore
+    assert parser.getBool("main", "intopt1", None) is None  # type: ignore
+
+    assert parser.getBool("nope", "boolopt1", None) is None  # type: ignore
+    assert parser.getBool("main", "blabla", None) is None  # type: ignore
+
+    # Read Integer
+    assert parser.getInt("main", "intopt1", 13) == 42
+    assert parser.getInt("main", "intopt2", 13) == 13
+    assert parser.getInt("main", "stropt", 13) == 13
+
+    assert parser.getInt("nope", "intopt1", 13) == 13
+    assert parser.getInt("main", "blabla", 13) == 13
+
+    # Read Float
+    assert parser.getFloat("main", "intopt1", 13.0) == 42.0
+    assert parser.getFloat("main", "float1", 13.0) == 4.2
+    assert parser.getFloat("main", "stropt", 13.0) == 13.0
+
+    assert parser.getFloat("nope", "intopt1", 13.0) == 13.0
+    assert parser.getFloat("main", "blabla", 13.0) == 13.0
+
+    # Read Path
+    assert parser.getPath("main", "path1", Path.home()) == fncPath
+
+    # Read String List
+    assert parser.getStrList("main", "list1", []) == []
+    assert parser.getStrList("main", "list1", ["x"]) == ["a"]
+    assert parser.getStrList("main", "list1", ["x", "y"]) == ["a", "b"]
+    assert parser.getStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
+    assert parser.getStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
+
+    assert parser.getStrList("main", "stropt", ["x"]) == ["value"]
+    assert parser.getStrList("main", "intopt1", ["x"]) == ["42"]
+
+    assert parser.getStrList("nope", "list1", ["x"]) == ["x"]
+    assert parser.getStrList("main", "blabla", ["x"]) == ["x"]
+
+    # Read Integer List
+    assert parser.getIntList("main", "list2", []) == []
+    assert parser.getIntList("main", "list2", [1]) == [17]
+    assert parser.getIntList("main", "list2", [1, 2]) == [17, 18]
+    assert parser.getIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
+    assert parser.getIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
+
+    assert parser.getIntList("main", "stropt", [1]) == [1]
+    assert parser.getIntList("main", "boolopt1", [1]) == [1]
+
+    assert parser.getIntList("nope", "list2", [1]) == [1]
+    assert parser.getIntList("main", "blabla", [1]) == [1]
+
+    # Read Enum
+    assert parser.getEnum("main", "enum1", nwItemClass.NO_CLASS) == nwItemClass.NOVEL
+    assert parser.getEnum("main", "blabla", nwItemClass.NO_CLASS) == nwItemClass.NO_CLASS
+
+
+@pytest.mark.base
+def testConfig_NTomlParser(fncPath):
+    """Test the NTomlParser class."""
+    conf = fncPath / "test.toml"
+    writeFile(
+        conf,
+        (
+            "[main]\n"
+            'stropt = "value"\n'
+            "intopt1 = 42\n"
+            'intopt2 = "42.43"\n'
+            "boolopt1 = true\n"
+            "boolopt2 = false\n"
+            "boolopt3 = 1\n"
+            "boolopt4 = 0\n"
+            'boolopt5 = "true"\n'
+            'list1 = ["a", "b", "c"]\n'
+            "list2 = [17, 18, 19]\n"
+            "float1 = 4.2\n"
+            'enum1 = "NOVEL"\n'
+            f'path1 = "{fncPath}"\n'
+        ),
+    )
+
+    parser = NTomlParser()
+    parser.read(conf)
+
+    # Readers
+    # =======
+
+    # Read String
+    assert parser.getStr("main", "stropt", "stuff") == "value"
+    assert parser.getStr("main", "intopt1", "stuff") == "stuff"
+
+    assert parser.getStr("nope", "stropt", "stuff") == "stuff"
+    assert parser.getStr("main", "blabla", "stuff") == "stuff"
+
+    # Read Boolean
+    assert parser.getBool("main", "boolopt1", None) is True  # type: ignore
+    assert parser.getBool("main", "boolopt2", None) is False  # type: ignore
+    assert parser.getBool("main", "boolopt3", None) is True  # type: ignore
+    assert parser.getBool("main", "boolopt4", None) is False  # type: ignore
+    assert parser.getBool("main", "boolopt5", None) is True  # type: ignore
+    assert parser.getBool("main", "intopt1", None) is None  # type: ignore
+
+    assert parser.getBool("nope", "boolopt1", None) is None  # type: ignore
+    assert parser.getBool("main", "blabla", None) is None  # type: ignore
+
+    # Read Integer
+    assert parser.getInt("main", "intopt1", 13) == 42
+    assert parser.getInt("main", "intopt2", 13) == 13
+    assert parser.getInt("main", "stropt", 13) == 13
+
+    assert parser.getInt("nope", "intopt1", 13) == 13
+    assert parser.getInt("main", "blabla", 13) == 13
+
+    # Read Float
+    assert parser.getFloat("main", "intopt1", 13.0) == 42.0
+    assert parser.getFloat("main", "float1", 13.0) == 4.2
+    assert parser.getFloat("main", "stropt", 13.0) == 13.0
+
+    assert parser.getFloat("nope", "intopt1", 13.0) == 13.0
+    assert parser.getFloat("main", "blabla", 13.0) == 13.0
+
+    # Read Path
+    assert parser.getPath("main", "path1", Path.home()) == fncPath
+
+    # Read String List
+    assert parser.getStrList("main", "list1", []) == []
+    assert parser.getStrList("main", "list1", ["x"]) == ["a"]
+    assert parser.getStrList("main", "list1", ["x", "y"]) == ["a", "b"]
+    assert parser.getStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
+    assert parser.getStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
+
+    assert parser.getStrList("main", "stropt", ["x"]) == ["x"]
+
+    assert parser.getStrList("nope", "list1", ["x"]) == ["x"]
+    assert parser.getStrList("main", "blabla", ["x"]) == ["x"]
+
+    # Read Integer List
+    assert parser.getIntList("main", "list2", []) == []
+    assert parser.getIntList("main", "list2", [1]) == [17]
+    assert parser.getIntList("main", "list2", [1, 2]) == [17, 18]
+    assert parser.getIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
+    assert parser.getIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
+
+    assert parser.getIntList("main", "stropt", [1]) == [1]
+
+    assert parser.getIntList("nope", "list2", [1]) == [1]
+    assert parser.getIntList("main", "blabla", [1]) == [1]
+
+    # Read Enum
+    assert parser.getEnum("main", "enum1", nwItemClass.NO_CLASS) == nwItemClass.NOVEL
+    assert parser.getEnum("main", "blabla", nwItemClass.NO_CLASS) == nwItemClass.NO_CLASS
+
+
+@pytest.mark.base
+def testConfig_NTomlParserInvalid(fncPath, caplog):
+    """Test that NTomlParser logs and skips top-level entries that
+    aren't valid [section] tables, for both write and read.
+    """
+    # Write: a non-dict top-level entry should be skipped and logged
+    path = fncPath / "invalid_write.toml"
+    parser = NTomlParser()
+    parser.write(path, {"Main": {"font": "Sans Serif"}, "bad": "not a section"})  # type: ignore
+    assert "Invalid config section 'bad'" in caplog.text
+    caplog.clear()
+
+    reader = NTomlParser()
+    reader.read(path)
+    assert reader.getStr("Main", "font", "") == "Sans Serif"
+
+    # Read: a bare top-level key not inside a table is also invalid
+    path2 = fncPath / "invalid_read.toml"
+    writeFile(
+        path2,
+        ('bad = "not a section"\n\n[Main]\nfont = "Sans Serif"\n'),
+    )
+    reader2 = NTomlParser()
+    reader2.read(path2)
+    assert "Invalid config section 'bad'" in caplog.text
+    assert reader2.getStr("Main", "font", "") == "Sans Serif"
+
+
+@pytest.mark.base
+def testConfig_ConvertOldConfig(fncPath, tstPaths):
+    """Test that an old ini-format config file is converted to the new
+    TOML format when loaded.
+    """
+    oldFile = fncPath / nwFiles.CONF_FILE_OLD
+    newFile = fncPath / nwFiles.CONF_FILE
+    copyfile(tstPaths.filesDir / "old_novelwriter.conf", oldFile)
+
+    assert oldFile.is_file()
+    assert not newFile.exists()
+
+    conf = Config()
+    conf.initConfig(confPath=fncPath, dataPath=fncPath)
+    assert conf.loadConfig() is True
+
+    # The old file should have triggered a conversion to the new format
+    assert newFile.exists()
+
+    # A selection of values should have been picked up from the old file
+    assert conf.lightTheme == "default_light"
+    assert conf.darkTheme == "default_dark"
+    assert conf.themeMode == nwTheme.AUTO
+    assert conf.mainWinSize == [1200, 650]
+    assert conf.fontWinSize == [700, 550]
+    assert conf.autoSaveProj == 60
+    assert conf.autoSaveDoc == 30
+    assert conf.backupInterval == "session"
+    assert conf.textWidth == 700
+    assert conf.tabWidth == 40
+    assert conf.dialogStyle == 2
+    assert conf.spellLanguage == "en"
+    assert conf.userIdleTime == 300
+    assert conf.showSessionTime is True
+    assert conf.searchRegEx is False
+
+    # Loading the newly converted file should produce the same values
+    newConf = Config()
+    newConf.initConfig(confPath=fncPath, dataPath=fncPath)
+    assert newConf.loadConfig() is True
+    assert newConf.mainWinSize == conf.mainWinSize
+    assert newConf.dialogStyle == conf.dialogStyle
+    assert newConf.spellLanguage == conf.spellLanguage

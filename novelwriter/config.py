@@ -24,10 +24,13 @@ from __future__ import annotations
 import json
 import logging
 import sys
+import tomllib
 
+from configparser import ConfigParser
+from enum import Enum
 from pathlib import Path
 from time import time
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, TypeVar
 
 from PyQt6.QtCore import (
     PYQT_VERSION,
@@ -47,9 +50,11 @@ from PyQt6.QtGui import QFont, QFontDatabase, QFontMetrics
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
-    NConfigParser,
+    checkBool,
+    checkFloat,
     checkInt,
     checkPath,
+    checkString,
     describeFont,
     fontMatcher,
     formatTimeStamp,
@@ -76,6 +81,10 @@ DEF_GUI_DARK = "default_dark"
 DEF_GUI_LIGHT = "default_light"
 DEF_ICONS = "material_rounded_normal"
 DEF_TREECOL = "theme"
+
+T_ConfValue = str | int | float | bool | Path | list[str] | list[int] | Enum | QFont
+T_ConfEntry = dict[str, T_ConfValue]
+T_ConfData = dict[str, T_ConfEntry]
 
 
 class Config:
@@ -758,11 +767,16 @@ class Config:
         self.splashMessage("Loading user configuration ...")
 
         logger.debug("Loading config file")
+        convertOld = False
 
-        conf = NConfigParser()
-        cnfPath = self._confPath / nwFiles.CONF_FILE
-
-        if not safeExists(cnfPath):
+        if safeExists(path := self._confPath / nwFiles.CONF_FILE):
+            confPath = path
+            parser = NTomlParser()
+        elif safeExists(path := self._confPath / nwFiles.CONF_FILE_OLD):
+            confPath = path
+            parser = NConfigParser()
+            convertOld = True
+        else:
             # Initial file, so we just create one from defaults
             self.setGuiFont(None)
             self.setTextFont(None)
@@ -770,8 +784,7 @@ class Config:
             return True
 
         try:
-            with open(cnfPath, mode="r", encoding="utf-8") as inFile:
-                conf.read_file(inFile)
+            parser.read(confPath)
         except Exception as exc:
             logger.error("Could not load config file")
             logException()
@@ -782,113 +795,113 @@ class Config:
 
         # Main
         sec = "Main"
-        self.setGuiFont(conf.rdStr(sec, "font", ""))
-        self.lightTheme = conf.rdStr(sec, "lighttheme", self.lightTheme)
-        self.darkTheme = conf.rdStr(sec, "darktheme", self.darkTheme)
-        self.themeMode = conf.rdEnum(sec, "thememode", self.themeMode)
-        self.iconTheme = conf.rdStr(sec, "icons", self.iconTheme)
-        self.iconColTree = conf.rdStr(sec, "iconcoltree", self.iconColTree)
-        self.iconColDocs = conf.rdBool(sec, "iconcoldocs", self.iconColDocs)
-        self.guiLocale = conf.rdStr(sec, "localisation", self.guiLocale)
-        self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
-        self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
-        self.lastNotes = conf.rdStr(sec, "lastnotes", self.lastNotes)
-        self.nativeFont = conf.rdBool(sec, "nativefont", self.nativeFont)
-        self.useCharCount = conf.rdBool(sec, "usecharcount", self.useCharCount)
-        self.vimMode = conf.rdBool(sec, "vimmode", self.vimMode)
+        self.setGuiFont(parser.getStr(sec, "font", ""))
+        self.lightTheme = parser.getStr(sec, "lightTheme", self.lightTheme)
+        self.darkTheme = parser.getStr(sec, "darkTheme", self.darkTheme)
+        self.themeMode = parser.getEnum(sec, "themeMode", self.themeMode)
+        self.iconTheme = parser.getStr(sec, "icons", self.iconTheme)
+        self.iconColTree = parser.getStr(sec, "iconColTree", self.iconColTree)
+        self.iconColDocs = parser.getBool(sec, "iconColDocs", self.iconColDocs)
+        self.guiLocale = parser.getStr(sec, "localisation", self.guiLocale)
+        self.hideVScroll = parser.getBool(sec, "hideVScroll", self.hideVScroll)
+        self.hideHScroll = parser.getBool(sec, "hideHScroll", self.hideHScroll)
+        self.lastNotes = parser.getStr(sec, "lastNotes", self.lastNotes)
+        self.nativeFont = parser.getBool(sec, "nativeFont", self.nativeFont)
+        self.useCharCount = parser.getBool(sec, "useCharCount", self.useCharCount)
+        self.vimMode = parser.getBool(sec, "vimMode", self.vimMode)
 
         # Sizes
         sec = "Sizes"
-        self.mainWinSize = conf.rdIntList(sec, "mainwindow", self.mainWinSize)
-        self.welcomeWinSize = conf.rdIntList(sec, "welcome", self.welcomeWinSize)
-        self.prefsWinSize = conf.rdIntList(sec, "preferences", self.prefsWinSize)
-        self.fontWinSize = conf.rdIntList(sec, "fontselect", self.fontWinSize)
-        self.mainPanePos = conf.rdIntList(sec, "mainpane", self.mainPanePos)
-        self.viewPanePos = conf.rdIntList(sec, "viewpane", self.viewPanePos)
-        self.outlinePanePos = conf.rdIntList(sec, "outlinepane", self.outlinePanePos)
-        self.searchPanePos = conf.rdIntList(sec, "searchpane", self.searchPanePos)
-        self.moveMainWin = conf.rdBool(sec, "movemainwin", self.moveMainWin)
+        self.mainWinSize = parser.getIntList(sec, "mainWindow", self.mainWinSize)
+        self.welcomeWinSize = parser.getIntList(sec, "welcome", self.welcomeWinSize)
+        self.prefsWinSize = parser.getIntList(sec, "preferences", self.prefsWinSize)
+        self.fontWinSize = parser.getIntList(sec, "fontSelect", self.fontWinSize)
+        self.mainPanePos = parser.getIntList(sec, "mainPane", self.mainPanePos)
+        self.viewPanePos = parser.getIntList(sec, "viewPane", self.viewPanePos)
+        self.outlinePanePos = parser.getIntList(sec, "outlinePane", self.outlinePanePos)
+        self.searchPanePos = parser.getIntList(sec, "searchPane", self.searchPanePos)
+        self.moveMainWin = parser.getBool(sec, "moveMainWin", self.moveMainWin)
 
         # Project
         sec = "Project"
-        self.autoSaveProj = conf.rdInt(sec, "autosaveproject", self.autoSaveProj)
-        self.autoSaveDoc = conf.rdInt(sec, "autosavedoc", self.autoSaveDoc)
-        self.emphLabels = conf.rdBool(sec, "emphlabels", self.emphLabels)
-        self._backupPath = conf.rdPath(sec, "backuppath", self._backupPath)
-        self.backupOnClose = conf.rdBool(sec, "backuponclose", self.backupOnClose)
-        self.backupInterval = conf.rdStr(sec, "backupinterval", self.backupInterval)
-        self.askBeforeBackup = conf.rdBool(sec, "askbeforebackup", self.askBeforeBackup)
-        self.askBeforeExit = conf.rdBool(sec, "askbeforeexit", self.askBeforeExit)
-        self._lastAuthor = conf.rdStr(sec, "lastauthor", self._lastAuthor)
+        self.autoSaveProj = parser.getInt(sec, "autoSaveProject", self.autoSaveProj)
+        self.autoSaveDoc = parser.getInt(sec, "autoSaveDoc", self.autoSaveDoc)
+        self.emphLabels = parser.getBool(sec, "emphLabels", self.emphLabels)
+        self._backupPath = parser.getPath(sec, "backupPath", self._backupPath)
+        self.backupOnClose = parser.getBool(sec, "backupOnClose", self.backupOnClose)
+        self.backupInterval = parser.getStr(sec, "backupInterval", self.backupInterval)
+        self.askBeforeBackup = parser.getBool(sec, "askBeforeBackup", self.askBeforeBackup)
+        self.askBeforeExit = parser.getBool(sec, "askBeforeExit", self.askBeforeExit)
+        self._lastAuthor = parser.getStr(sec, "lastAuthor", self._lastAuthor)
 
         # Editor
         sec = "Editor"
-        self.setTextFont(conf.rdStr(sec, "textfont", ""))
-        self.textWidth = conf.rdInt(sec, "width", self.textWidth)
-        self.textMargin = conf.rdInt(sec, "margin", self.textMargin)
-        self.tabWidth = conf.rdInt(sec, "tabwidth", self.tabWidth)
-        self.lineHeight = conf.rdFlt(sec, "lineheight", self.lineHeight)
-        self.cursorWidth = conf.rdInt(sec, "cursorwidth", self.cursorWidth)
-        self.lineHighlight = conf.rdBool(sec, "linehighlight", self.lineHighlight)
-        self.focusWidth = conf.rdInt(sec, "focuswidth", self.focusWidth)
-        self.hideFocusFooter = conf.rdBool(sec, "hidefocusfooter", self.hideFocusFooter)
-        self.doJustify = conf.rdBool(sec, "justify", self.doJustify)
-        self.autoSelect = conf.rdBool(sec, "autoselect", self.autoSelect)
-        self.doReplace = conf.rdBool(sec, "autoreplace", self.doReplace)
-        self.doReplaceSQuote = conf.rdBool(sec, "repsquotes", self.doReplaceSQuote)
-        self.doReplaceDQuote = conf.rdBool(sec, "repdquotes", self.doReplaceDQuote)
-        self.doReplaceDash = conf.rdBool(sec, "repdash", self.doReplaceDash)
-        self.doReplaceDots = conf.rdBool(sec, "repdots", self.doReplaceDots)
-        self.autoScroll = conf.rdBool(sec, "autoscroll", self.autoScroll)
-        self.autoScrollPos = conf.rdInt(sec, "autoscrollpos", self.autoScrollPos)
-        self.scrollPastEnd = conf.rdBool(sec, "scrollpastend", self.scrollPastEnd)
-        self.fmtSQuoteOpen = conf.rdStr(sec, "fmtsquoteopen", self.fmtSQuoteOpen)
-        self.fmtSQuoteClose = conf.rdStr(sec, "fmtsquoteclose", self.fmtSQuoteClose)
-        self.fmtDQuoteOpen = conf.rdStr(sec, "fmtdquoteopen", self.fmtDQuoteOpen)
-        self.fmtDQuoteClose = conf.rdStr(sec, "fmtdquoteclose", self.fmtDQuoteClose)
-        self.fmtPadBefore = conf.rdStr(sec, "fmtpadbefore", self.fmtPadBefore)
-        self.fmtPadAfter = conf.rdStr(sec, "fmtpadafter", self.fmtPadAfter)
-        self.fmtPadThin = conf.rdBool(sec, "fmtpadthin", self.fmtPadThin)
-        self.spellLanguage = conf.rdStr(sec, "spellcheck", self.spellLanguage)
-        self.showTabsNSpaces = conf.rdBool(sec, "showtabsnspaces", self.showTabsNSpaces)
-        self.showLineEndings = conf.rdBool(sec, "showlineendings", self.showLineEndings)
-        self.showMultiSpaces = conf.rdBool(sec, "showmultispaces", self.showMultiSpaces)
-        self.scaleHeadings = conf.rdBool(sec, "scaleheadings", self.scaleHeadings)
-        self.singleStarBold = conf.rdBool(sec, "singlestarbold", self.singleStarBold)
-        self.incNotesWCount = conf.rdBool(sec, "incnoteswcount", self.incNotesWCount)
-        self.showFullPath = conf.rdBool(sec, "showfullpath", self.showFullPath)
-        self.dialogStyle = conf.rdInt(sec, "dialogstyle", self.dialogStyle)
-        self.allowOpenDial = conf.rdBool(sec, "allowopendial", self.allowOpenDial)
-        dialogLine = conf.rdStr(sec, "dialogline", self.dialogLine)
-        narratorBreak = conf.rdStr(sec, "narratorbreak", self.narratorBreak)
-        narratorDialog = conf.rdStr(sec, "narratordialog", self.narratorDialog)
-        self.altDialogOpen = conf.rdStr(sec, "altdialogopen", self.altDialogOpen)
-        self.altDialogClose = conf.rdStr(sec, "altdialogclose", self.altDialogClose)
-        self.highlightEmph = conf.rdBool(sec, "highlightemph", self.highlightEmph)
-        self.dottedModCodes = conf.rdBool(sec, "dottedmodcodes", self.dottedModCodes)
-        self.stopWhenIdle = conf.rdBool(sec, "stopwhenidle", self.stopWhenIdle)
-        self.userIdleTime = conf.rdInt(sec, "useridletime", self.userIdleTime)
+        self.setTextFont(parser.getStr(sec, "textFont", ""))
+        self.textWidth = parser.getInt(sec, "width", self.textWidth)
+        self.textMargin = parser.getInt(sec, "margin", self.textMargin)
+        self.tabWidth = parser.getInt(sec, "tabWidth", self.tabWidth)
+        self.lineHeight = parser.getFloat(sec, "lineHeight", self.lineHeight)
+        self.cursorWidth = parser.getInt(sec, "cursorWidth", self.cursorWidth)
+        self.lineHighlight = parser.getBool(sec, "lineHighlight", self.lineHighlight)
+        self.focusWidth = parser.getInt(sec, "focusWidth", self.focusWidth)
+        self.hideFocusFooter = parser.getBool(sec, "hideFocusFooter", self.hideFocusFooter)
+        self.doJustify = parser.getBool(sec, "justify", self.doJustify)
+        self.autoSelect = parser.getBool(sec, "autoSelect", self.autoSelect)
+        self.doReplace = parser.getBool(sec, "autoReplace", self.doReplace)
+        self.doReplaceSQuote = parser.getBool(sec, "repSQuotes", self.doReplaceSQuote)
+        self.doReplaceDQuote = parser.getBool(sec, "repDQuotes", self.doReplaceDQuote)
+        self.doReplaceDash = parser.getBool(sec, "repDash", self.doReplaceDash)
+        self.doReplaceDots = parser.getBool(sec, "repDots", self.doReplaceDots)
+        self.autoScroll = parser.getBool(sec, "autoScroll", self.autoScroll)
+        self.autoScrollPos = parser.getInt(sec, "autoScrollPos", self.autoScrollPos)
+        self.scrollPastEnd = parser.getBool(sec, "scrollPastEnd", self.scrollPastEnd)
+        self.fmtSQuoteOpen = parser.getStr(sec, "fmtSQuoteOpen", self.fmtSQuoteOpen)
+        self.fmtSQuoteClose = parser.getStr(sec, "fmtSQuoteClose", self.fmtSQuoteClose)
+        self.fmtDQuoteOpen = parser.getStr(sec, "fmtDQuoteOpen", self.fmtDQuoteOpen)
+        self.fmtDQuoteClose = parser.getStr(sec, "fmtDQuoteClose", self.fmtDQuoteClose)
+        self.fmtPadBefore = parser.getStr(sec, "fmtPadBefore", self.fmtPadBefore)
+        self.fmtPadAfter = parser.getStr(sec, "fmtPadAfter", self.fmtPadAfter)
+        self.fmtPadThin = parser.getBool(sec, "fmtPadThin", self.fmtPadThin)
+        self.spellLanguage = parser.getStr(sec, "spellCheck", self.spellLanguage)
+        self.showTabsNSpaces = parser.getBool(sec, "showTabsNSpaces", self.showTabsNSpaces)
+        self.showLineEndings = parser.getBool(sec, "showLineEndings", self.showLineEndings)
+        self.showMultiSpaces = parser.getBool(sec, "showMultiSpaces", self.showMultiSpaces)
+        self.scaleHeadings = parser.getBool(sec, "scaleHeadings", self.scaleHeadings)
+        self.singleStarBold = parser.getBool(sec, "singleStarBold", self.singleStarBold)
+        self.incNotesWCount = parser.getBool(sec, "incNotesWCount", self.incNotesWCount)
+        self.showFullPath = parser.getBool(sec, "showFullPath", self.showFullPath)
+        self.dialogStyle = parser.getInt(sec, "dialogStyle", self.dialogStyle)
+        self.allowOpenDial = parser.getBool(sec, "allowOpenDial", self.allowOpenDial)
+        dialogLine = parser.getStr(sec, "dialogLine", self.dialogLine)
+        narratorBreak = parser.getStr(sec, "narratorBreak", self.narratorBreak)
+        narratorDialog = parser.getStr(sec, "narratorDialog", self.narratorDialog)
+        self.altDialogOpen = parser.getStr(sec, "altDialogOpen", self.altDialogOpen)
+        self.altDialogClose = parser.getStr(sec, "altDialogClose", self.altDialogClose)
+        self.highlightEmph = parser.getBool(sec, "highlightEmph", self.highlightEmph)
+        self.dottedModCodes = parser.getBool(sec, "dottedModCodes", self.dottedModCodes)
+        self.stopWhenIdle = parser.getBool(sec, "stopWhenIdle", self.stopWhenIdle)
+        self.userIdleTime = parser.getInt(sec, "userIdleTime", self.userIdleTime)
 
         # State
         sec = "State"
-        self.showDetailsPanel = conf.rdBool(sec, "showdetailspanel", self.showDetailsPanel)
-        self.showViewerPanel = conf.rdBool(sec, "showviewerpanel", self.showViewerPanel)
-        self.showEditToolBar = conf.rdBool(sec, "showedittoolbar", self.showEditToolBar)
-        self.showSessionTime = conf.rdBool(sec, "showsessiontime", self.showSessionTime)
-        self.viewComments = conf.rdBool(sec, "viewcomments", self.viewComments)
-        self.viewSynopsis = conf.rdBool(sec, "viewsynopsis", self.viewSynopsis)
-        self.viewNotes = conf.rdBool(sec, "viewnotes", self.viewNotes)
-        self.searchAuto = conf.rdBool(sec, "searchauto", self.searchAuto)
-        self.searchCase = conf.rdBool(sec, "searchcase", self.searchCase)
-        self.searchWord = conf.rdBool(sec, "searchword", self.searchWord)
-        self.searchRegEx = conf.rdBool(sec, "searchregex", self.searchRegEx)
-        self.searchLoop = conf.rdBool(sec, "searchloop", self.searchLoop)
-        self.searchNextFile = conf.rdBool(sec, "searchnextfile", self.searchNextFile)
-        self.searchMatchCap = conf.rdBool(sec, "searchmatchcap", self.searchMatchCap)
-        self.searchProjAuto = conf.rdBool(sec, "searchprojauto", self.searchProjAuto)
-        self.searchProjCase = conf.rdBool(sec, "searchprojcase", self.searchProjCase)
-        self.searchProjWord = conf.rdBool(sec, "searchprojword", self.searchProjWord)
-        self.searchProjRegEx = conf.rdBool(sec, "searchprojregex", self.searchProjRegEx)
+        self.showDetailsPanel = parser.getBool(sec, "showDetailsPanel", self.showDetailsPanel)
+        self.showViewerPanel = parser.getBool(sec, "showViewerPanel", self.showViewerPanel)
+        self.showEditToolBar = parser.getBool(sec, "showEditToolBar", self.showEditToolBar)
+        self.showSessionTime = parser.getBool(sec, "showSessionTime", self.showSessionTime)
+        self.viewComments = parser.getBool(sec, "viewComments", self.viewComments)
+        self.viewSynopsis = parser.getBool(sec, "viewSynopsis", self.viewSynopsis)
+        self.viewNotes = parser.getBool(sec, "viewNotes", self.viewNotes)
+        self.searchAuto = parser.getBool(sec, "searchAuto", self.searchAuto)
+        self.searchCase = parser.getBool(sec, "searchCase", self.searchCase)
+        self.searchWord = parser.getBool(sec, "searchWord", self.searchWord)
+        self.searchRegEx = parser.getBool(sec, "searchRegEx", self.searchRegEx)
+        self.searchLoop = parser.getBool(sec, "searchLoop", self.searchLoop)
+        self.searchNextFile = parser.getBool(sec, "searchNextFile", self.searchNextFile)
+        self.searchMatchCap = parser.getBool(sec, "searchMatchCap", self.searchMatchCap)
+        self.searchProjAuto = parser.getBool(sec, "searchProjAuto", self.searchProjAuto)
+        self.searchProjCase = parser.getBool(sec, "searchProjCase", self.searchProjCase)
+        self.searchProjWord = parser.getBool(sec, "searchProjWord", self.searchProjWord)
+        self.searchProjRegEx = parser.getBool(sec, "searchProjRegEx", self.searchProjRegEx)
 
         # Check Values
         # ============
@@ -909,133 +922,137 @@ class Config:
         self.narratorBreak = narratorBreak if narratorBreak in nwQuotes.DASHES else ""
         self.narratorDialog = narratorDialog if narratorDialog in nwQuotes.DASHES else ""
 
+        if convertOld:
+            logger.info("Old config file detected, converting to new format")
+            self.saveConfig()
+
         return True
 
     def saveConfig(self) -> bool:
         """Save the current preferences to file."""
         logger.debug("Saving config file")
 
-        conf = NConfigParser()
+        config: T_ConfData = {}
 
-        conf["Meta"] = {
-            "timestamp": formatTimeStamp(time()),
+        config["Meta"] = {
+            "timeStamp": formatTimeStamp(time()),
         }
 
-        conf["Main"] = {
-            "font": self.guiFont.toString(),
-            "lighttheme": str(self.lightTheme),
-            "darktheme": str(self.darkTheme),
-            "thememode": self.themeMode.name,
-            "icons": str(self.iconTheme),
-            "iconcoltree": str(self.iconColTree),
-            "iconcoldocs": str(self.iconColDocs),
-            "localisation": str(self.guiLocale),
-            "hidevscroll": str(self.hideVScroll),
-            "hidehscroll": str(self.hideHScroll),
-            "lastnotes": str(self.lastNotes),
-            "nativefont": str(self.nativeFont),
-            "usecharcount": str(self.useCharCount),
-            "vimmode": str(self.vimMode),
+        config["Main"] = {
+            "font": self.guiFont,
+            "lightTheme": self.lightTheme,
+            "darkTheme": self.darkTheme,
+            "themeMode": self.themeMode,
+            "icons": self.iconTheme,
+            "iconColTree": self.iconColTree,
+            "iconColDocs": self.iconColDocs,
+            "localisation": self.guiLocale,
+            "hideVScroll": self.hideVScroll,
+            "hideHScroll": self.hideHScroll,
+            "lastNotes": self.lastNotes,
+            "nativeFont": self.nativeFont,
+            "useCharCount": self.useCharCount,
+            "vimMode": self.vimMode,
         }
 
-        conf["Sizes"] = {
-            "mainwindow": self._packList(self.mainWinSize),
-            "welcome": self._packList(self.welcomeWinSize),
-            "preferences": self._packList(self.prefsWinSize),
-            "fontselect": self._packList(self.fontWinSize),
-            "mainpane": self._packList(self.mainPanePos),
-            "viewpane": self._packList(self.viewPanePos),
-            "outlinepane": self._packList(self.outlinePanePos),
-            "searchpane": self._packList(self.searchPanePos),
-            "movemainwin": str(self.moveMainWin),
+        config["Sizes"] = {
+            "mainWindow": self.mainWinSize,
+            "welcome": self.welcomeWinSize,
+            "preferences": self.prefsWinSize,
+            "fontSelect": self.fontWinSize,
+            "mainPane": self.mainPanePos,
+            "viewPane": self.viewPanePos,
+            "outlinePane": self.outlinePanePos,
+            "searchPane": self.searchPanePos,
+            "moveMainWin": self.moveMainWin,
         }
 
-        conf["Project"] = {
-            "autosaveproject": str(self.autoSaveProj),
-            "autosavedoc": str(self.autoSaveDoc),
-            "emphlabels": str(self.emphLabels),
-            "backuppath": str(self._backupPath),
-            "backuponclose": str(self.backupOnClose),
-            "backupinterval": str(self.backupInterval),
-            "askbeforebackup": str(self.askBeforeBackup),
-            "askbeforeexit": str(self.askBeforeExit),
-            "lastauthor": str(self._lastAuthor),
+        config["Project"] = {
+            "autoSaveProject": self.autoSaveProj,
+            "autoSaveDoc": self.autoSaveDoc,
+            "emphLabels": self.emphLabels,
+            "backupPath": self._backupPath,
+            "backupOnClose": self.backupOnClose,
+            "backupInterval": self.backupInterval,
+            "askBeforeBackup": self.askBeforeBackup,
+            "askBeforeExit": self.askBeforeExit,
+            "lastAuthor": self._lastAuthor,
         }
 
-        conf["Editor"] = {
-            "textfont": self.textFont.toString(),
-            "width": str(self.textWidth),
-            "margin": str(self.textMargin),
-            "tabwidth": str(self.tabWidth),
-            "lineheight": str(self.lineHeight),
-            "cursorwidth": str(self.cursorWidth),
-            "lineHighlight": str(self.lineHighlight),
-            "focuswidth": str(self.focusWidth),
-            "hidefocusfooter": str(self.hideFocusFooter),
-            "justify": str(self.doJustify),
-            "autoselect": str(self.autoSelect),
-            "autoreplace": str(self.doReplace),
-            "repsquotes": str(self.doReplaceSQuote),
-            "repdquotes": str(self.doReplaceDQuote),
-            "repdash": str(self.doReplaceDash),
-            "repdots": str(self.doReplaceDots),
-            "autoscroll": str(self.autoScroll),
-            "autoscrollpos": str(self.autoScrollPos),
-            "scrollpastend": str(self.scrollPastEnd),
-            "fmtsquoteopen": str(self.fmtSQuoteOpen),
-            "fmtsquoteclose": str(self.fmtSQuoteClose),
-            "fmtdquoteopen": str(self.fmtDQuoteOpen),
-            "fmtdquoteclose": str(self.fmtDQuoteClose),
-            "fmtpadbefore": str(self.fmtPadBefore),
-            "fmtpadafter": str(self.fmtPadAfter),
-            "fmtpadthin": str(self.fmtPadThin),
-            "spellcheck": str(self.spellLanguage),
-            "showtabsnspaces": str(self.showTabsNSpaces),
-            "showlineendings": str(self.showLineEndings),
-            "showmultispaces": str(self.showMultiSpaces),
-            "scaleheadings": str(self.scaleHeadings),
-            "singlestarbold": str(self.singleStarBold),
-            "incnoteswcount": str(self.incNotesWCount),
-            "showfullpath": str(self.showFullPath),
-            "dialogstyle": str(self.dialogStyle),
-            "allowopendial": str(self.allowOpenDial),
-            "dialogline": str(self.dialogLine),
-            "narratorbreak": str(self.narratorBreak),
-            "narratordialog": str(self.narratorDialog),
-            "altdialogopen": str(self.altDialogOpen),
-            "altdialogclose": str(self.altDialogClose),
-            "highlightemph": str(self.highlightEmph),
-            "dottedmodcodes": str(self.dottedModCodes),
-            "stopwhenidle": str(self.stopWhenIdle),
-            "useridletime": str(self.userIdleTime),
+        config["Editor"] = {
+            "textFont": self.textFont,
+            "width": self.textWidth,
+            "margin": self.textMargin,
+            "tabWidth": self.tabWidth,
+            "lineHeight": self.lineHeight,
+            "cursorWidth": self.cursorWidth,
+            "lineHighlight": self.lineHighlight,
+            "focusWidth": self.focusWidth,
+            "hideFocusFooter": self.hideFocusFooter,
+            "justify": self.doJustify,
+            "autoSelect": self.autoSelect,
+            "autoReplace": self.doReplace,
+            "repSQuotes": self.doReplaceSQuote,
+            "repDQuotes": self.doReplaceDQuote,
+            "repDash": self.doReplaceDash,
+            "repDots": self.doReplaceDots,
+            "autoScroll": self.autoScroll,
+            "autoScrollPos": self.autoScrollPos,
+            "scrollPastEnd": self.scrollPastEnd,
+            "fmtSQuoteOpen": self.fmtSQuoteOpen,
+            "fmtSQuoteClose": self.fmtSQuoteClose,
+            "fmtDQuoteOpen": self.fmtDQuoteOpen,
+            "fmtDQuoteClose": self.fmtDQuoteClose,
+            "fmtPadBefore": self.fmtPadBefore,
+            "fmtPadAfter": self.fmtPadAfter,
+            "fmtPadThin": self.fmtPadThin,
+            "spellCheck": self.spellLanguage,
+            "showTabsNSpaces": self.showTabsNSpaces,
+            "showLineEndings": self.showLineEndings,
+            "showMultiSpaces": self.showMultiSpaces,
+            "scaleHeadings": self.scaleHeadings,
+            "singleStarBold": self.singleStarBold,
+            "incNotesWCount": self.incNotesWCount,
+            "showFullPath": self.showFullPath,
+            "dialogStyle": self.dialogStyle,
+            "allowOpenDial": self.allowOpenDial,
+            "dialogLine": self.dialogLine,
+            "narratorBreak": self.narratorBreak,
+            "narratorDialog": self.narratorDialog,
+            "altDialogOpen": self.altDialogOpen,
+            "altDialogClose": self.altDialogClose,
+            "highlightEmph": self.highlightEmph,
+            "dottedModCodes": self.dottedModCodes,
+            "stopWhenIdle": self.stopWhenIdle,
+            "userIdleTime": self.userIdleTime,
         }
 
-        conf["State"] = {
-            "showdetailspanel": str(self.showDetailsPanel),
-            "showviewerpanel": str(self.showViewerPanel),
-            "showedittoolbar": str(self.showEditToolBar),
-            "showsessiontime": str(self.showSessionTime),
-            "viewcomments": str(self.viewComments),
-            "viewsynopsis": str(self.viewSynopsis),
-            "viewnotes": str(self.viewNotes),
-            "searchauto": str(self.searchAuto),
-            "searchcase": str(self.searchCase),
-            "searchword": str(self.searchWord),
-            "searchregex": str(self.searchRegEx),
-            "searchloop": str(self.searchLoop),
-            "searchnextfile": str(self.searchNextFile),
-            "searchmatchcap": str(self.searchMatchCap),
-            "searchprojauto": str(self.searchProjAuto),
-            "searchprojcase": str(self.searchProjCase),
-            "searchprojword": str(self.searchProjWord),
-            "searchprojregex": str(self.searchProjRegEx),
+        config["State"] = {
+            "showDetailsPanel": self.showDetailsPanel,
+            "showViewerPanel": self.showViewerPanel,
+            "showEditToolBar": self.showEditToolBar,
+            "showSessionTime": self.showSessionTime,
+            "viewComments": self.viewComments,
+            "viewSynopsis": self.viewSynopsis,
+            "viewNotes": self.viewNotes,
+            "searchAuto": self.searchAuto,
+            "searchCase": self.searchCase,
+            "searchWord": self.searchWord,
+            "searchRegEx": self.searchRegEx,
+            "searchLoop": self.searchLoop,
+            "searchNextFile": self.searchNextFile,
+            "searchMatchCap": self.searchMatchCap,
+            "searchProjAuto": self.searchProjAuto,
+            "searchProjCase": self.searchProjCase,
+            "searchProjWord": self.searchProjWord,
+            "searchProjRegEx": self.searchProjRegEx,
         }
 
         # Write config file
         cnfPath = self._confPath / nwFiles.CONF_FILE
         try:
-            with open(cnfPath, mode="w", encoding="utf-8") as outFile:
-                conf.write(outFile)
+            parser = NTomlParser()
+            parser.write(cnfPath, config)
         except Exception as exc:
             logger.error("Could not save config file")
             logException()
@@ -1219,3 +1236,199 @@ class RecentPaths:
             logException()
             return False
         return True
+
+
+_T_Enum = TypeVar("_T_Enum", bound=Enum)
+
+
+class NTomlParser:
+    """Core: Toml Config Parser.
+
+    This is a wrapper around the standard tomllib module, and assumes a
+    two level section and key/value structure. It has type safe getters
+    for all the supported types.
+    """
+
+    def __init__(self) -> None:
+        self._data: T_ConfData = {}
+
+    def read(self, path: Path) -> None:
+        """Read and parse TOML data from a file."""
+        with open(path, mode="r", encoding="utf-8") as fileObj:
+            data = tomllib.loads(fileObj.read())
+
+        self._data = {}
+        for section, values in data.items():
+            if not isinstance(values, dict):
+                logger.error("Invalid config section '%s', expected key/value pairs", section)
+                continue
+            self._data[section] = values
+
+    def write(self, path: Path, data: T_ConfData) -> None:
+        """Write a dict of sections to a file in TOML format."""
+        with open(path, mode="w", encoding="utf-8") as fileObj:
+            for section, values in data.items():
+                if not isinstance(values, dict):
+                    logger.error("Invalid config section '%s', expected key/value pairs", section)
+                    continue
+                fileObj.write(f"[{section}]\n")
+                for key, value in values.items():
+                    fileObj.write(f"{key} = {self._dump(value)}\n")
+                fileObj.write("\n")
+
+    def getStr(self, section: str, option: str, default: str) -> str:
+        """Read string value."""
+        return checkString(self._value(section, option), default)
+
+    def getInt(self, section: str, option: str, default: int) -> int:
+        """Read integer value."""
+        return checkInt(self._value(section, option), default)
+
+    def getFloat(self, section: str, option: str, default: float) -> float:
+        """Read float value."""
+        return checkFloat(self._value(section, option), default)
+
+    def getBool(self, section: str, option: str, default: bool) -> bool:
+        """Read boolean value."""
+        return checkBool(self._value(section, option), default)
+
+    def getPath(self, section: str, option: str, default: Path) -> Path:
+        """Read a Path value."""
+        return checkPath(self._value(section, option), default)
+
+    def getStrList(self, section: str, option: str, default: list[str]) -> list[str]:
+        """Read string list, keeping the length of the default."""
+        result = default.copy() if isinstance(default, list) else []
+        data = self._value(section, option)
+        if isinstance(data, list):
+            for i in range(min(len(data), len(result))):
+                result[i] = str(data[i])
+        return result
+
+    def getIntList(self, section: str, option: str, default: list[int]) -> list[int]:
+        """Read integer list, keeping the length of the default."""
+        result = default.copy() if isinstance(default, list) else []
+        data = self._value(section, option)
+        if isinstance(data, list):
+            for i in range(min(len(data), len(result))):
+                result[i] = checkInt(data[i], result[i])
+        return result
+
+    def getEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
+        """Read enum value."""
+        data = self._value(section, option)
+        if isinstance(data, str):
+            return type(default).__members__.get(data.upper(), default)
+        return default
+
+    ##
+    # Internal Functions
+    ##
+
+    def _value(self, section: str, option: str) -> T_ConfValue | None:
+        """Look up a raw value, or None if the section or option is unset."""
+        return self._data.get(section, {}).get(option)
+
+    @staticmethod
+    def _dump(value: T_ConfValue) -> str:
+        """Format a value as a TOML literal."""
+        if isinstance(value, bool):
+            return "true" if value else "false"
+        elif isinstance(value, (int, float)):
+            return str(value)
+        elif isinstance(value, (list, tuple)):
+            return "[" + ", ".join(NTomlParser._dump(v) for v in value) + "]"
+        elif isinstance(value, Enum):
+            return f'"{value.name}"'
+        elif isinstance(value, QFont):
+            return f'"{value.toString()}"'
+        return NTomlParser._dumpStr(str(value))
+
+    @staticmethod
+    def _dumpStr(value: str) -> str:
+        """Format a string as a quoted TOML basic string."""
+        escaped = (
+            value
+            .replace("\\", "\\\\")
+            .replace('"', '\\"')
+            .replace("\t", "\\t")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+        )
+        return f'"{escaped}"'
+
+
+class NConfigParser(ConfigParser):
+    """Core: Adapted Config Parser.
+
+    This is a subclass of the standard config parser that adds type safe
+    helper functions, and support for lists. It also turns off
+    interpolation, which would require % symbols to be escaped (#2455).
+
+    It is kept for backwards compatibility with old config files.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(interpolation=None)
+
+    def read(self, path: Path) -> None:
+        """Read and parse config data from a file, mirroring write()."""
+        with open(path, mode="r", encoding="utf-8") as fileObj:
+            self.read_string(fileObj.read())
+
+    def getStr(self, section: str, option: str, default: str) -> str:
+        """Read string value."""
+        return self.get(section, option, fallback=default)
+
+    def getInt(self, section: str, option: str, default: int) -> int:
+        """Read integer value."""
+        try:
+            return self.getint(section, option, fallback=default)
+        except ValueError:
+            logger.error("Could not read '%s':'%s' from config", section, option)
+        return default
+
+    def getFloat(self, section: str, option: str, default: float) -> float:
+        """Read float value."""
+        try:
+            return self.getfloat(section, option, fallback=default)
+        except ValueError:
+            logger.error("Could not read '%s':'%s' from config", section, option)
+        return default
+
+    def getBool(self, section: str, option: str, default: bool) -> bool:
+        """Read boolean value."""
+        try:
+            return self.getboolean(section, option, fallback=default)
+        except ValueError:
+            logger.error("Could not read '%s':'%s' from config", section, option)
+        return default
+
+    def getPath(self, section: str, option: str, default: Path) -> Path:
+        """Read a Path value."""
+        return checkPath(self.get(section, option, fallback=default), default)
+
+    def getStrList(self, section: str, option: str, default: list[str]) -> list[str]:
+        """Read string list."""
+        result = default.copy() if isinstance(default, list) else []
+        if self.has_option(section, option):
+            data = self.get(section, option, fallback="").split(",")
+            for i in range(min(len(data), len(result))):
+                result[i] = data[i].strip()
+        return result
+
+    def getIntList(self, section: str, option: str, default: list[int]) -> list[int]:
+        """Read integer list."""
+        result = default.copy() if isinstance(default, list) else []
+        if self.has_option(section, option):
+            data = self.get(section, option, fallback="").split(",")
+            for i in range(min(len(data), len(result))):
+                result[i] = checkInt(data[i].strip(), result[i])
+        return result
+
+    def getEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
+        """Read enum value."""
+        if self.has_option(section, option):
+            data = self.get(section, option, fallback="")
+            return type(default).__members__.get(data.upper(), default)
+        return default

@@ -148,7 +148,8 @@ class nwFiles:
     """novelWriter Files."""
 
     # Config Files
-    CONF_FILE = "novelwriter.conf"
+    CONF_FILE = "novelwriter.toml"
+    CONF_FILE_OLD = "novelwriter.conf"
     RECENT_FILE = "recentProjects.json"
     RECENT_PATH = "recentPaths.json"
 
