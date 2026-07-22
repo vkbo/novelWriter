@@ -1,5 +1,5 @@
 """
-novelWriter – Windows Build
+novelWriter - Windows Build
 ===========================
 
 This file is a part of novelWriter

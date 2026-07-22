@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Novel View Tests
+novelWriter - GUI Novel View Tests
 ==================================
 
 This file is a part of novelWriter

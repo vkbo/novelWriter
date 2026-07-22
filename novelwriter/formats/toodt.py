@@ -1,5 +1,5 @@
 """
-novelWriter – ODT Text Converter
+novelWriter - ODT Text Converter
 ================================
 
 This file is a part of novelWriter

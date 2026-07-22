@@ -1,5 +1,5 @@
 """
-novelWriter – Split Dialog Tests
+novelWriter - Split Dialog Tests
 ================================
 
 This file is a part of novelWriter

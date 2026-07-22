@@ -1,5 +1,5 @@
 """
-novelWriter – Project Tree
+novelWriter - Project Tree
 ==========================
 
 This file is a part of novelWriter

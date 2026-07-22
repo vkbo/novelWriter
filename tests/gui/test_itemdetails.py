@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Item Details Tests
+novelWriter - GUI Item Details Tests
 ====================================
 
 This file is a part of novelWriter
@@ -62,9 +62,9 @@ def testGuiItemDetails_Display(qtbot, nwGUI, projPath, mockRnd):
 
     itemDetails.updateViewBox(C.hChapterDir)
     assert itemDetails.labelData.text() == elide(folder.itemName, 100)
-    assert itemDetails.cCountData.text() == "–"
-    assert itemDetails.wCountData.text() == "–"
-    assert itemDetails.pCountData.text() == "–"
+    assert itemDetails.cCountData.text() == "\u2013"
+    assert itemDetails.wCountData.text() == "\u2013"
+    assert itemDetails.pCountData.text() == "\u2013"
 
     # An invalid handle clears the details instead
     itemDetails.updateViewBox(C.hInvalid)

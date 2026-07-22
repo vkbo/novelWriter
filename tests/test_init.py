@@ -1,5 +1,5 @@
 """
-novelWriter – App Init Tests
+novelWriter - App Init Tests
 ============================
 
 This file is a part of novelWriter

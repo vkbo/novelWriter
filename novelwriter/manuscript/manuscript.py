@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Manuscript Tool
+novelWriter - GUI Manuscript Tool
 =================================
 
 This file is a part of novelWriter

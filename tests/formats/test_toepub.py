@@ -1,5 +1,5 @@
 """
-novelWriter – EPub Format Tests
+novelWriter - EPub Format Tests
 ===============================
 
 This file is a part of novelWriter

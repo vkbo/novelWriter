@@ -1,5 +1,5 @@
 """
-novelWriter – Novel Model Tests
+novelWriter - Novel Model Tests
 ===============================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Project XML Read/Write
+novelWriter - Project XML Read/Write
 ====================================
 
 This file is a part of novelWriter

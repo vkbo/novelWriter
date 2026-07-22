@@ -1,5 +1,5 @@
 """
-novelWriter – Version Info Widget Tests
+novelWriter - Version Info Widget Tests
 =======================================
 
 This file is a part of novelWriter
@@ -121,7 +121,9 @@ def testVersionInfoWidget_Main(qtbot, monkeypatch):
     version._processLink("#unknown")
 
     version._updateReleaseInfo("v2.0", "")
-    assert version._lblRelease.text() == ("Latest Version: 2.0 – Download from <a href='#website'>novelwriter.io</a>")
+    assert version._lblRelease.text() == (
+        "Latest Version: 2.0 \u2013 Download from <a href='#website'>novelwriter.io</a>"
+    )
 
     version._updateReleaseInfo("", "")
     assert version._lblRelease.text() == "Latest Version: Failed"

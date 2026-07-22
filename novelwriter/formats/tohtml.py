@@ -1,5 +1,5 @@
 """
-novelWriter – HTML Text Converter
+novelWriter - HTML Text Converter
 =================================
 
 This file is a part of novelWriter

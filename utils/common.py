@@ -1,5 +1,5 @@
 """
-novelWriter – Common Utils
+novelWriter - Common Utils
 ==========================
 
 This file is a part of novelWriter

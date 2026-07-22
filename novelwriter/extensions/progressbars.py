@@ -1,5 +1,5 @@
 """
-novelWriter – Custom Widget: Progress Bars
+novelWriter - Custom Widget: Progress Bars
 ==========================================
 
 This file is a part of novelWriter

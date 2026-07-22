@@ -1,5 +1,5 @@
 """
-novelWriter – GUI About Dialog
+novelWriter - GUI About Dialog
 ==============================
 
 This file is a part of novelWriter

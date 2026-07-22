@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Doc Merge Dialog
+novelWriter - GUI Doc Merge Dialog
 ==================================
 
 This file is a part of novelWriter

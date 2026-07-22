@@ -1,5 +1,5 @@
 """
-novelWriter – Project Search Tests
+novelWriter - Project Search Tests
 ==================================
 
 This file is a part of novelWriter

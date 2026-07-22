@@ -1,5 +1,5 @@
 """
-novelWriter – Text Comments
+novelWriter - Text Comments
 ===========================
 
 This file is a part of novelWriter

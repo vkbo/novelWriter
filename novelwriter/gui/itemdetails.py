@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Item Details Panel
+novelWriter - GUI Item Details Panel
 ====================================
 
 This file is a part of novelWriter
@@ -252,9 +252,9 @@ class GuiItemDetails(NExpandablePanel):
             self.wCountData.setText(f"{nwItem.wordCount:n}")
             self.pCountData.setText(f"{nwItem.paraCount:n}")
         else:
-            self.cCountData.setText("–")
-            self.wCountData.setText("–")
-            self.pCountData.setText("–")
+            self.cCountData.setText("\u2013")
+            self.wCountData.setText("\u2013")
+            self.pCountData.setText("\u2013")
 
         self._refresh = None
 

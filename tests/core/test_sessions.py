@@ -1,5 +1,5 @@
 """
-novelWriter – Session Log Tests
+novelWriter - Session Log Tests
 ===============================
 
 This file is a part of novelWriter

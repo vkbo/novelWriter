@@ -1,5 +1,5 @@
 """
-novelWriter – AppImage Build
+novelWriter - AppImage Build
 ============================
 
 This file is a part of novelWriter

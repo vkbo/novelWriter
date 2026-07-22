@@ -1,5 +1,5 @@
 """
-novelWriter – Command Completer Tests
+novelWriter - Command Completer Tests
 =====================================
 
 This file is a part of novelWriter

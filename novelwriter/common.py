@@ -1,5 +1,5 @@
 """
-novelWriter – Common Functions
+novelWriter - Common Functions
 ==============================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Command Completer
+novelWriter - GUI Command Completer
 ===================================
 
 This file is a part of novelWriter

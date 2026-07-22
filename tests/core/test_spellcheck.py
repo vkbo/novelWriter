@@ -1,5 +1,5 @@
 """
-novelWriter – Spell Check Tests
+novelWriter - Spell Check Tests
 ===============================
 
 This file is a part of novelWriter

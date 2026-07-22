@@ -1,5 +1,5 @@
 """
-novelWriter – Manuscript Document Builder
+novelWriter - Manuscript Document Builder
 =========================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Writing Statistics
+novelWriter - GUI Writing Statistics
 ====================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Text Document
+novelWriter - GUI Text Document
 ===============================
 
 This file is a part of novelWriter

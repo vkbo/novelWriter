@@ -1,5 +1,5 @@
 """
-novelWriter – Manuscript Tool Tests
+novelWriter - Manuscript Tool Tests
 ===================================
 
 This file is a part of novelWriter

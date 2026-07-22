@@ -1,5 +1,5 @@
 """
-novelWriter – Icon Theme Utils
+novelWriter - Icon Theme Utils
 ==============================
 
 This file is a part of novelWriter

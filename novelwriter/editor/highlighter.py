@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Syntax Highlighter
+novelWriter - GUI Syntax Highlighter
 ====================================
 
 This file is a part of novelWriter

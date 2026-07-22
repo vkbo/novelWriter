@@ -1,5 +1,5 @@
 """
-novelWriter – Dictionary Downloader Tests
+novelWriter - Dictionary Downloader Tests
 =========================================
 
 This file is a part of novelWriter

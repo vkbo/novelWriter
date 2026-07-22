@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Viewer Header
+novelWriter - GUI Viewer Header
 ===============================
 
 This file is a part of novelWriter

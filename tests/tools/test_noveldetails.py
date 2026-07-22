@@ -1,5 +1,5 @@
 """
-novelWriter – Novel Details Tool Tests
+novelWriter - Novel Details Tool Tests
 ======================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Project Settings
+novelWriter - GUI Project Settings
 ==================================
 
 This file is a part of novelWriter

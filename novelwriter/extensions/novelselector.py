@@ -1,5 +1,5 @@
 """
-novelWriter – Custom Widget: Novel Selector
+novelWriter - Custom Widget: Novel Selector
 ===========================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Search Result Model
+novelWriter - Search Result Model
 =================================
 
 This file is a part of novelWriter

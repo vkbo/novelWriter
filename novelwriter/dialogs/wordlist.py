@@ -1,5 +1,5 @@
 """
-novelWriter – GUI User Wordlist
+novelWriter - GUI User Wordlist
 ===============================
 
 This file is a part of novelWriter

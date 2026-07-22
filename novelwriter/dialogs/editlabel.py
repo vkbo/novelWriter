@@ -1,5 +1,5 @@
 """
-novelWriter – Edit Label Dialog
+novelWriter - Edit Label Dialog
 ===============================
 
 This file is a part of novelWriter

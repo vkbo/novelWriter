@@ -1,5 +1,5 @@
 """
-novelWriter – Raw NW Text Format
+novelWriter - Raw NW Text Format
 ================================
 
 This file is a part of novelWriter

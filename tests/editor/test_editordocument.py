@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Text Document Tests
+novelWriter - GUI Text Document Tests
 =====================================
 
 This file is a part of novelWriter

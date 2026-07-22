@@ -1,5 +1,5 @@
 """
-novelWriter – Types and Flags
+novelWriter - Types and Flags
 =============================
 
 This file is a part of novelWriter

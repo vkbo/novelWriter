@@ -1,5 +1,5 @@
 """
-novelWriter – Documentation
+novelWriter - Documentation
 ===========================
 
 This file is a part of novelWriter

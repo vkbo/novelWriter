@@ -1,5 +1,5 @@
 """
-novelWriter – Progress Bar Tests
+novelWriter - Progress Bar Tests
 ================================
 
 This file is a part of novelWriter

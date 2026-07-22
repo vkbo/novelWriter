@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Editor Search
+novelWriter - GUI Editor Search
 ===============================
 
 This file is a part of novelWriter

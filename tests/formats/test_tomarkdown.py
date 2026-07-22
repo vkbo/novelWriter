@@ -1,5 +1,5 @@
 """
-novelWriter – Markdown Format Tests
+novelWriter - Markdown Format Tests
 ===================================
 
 This file is a part of novelWriter

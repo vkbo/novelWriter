@@ -1,5 +1,5 @@
 """
-novelWriter – Shared Data Class Tests
+novelWriter - Shared Data Class Tests
 =====================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – Custom Widget: Version Info
+novelWriter - Custom Widget: Version Info
 =========================================
 
 This file is a part of novelWriter

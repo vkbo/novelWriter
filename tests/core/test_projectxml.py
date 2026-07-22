@@ -1,5 +1,5 @@
 """
-novelWriter – Project XML Tests
+novelWriter - Project XML Tests
 ===============================
 
 This file is a part of novelWriter

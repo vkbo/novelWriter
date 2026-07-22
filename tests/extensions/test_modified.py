@@ -1,5 +1,5 @@
 """
-novelWriter – Modified Widgets Tests
+novelWriter - Modified Widgets Tests
 ====================================
 
 This file is a part of novelWriter

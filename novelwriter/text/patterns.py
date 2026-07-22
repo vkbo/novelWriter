@@ -1,5 +1,5 @@
 """
-novelWriter – Text Pattern Functions
+novelWriter - Text Pattern Functions
 ====================================
 
 This file is a part of novelWriter

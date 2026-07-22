@@ -1,5 +1,5 @@
 """
-novelWriter – Init File
+novelWriter - Init File
 =======================
 
 This file is a part of novelWriter

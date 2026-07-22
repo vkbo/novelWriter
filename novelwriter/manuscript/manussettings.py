@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Build Settings
+novelWriter - GUI Build Settings
 ================================
 
 This file is a part of novelWriter

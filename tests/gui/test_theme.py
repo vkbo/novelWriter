@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Theme and Icons Tests
+novelWriter - GUI Theme and Icons Tests
 =======================================
 
 This file is a part of novelWriter

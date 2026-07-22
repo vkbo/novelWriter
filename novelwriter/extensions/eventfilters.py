@@ -1,5 +1,5 @@
 """
-novelWriter – Custom Objects: Event Filters
+novelWriter - Custom Objects: Event Filters
 ===========================================
 
 This file is a part of novelWriter

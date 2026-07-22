@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Document Viewer
+novelWriter - GUI Document Viewer
 =================================
 
 This file is a part of novelWriter

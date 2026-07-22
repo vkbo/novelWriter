@@ -1,5 +1,5 @@
 """
-novelWriter – Shared Data Class
+novelWriter - Shared Data Class
 ===============================
 
 This file is a part of novelWriter

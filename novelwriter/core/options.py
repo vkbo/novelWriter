@@ -1,5 +1,5 @@
 """
-novelWriter – Project Options Cache
+novelWriter - Project Options Cache
 ===================================
 
 This file is a part of novelWriter

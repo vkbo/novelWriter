@@ -1,5 +1,5 @@
 """
-novelWriter – Project Tree Tests
+novelWriter - Project Tree Tests
 ================================
 
 This file is a part of novelWriter

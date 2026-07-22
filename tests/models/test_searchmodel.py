@@ -1,5 +1,5 @@
 """
-novelWriter – Search Model Tests
+novelWriter - Search Model Tests
 ================================
 
 This file is a part of novelWriter

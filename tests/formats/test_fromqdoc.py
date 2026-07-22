@@ -1,5 +1,5 @@
 """
-novelWriter – QTextDocument to Text Converter Tests
+novelWriter - QTextDocument to Text Converter Tests
 ===================================================
 
 This file is a part of novelWriter

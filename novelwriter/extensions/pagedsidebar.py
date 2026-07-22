@@ -1,5 +1,5 @@
 """
-novelWriter – Custom Widget: Paged SideBar
+novelWriter - Custom Widget: Paged SideBar
 ==========================================
 
 This file is a part of novelWriter

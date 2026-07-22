@@ -1,5 +1,5 @@
 """
-novelWriter – QTextDocument Format Tests
+novelWriter - QTextDocument Format Tests
 ========================================
 
 This file is a part of novelWriter

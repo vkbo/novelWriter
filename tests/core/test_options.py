@@ -1,5 +1,5 @@
 """
-novelWriter – OptionState Tests
+novelWriter - OptionState Tests
 ===============================
 
 This file is a part of novelWriter

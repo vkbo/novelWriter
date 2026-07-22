@@ -1,5 +1,5 @@
 """
-novelWriter – Custom Widget: Modified Widgets
+novelWriter - Custom Widget: Modified Widgets
 =============================================
 
 This file is a part of novelWriter

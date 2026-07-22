@@ -1,5 +1,5 @@
 """
-novelWriter – HTML Format Tests
+novelWriter - HTML Format Tests
 ===============================
 
 This file is a part of novelWriter
@@ -386,7 +386,7 @@ def testToHtml_Dialog(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1>Chapter</h1>\n<p>This text <span style='color: #4271ae'>“has dialogue”</span> in it.</p>\n"
+        "<h1>Chapter</h1>\n<p>This text <span style='color: #4271ae'>\u201chas dialogue\u201d</span> in it.</p>\n"
     )
 
     # Alt Dialog
@@ -780,16 +780,16 @@ def testToHtml_Methods(mockGUI):
     html.initDocument()
 
     # Auto-Replace, keep Unicode
-    docText = "Text with <brackets> & short–dash, long—dash …\n"
+    docText = "Text with <brackets> & short\u2013dash, long\u2014dash …\n"
     html._text = docText
     html.setReplaceUnicode(False)
     html.doPreProcessing()
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == ("<p>Text with &lt;brackets&gt; &amp; short–dash, long—dash …</p>\n")
+    assert html._pages[-1] == ("<p>Text with &lt;brackets&gt; &amp; short\u2013dash, long\u2014dash …</p>\n")
 
     # Auto-Replace, replace Unicode
-    docText = "Text with <brackets> & short–dash, long—dash …\n"
+    docText = "Text with <brackets> & short\u2013dash, long\u2014dash …\n"
     html._text = docText
     html.setReplaceUnicode(True)
     html.doPreProcessing()

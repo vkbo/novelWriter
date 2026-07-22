@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Project Outline
+novelWriter - GUI Project Outline
 =================================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Novel Info
+novelWriter - GUI Novel Info
 ============================
 
 This file is a part of novelWriter

@@ -1,5 +1,5 @@
 """
-novelWriter – App Splash Screen Tests
+novelWriter - App Splash Screen Tests
 =====================================
 
 This file is a part of novelWriter

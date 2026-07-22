@@ -1,5 +1,5 @@
 """
-novelWriter – Test Suite Configuration
+novelWriter - Test Suite Configuration
 ======================================
 
 This file is a part of novelWriter

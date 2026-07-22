@@ -1,5 +1,5 @@
 """
-novelWriter – Formats Shared
+novelWriter - Formats Shared
 ============================
 
 This file is a part of novelWriter

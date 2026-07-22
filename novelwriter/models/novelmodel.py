@@ -1,5 +1,5 @@
 """
-novelWriter – Novel Model
+novelWriter - Novel Model
 =========================
 
 This file is a part of novelWriter

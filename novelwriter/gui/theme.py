@@ -1,5 +1,5 @@
 """
-novelWriter – Theme and Icons Classes
+novelWriter - Theme and Icons Classes
 =====================================
 
 This file is a part of novelWriter

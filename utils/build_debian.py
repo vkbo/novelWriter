@@ -1,5 +1,5 @@
 """
-novelWriter – Debian Build
+novelWriter - Debian Build
 ==========================
 
 This file is a part of novelWriter

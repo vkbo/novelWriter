@@ -1,5 +1,5 @@
 """
-novelWriter – Core Tools Tests
+novelWriter - Core Tools Tests
 ==============================
 
 This file is a part of novelWriter

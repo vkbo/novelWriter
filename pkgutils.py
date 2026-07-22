@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-novelWriter – Packaging Utils
+novelWriter - Packaging Utils
 =============================
 
 This file is a part of novelWriter

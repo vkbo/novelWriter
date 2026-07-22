@@ -1,5 +1,5 @@
 """
-novelWriter – Project Wrapper
+novelWriter - Project Wrapper
 =============================
 
 This file is a part of novelWriter

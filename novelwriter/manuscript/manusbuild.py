@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Build Manuscript
+novelWriter - GUI Build Manuscript
 ==================================
 
 This file is a part of novelWriter

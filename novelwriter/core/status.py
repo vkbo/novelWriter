@@ -1,5 +1,5 @@
 """
-novelWriter – Project Item Status
+novelWriter - Project Item Status
 =================================
 
 This file is a part of novelWriter

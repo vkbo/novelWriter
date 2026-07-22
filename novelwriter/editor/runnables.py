@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Editor Runnables
+novelWriter - GUI Editor Runnables
 ==================================
 
 This file is a part of novelWriter

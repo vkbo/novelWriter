@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Editor Toolbar
+novelWriter - GUI Editor Toolbar
 ================================
 
 This file is a part of novelWriter

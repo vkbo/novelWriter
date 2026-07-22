@@ -1,5 +1,5 @@
 """
-novelWriter – Lorem Ipsum Tool Tests
+novelWriter - Lorem Ipsum Tool Tests
 ====================================
 
 This file is a part of novelWriter

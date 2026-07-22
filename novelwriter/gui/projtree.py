@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Project Tree
+novelWriter - GUI Project Tree
 ==============================
 
 This file is a part of novelWriter

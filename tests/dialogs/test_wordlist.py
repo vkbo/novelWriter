@@ -1,5 +1,5 @@
 """
-novelWriter – Word List Tests
+novelWriter - Word List Tests
 =============================
 
 This file is a part of novelWriter

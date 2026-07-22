@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Main Menu
+novelWriter - GUI Main Menu
 ===========================
 
 This file is a part of novelWriter

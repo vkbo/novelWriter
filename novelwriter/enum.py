@@ -1,5 +1,5 @@
 """
-novelWriter – Enums
+novelWriter - Enums
 ===================
 
 This file is a part of novelWriter

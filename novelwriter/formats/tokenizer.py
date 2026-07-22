@@ -1,5 +1,5 @@
 """
-novelWriter – Text Tokenizer
+novelWriter - Text Tokenizer
 ============================
 
 This file is a part of novelWriter

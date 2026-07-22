@@ -1,5 +1,5 @@
 """
-novelWriter – Text Tokenizer Tests
+novelWriter - Text Tokenizer Tests
 ==================================
 
 This file is a part of novelWriter
@@ -1848,13 +1848,13 @@ def testTokenizer_DialogueDisabled(monkeypatch, mockGUI):
         tokens.setDialogHighlight(True)
         tokens._handle = TMH
         tokens._isNovel = True
-        tokens._text = "Text with “dialogue” that is not highlighted.\n"
+        tokens._text = "Text with \u201cdialogue\u201d that is not highlighted.\n"
         tokens.tokenizeText()
         assert tokens._blocks == [
             (
                 BlockTyp.TEXT,
                 "",
-                "Text with “dialogue” that is not highlighted.",
+                "Text with \u201cdialogue\u201d that is not highlighted.",
                 [],
                 BlockFmt.NONE,
             )

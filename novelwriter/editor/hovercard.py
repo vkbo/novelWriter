@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Editor Hover Card
+novelWriter - GUI Editor Hover Card
 ===================================
 
 This file is a part of novelWriter
