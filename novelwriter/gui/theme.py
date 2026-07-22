@@ -604,7 +604,7 @@ class GuiTheme:
 
         # Finalise
         QApplication.setPalette(self._guiPalette)
-        QToolTip.setPalette(self._guiPalette)
+        QToolTip.setPalette(self._guiPalette)  # Fixes an issue with desktop overrides on Linux, see #2871
         self._buildStyleSheets(self._guiPalette)
 
         return True
