@@ -1,0 +1,115 @@
+[Main]
+name   = "Dracula"
+mode   = "dark"
+author = "Veronica Berglyd Olsen (adaptation)"
+credit = "Zeno Rocha"
+url    = "https://draculatheme.com"
+
+##
+# Colours:
+# See: https://spec.draculatheme.com/
+# Background   = 282a36 :  40,  42,  54
+# Foreground   = f8f8f2 : 248, 248, 242
+# Current Line = 44475a :  68,  71,  90
+# Comment      = 6272a4 :  98, 114, 164
+# Cyan         = 8be9fd : 139, 233, 253
+# Green        = 50fa7b :  80, 250, 123
+# Orange       = ffb86c : 255, 184, 108
+# Pink         = ff79c6 : 255, 121, 198
+# Purple       = bd93f9 : 189, 147, 249
+# Red          = ff5555 : 255,  85,  85
+# Yellow       = f1fa8c : 241, 250, 140
+##
+
+[Base]
+base    = "#282a36"
+default = "#e6e6e0"
+faded   = "#6272a4"
+red     = "#ff5555"
+orange  = "#ffb86c"
+yellow  = "#f1fa8c"
+green   = "#50fa7b"
+cyan    = "#8be9fd"
+blue    = "#93cff9"
+purple  = "#bd93f9"
+
+[Project]
+root     = "purple"
+folder   = "yellow"
+file     = "default"
+title    = "green"
+chapter  = "red"
+scene    = "cyan"
+note     = "yellow"
+active   = "green"
+inactive = "red"
+disabled = "faded"
+
+[Icon]
+tool      = "default"
+sidebar   = "default"
+accept    = "green"
+reject    = "red"
+action    = "blue"
+altaction = "orange"
+apply     = "green"
+create    = "yellow"
+destroy   = "faded"
+reset     = "green"
+add       = "green"
+change    = "green"
+remove    = "red"
+shortcode = "default"
+markdown  = "orange"
+systemio  = "yellow"
+info      = "blue"
+warning   = "orange"
+error     = "red"
+
+[Palette]
+window          = "#44475a"
+windowtext      = "#f8f8f2"
+base            = "base"
+alternatebase   = "#333645"
+text            = "#f8f8f2"
+tooltipbase     = "yellow"
+tooltiptext     = "base"
+button          = "#505369"
+buttontext      = "#f8f8f2"
+brighttext      = "base"
+highlight       = "#a681da"
+highlightedtext = "#f8f8f2"
+link            = "cyan"
+linkvisited     = "cyan"
+accent          = "#a681da"
+toggle          = "#a681da7f"
+searchmatch     = "orange:96"
+
+[GUI]
+helptext  = "#ccacf9"
+fadedtext = "faded"
+errortext = "red"
+
+[Syntax]
+background     = "base"
+text           = "#f8f8f2"
+line           = "base:L150"
+link           = "#ff79c6"
+headertext     = "purple"
+headertag      = "purple:D150"
+emphasis       = "orange"
+whitespace     = "orange:64"
+dialog         = "green"
+altdialog      = "yellow"
+note           = "#ffcce9"
+hidden         = "faded"
+shortcode      = "cyan"
+keyword        = "#ff79c6"
+tag            = "orange"
+value          = "orange"
+optional       = "green"
+spellcheckline = "red"
+errorline      = "green"
+replacetag     = "yellow"
+modifier       = "cyan"
+texthighlight  = "yellow:96"
