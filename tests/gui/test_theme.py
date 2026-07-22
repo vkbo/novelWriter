@@ -22,8 +22,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
+import tomllib
 
-from configparser import ConfigParser
 from pathlib import Path
 from unittest.mock import MagicMock, Mock
 
@@ -714,11 +714,11 @@ def testGuiTheme_CheckTheme(theme):
     assert themes.isDarkTheme == current.dark
 
     # Check completeness
-    parser = ConfigParser()
-    parser.read(current.path, encoding="utf-8")
+    with open(current.path, mode="rb") as fileObj:
+        data = tomllib.load(fileObj)
 
     sections = ["Main", "Base", "Project", "Icon", "Palette", "GUI", "Syntax"]
-    assert sorted(parser.sections()) == sorted(sections)
+    assert sorted(data.keys()) == sorted(sections)
 
     structure = {
         "Main": [
@@ -756,7 +756,7 @@ def testGuiTheme_CheckTheme(theme):
             "accept",
             "reject",
             "action",
-            "altaction",
+            "altAction",
             "apply",
             "create",
             "destroy",
@@ -766,46 +766,46 @@ def testGuiTheme_CheckTheme(theme):
             "remove",
             "shortcode",
             "markdown",
-            "systemio",
+            "systemIO",
             "info",
             "warning",
             "error",
         ],
         "Palette": [
             "window",
-            "windowtext",
+            "windowText",
             "base",
-            "alternatebase",
+            "alternateBase",
             "text",
-            "tooltipbase",
-            "tooltiptext",
+            "tooltipBase",
+            "tooltipText",
             "button",
-            "buttontext",
-            "brighttext",
+            "buttonText",
+            "brightText",
             "highlight",
-            "highlightedtext",
+            "highlightedText",
             "link",
-            "linkvisited",
+            "linkVisited",
             "accent",
             "toggle",
-            "searchmatch",
+            "searchMatch",
         ],
         "GUI": [
-            "helptext",
-            "fadedtext",
-            "errortext",
+            "helpText",
+            "fadedText",
+            "errorText",
         ],
         "Syntax": [
             "background",
             "text",
             "line",
             "link",
-            "headertext",
-            "headertag",
+            "headerText",
+            "headerTag",
             "emphasis",
             "whitespace",
             "dialog",
-            "altdialog",
+            "altDialog",
             "hidden",
             "note",
             "shortcode",
@@ -813,23 +813,23 @@ def testGuiTheme_CheckTheme(theme):
             "tag",
             "value",
             "optional",
-            "spellcheckline",
-            "errorline",
-            "replacetag",
+            "spellCheckLine",
+            "errorLine",
+            "replaceTag",
             "modifier",
-            "texthighlight",
+            "textHighlight",
         ],
     }
     optional = ["credit", "url"]
     missing = []
     for section, options in structure.items():
-        missing.extend(opt for opt in options if opt not in parser[section])
+        missing.extend(opt for opt in options if opt not in data[section])
     assert missing == [], "Missing options in theme file"
 
     # Check deprecated
     deprecated = []
     for section in sections:
-        deprecated.extend(opt for opt in parser[section] if opt not in structure[section] and opt not in optional)
+        deprecated.extend(opt for opt in data[section] if opt not in structure[section] and opt not in optional)
     assert deprecated == [], "Deprecated options in theme file"
 
 
