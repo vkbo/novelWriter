@@ -77,35 +77,35 @@ class NTomlParser:
                 fileObj.write(f"{key} = {self._dump(value)}\n")
             fileObj.write("\n")
 
-    def rdStr(self, section: str, option: str, default: str) -> str:
+    def getStr(self, section: str, option: str, default: str) -> str:
         """Read string value."""
         value = self._data.get(section, {}).get(option, default)
         return value if isinstance(value, str) else default
 
-    def rdInt(self, section: str, option: str, default: int) -> int:
+    def getInt(self, section: str, option: str, default: int) -> int:
         """Read integer value."""
         if self.has_option(section, option):
             return checkInt(self._data[section][option], default)
         return default
 
-    def rdFlt(self, section: str, option: str, default: float) -> float:
+    def getFloat(self, section: str, option: str, default: float) -> float:
         """Read float value."""
         if self.has_option(section, option):
             return checkFloat(self._data[section][option], default)
         return default
 
-    def rdBool(self, section: str, option: str, default: bool) -> bool:
+    def getBool(self, section: str, option: str, default: bool) -> bool:
         """Read boolean value."""
         if self.has_option(section, option):
             return checkBool(self._data[section][option], default)
         return default
 
-    def rdPath(self, section: str, option: str, default: Path) -> Path:
+    def getPath(self, section: str, option: str, default: Path) -> Path:
         """Read a Path value."""
         value = self._data.get(section, {}).get(option, default)
         return checkPath(value, default)
 
-    def rdStrList(self, section: str, option: str, default: list[str]) -> list[str]:
+    def getStrList(self, section: str, option: str, default: list[str]) -> list[str]:
         """Read string list."""
         result = default.copy() if isinstance(default, list) else []
         if self.has_option(section, option):
@@ -115,7 +115,7 @@ class NTomlParser:
                     result[i] = str(data[i])
         return result
 
-    def rdIntList(self, section: str, option: str, default: list[int]) -> list[int]:
+    def getIntList(self, section: str, option: str, default: list[int]) -> list[int]:
         """Read integer list."""
         result = default.copy() if isinstance(default, list) else []
         if self.has_option(section, option):
@@ -125,7 +125,7 @@ class NTomlParser:
                     result[i] = checkInt(data[i], result[i])
         return result
 
-    def rdEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
+    def getEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
         """Read enum value."""
         if self.has_option(section, option):
             data = self._data[section][option]
@@ -169,11 +169,11 @@ class NConfigParser(ConfigParser):
     def __init__(self) -> None:
         super().__init__(interpolation=None)
 
-    def rdStr(self, section: str, option: str, default: str) -> str:
+    def getStr(self, section: str, option: str, default: str) -> str:
         """Read string value."""
         return self.get(section, option, fallback=default)
 
-    def rdInt(self, section: str, option: str, default: int) -> int:
+    def getInt(self, section: str, option: str, default: int) -> int:
         """Read integer value."""
         try:
             return self.getint(section, option, fallback=default)
@@ -181,7 +181,7 @@ class NConfigParser(ConfigParser):
             logger.error("Could not read '%s':'%s' from config", section, option)
         return default
 
-    def rdFlt(self, section: str, option: str, default: float) -> float:
+    def getFloat(self, section: str, option: str, default: float) -> float:
         """Read float value."""
         try:
             return self.getfloat(section, option, fallback=default)
@@ -189,7 +189,7 @@ class NConfigParser(ConfigParser):
             logger.error("Could not read '%s':'%s' from config", section, option)
         return default
 
-    def rdBool(self, section: str, option: str, default: bool) -> bool:
+    def getBool(self, section: str, option: str, default: bool) -> bool:
         """Read boolean value."""
         try:
             return self.getboolean(section, option, fallback=default)
@@ -197,11 +197,11 @@ class NConfigParser(ConfigParser):
             logger.error("Could not read '%s':'%s' from config", section, option)
         return default
 
-    def rdPath(self, section: str, option: str, default: Path) -> Path:
+    def getPath(self, section: str, option: str, default: Path) -> Path:
         """Read a Path value."""
         return checkPath(self.get(section, option, fallback=default), default)
 
-    def rdStrList(self, section: str, option: str, default: list[str]) -> list[str]:
+    def getStrList(self, section: str, option: str, default: list[str]) -> list[str]:
         """Read string list."""
         result = default.copy() if isinstance(default, list) else []
         if self.has_option(section, option):
@@ -210,7 +210,7 @@ class NConfigParser(ConfigParser):
                 result[i] = data[i].strip()
         return result
 
-    def rdIntList(self, section: str, option: str, default: list[int]) -> list[int]:
+    def getIntList(self, section: str, option: str, default: list[int]) -> list[int]:
         """Read integer list."""
         result = default.copy() if isinstance(default, list) else []
         if self.has_option(section, option):
@@ -219,7 +219,7 @@ class NConfigParser(ConfigParser):
                 result[i] = checkInt(data[i].strip(), result[i])
         return result
 
-    def rdEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
+    def getEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
         """Read enum value."""
         if self.has_option(section, option):
             data = self.get(section, option, fallback="")
