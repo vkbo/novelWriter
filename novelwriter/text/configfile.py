@@ -26,17 +26,20 @@ import tomllib
 
 from configparser import ConfigParser
 from enum import Enum
-from typing import TYPE_CHECKING, Any, TypeVar
+from pathlib import Path
+from typing import TypeVar
+
+from PyQt6.QtGui import QFont
 
 from novelwriter.common import checkBool, checkFloat, checkInt, checkPath
-
-if TYPE_CHECKING:
-    from pathlib import Path
-    from typing import IO
 
 logger = logging.getLogger(__name__)
 
 _T_Enum = TypeVar("_T_Enum", bound=Enum)
+
+T_ConfValue = str | int | float | bool | Path | list[str] | list[int] | Enum | QFont
+T_ConfEntry = dict[str, T_ConfValue]
+T_ConfData = dict[str, T_ConfEntry]
 
 
 class NTomlParser:
@@ -50,32 +53,38 @@ class NTomlParser:
     """
 
     def __init__(self) -> None:
-        self._data: dict[str, dict[str, Any]] = {}
+        self._data: T_ConfData = {}
 
-    def __getitem__(self, section: str) -> dict[str, Any]:
+    def __getitem__(self, section: str) -> T_ConfEntry:
         """Get the options of a section."""
         return self._data.setdefault(section, {})
-
-    def __setitem__(self, section: str, values: dict[str, Any]) -> None:
-        """Set the options of a section."""
-        self._data[section] = dict(values)
 
     def has_option(self, section: str, option: str) -> bool:
         """Check if a section has a given option."""
         return option in self._data.get(section, {})
 
-    def read_file(self, fileObj: IO[str]) -> None:
-        """Read and parse TOML data from an open file."""
-        data = tomllib.loads(fileObj.read())
+    def read(self, path: Path) -> None:
+        """Read and parse TOML data from a file, mirroring write()."""
+        with open(path, mode="r", encoding="utf-8") as fileObj:
+            data = tomllib.loads(fileObj.read())
         self._data = {k: v for k, v in data.items() if isinstance(v, dict)}
 
-    def write(self, fileObj: IO[str]) -> None:
-        """Write the data to an open file as TOML."""
-        for section, values in self._data.items():
-            fileObj.write(f"[{section}]\n")
-            for key, value in values.items():
-                fileObj.write(f"{key} = {self._dump(value)}\n")
-            fileObj.write("\n")
+    def write(self, path: Path, data: T_ConfData) -> None:
+        """Write a dict of sections to a file in TOML format.
+
+        The dict must map section names to dicts of key/value pairs.
+        Any top-level entry that isn't a dict is not a valid section,
+        and is skipped with a logged error.
+        """
+        with open(path, mode="w", encoding="utf-8") as fileObj:
+            for section, values in data.items():
+                if not isinstance(values, dict):
+                    logger.error("Invalid config section '%s', expected key/value pairs", section)
+                    continue
+                fileObj.write(f"[{section}]\n")
+                for key, value in values.items():
+                    fileObj.write(f"{key} = {self._dump(value)}\n")
+                fileObj.write("\n")
 
     def getStr(self, section: str, option: str, default: str) -> str:
         """Read string value."""
@@ -134,14 +143,18 @@ class NTomlParser:
         return default
 
     @staticmethod
-    def _dump(value: Any) -> str:
+    def _dump(value: T_ConfValue) -> str:
         """Format a value as a TOML literal."""
         if isinstance(value, bool):
             return "true" if value else "false"
-        if isinstance(value, (int, float)):
+        elif isinstance(value, (int, float)):
             return str(value)
-        if isinstance(value, (list, tuple)):
+        elif isinstance(value, (list, tuple)):
             return "[" + ", ".join(NTomlParser._dump(v) for v in value) + "]"
+        elif isinstance(value, Enum):
+            return f'"{value.name}"'
+        elif isinstance(value, QFont):
+            return f'"{value.toString()}"'
         return NTomlParser._dumpStr(str(value))
 
     @staticmethod
@@ -168,6 +181,11 @@ class NConfigParser(ConfigParser):
 
     def __init__(self) -> None:
         super().__init__(interpolation=None)
+
+    def read(self, path: Path) -> None:
+        """Read and parse config data from a file, mirroring write()."""
+        with open(path, mode="r", encoding="utf-8") as fileObj:
+            self.read_string(fileObj.read())
 
     def getStr(self, section: str, option: str, default: str) -> str:
         """Read string value."""

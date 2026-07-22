@@ -26,7 +26,7 @@ from pathlib import Path
 import pytest
 
 from novelwriter.enum import nwItemClass
-from novelwriter.text.conffile import NConfigParser
+from novelwriter.text.configfile import NConfigParser
 
 from tests.helpers import writeFile
 
@@ -61,68 +61,68 @@ def testConfFile_NConfigParser(fncPath):
     # =======
 
     # Read String
-    assert parser.rdStr("main", "stropt", "stuff") == "value"
-    assert parser.rdStr("main", "boolopt1", "stuff") == "true"
-    assert parser.rdStr("main", "intopt1", "stuff") == "42"
+    assert parser.getStr("main", "stropt", "stuff") == "value"
+    assert parser.getStr("main", "boolopt1", "stuff") == "true"
+    assert parser.getStr("main", "intopt1", "stuff") == "42"
 
-    assert parser.rdStr("nope", "stropt", "stuff") == "stuff"
-    assert parser.rdStr("main", "blabla", "stuff") == "stuff"
+    assert parser.getStr("nope", "stropt", "stuff") == "stuff"
+    assert parser.getStr("main", "blabla", "stuff") == "stuff"
 
     # Read Boolean
-    assert parser.rdBool("main", "boolopt1", None) is True  # type: ignore
-    assert parser.rdBool("main", "boolopt2", None) is True  # type: ignore
-    assert parser.rdBool("main", "boolopt3", None) is True  # type: ignore
-    assert parser.rdBool("main", "boolopt4", None) is False  # type: ignore
-    assert parser.rdBool("main", "intopt1", None) is None  # type: ignore
+    assert parser.getBool("main", "boolopt1", None) is True  # type: ignore
+    assert parser.getBool("main", "boolopt2", None) is True  # type: ignore
+    assert parser.getBool("main", "boolopt3", None) is True  # type: ignore
+    assert parser.getBool("main", "boolopt4", None) is False  # type: ignore
+    assert parser.getBool("main", "intopt1", None) is None  # type: ignore
 
-    assert parser.rdBool("nope", "boolopt1", None) is None  # type: ignore
-    assert parser.rdBool("main", "blabla", None) is None  # type: ignore
+    assert parser.getBool("nope", "boolopt1", None) is None  # type: ignore
+    assert parser.getBool("main", "blabla", None) is None  # type: ignore
 
     # Read Integer
-    assert parser.rdInt("main", "intopt1", 13) == 42
-    assert parser.rdInt("main", "intopt2", 13) == 13
-    assert parser.rdInt("main", "stropt", 13) == 13
+    assert parser.getInt("main", "intopt1", 13) == 42
+    assert parser.getInt("main", "intopt2", 13) == 13
+    assert parser.getInt("main", "stropt", 13) == 13
 
-    assert parser.rdInt("nope", "intopt1", 13) == 13
-    assert parser.rdInt("main", "blabla", 13) == 13
+    assert parser.getInt("nope", "intopt1", 13) == 13
+    assert parser.getInt("main", "blabla", 13) == 13
 
     # Read Float
-    assert parser.rdFlt("main", "intopt1", 13.0) == 42.0
-    assert parser.rdFlt("main", "float1", 13.0) == 4.2
-    assert parser.rdFlt("main", "stropt", 13.0) == 13.0
+    assert parser.getFloat("main", "intopt1", 13.0) == 42.0
+    assert parser.getFloat("main", "float1", 13.0) == 4.2
+    assert parser.getFloat("main", "stropt", 13.0) == 13.0
 
-    assert parser.rdFlt("nope", "intopt1", 13.0) == 13.0
-    assert parser.rdFlt("main", "blabla", 13.0) == 13.0
+    assert parser.getFloat("nope", "intopt1", 13.0) == 13.0
+    assert parser.getFloat("main", "blabla", 13.0) == 13.0
 
     # Read Path
-    assert parser.rdPath("main", "path1", Path.home()) == fncPath
+    assert parser.getPath("main", "path1", Path.home()) == fncPath
 
     # Read String List
-    assert parser.rdStrList("main", "list1", []) == []
-    assert parser.rdStrList("main", "list1", ["x"]) == ["a"]
-    assert parser.rdStrList("main", "list1", ["x", "y"]) == ["a", "b"]
-    assert parser.rdStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
-    assert parser.rdStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
+    assert parser.getStrList("main", "list1", []) == []
+    assert parser.getStrList("main", "list1", ["x"]) == ["a"]
+    assert parser.getStrList("main", "list1", ["x", "y"]) == ["a", "b"]
+    assert parser.getStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
+    assert parser.getStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
 
-    assert parser.rdStrList("main", "stropt", ["x"]) == ["value"]
-    assert parser.rdStrList("main", "intopt1", ["x"]) == ["42"]
+    assert parser.getStrList("main", "stropt", ["x"]) == ["value"]
+    assert parser.getStrList("main", "intopt1", ["x"]) == ["42"]
 
-    assert parser.rdStrList("nope", "list1", ["x"]) == ["x"]
-    assert parser.rdStrList("main", "blabla", ["x"]) == ["x"]
+    assert parser.getStrList("nope", "list1", ["x"]) == ["x"]
+    assert parser.getStrList("main", "blabla", ["x"]) == ["x"]
 
     # Read Integer List
-    assert parser.rdIntList("main", "list2", []) == []
-    assert parser.rdIntList("main", "list2", [1]) == [17]
-    assert parser.rdIntList("main", "list2", [1, 2]) == [17, 18]
-    assert parser.rdIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
-    assert parser.rdIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
+    assert parser.getIntList("main", "list2", []) == []
+    assert parser.getIntList("main", "list2", [1]) == [17]
+    assert parser.getIntList("main", "list2", [1, 2]) == [17, 18]
+    assert parser.getIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
+    assert parser.getIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
 
-    assert parser.rdIntList("main", "stropt", [1]) == [1]
-    assert parser.rdIntList("main", "boolopt1", [1]) == [1]
+    assert parser.getIntList("main", "stropt", [1]) == [1]
+    assert parser.getIntList("main", "boolopt1", [1]) == [1]
 
-    assert parser.rdIntList("nope", "list2", [1]) == [1]
-    assert parser.rdIntList("main", "blabla", [1]) == [1]
+    assert parser.getIntList("nope", "list2", [1]) == [1]
+    assert parser.getIntList("main", "blabla", [1]) == [1]
 
     # Read Enum
-    assert parser.rdEnum("main", "enum1", nwItemClass.NO_CLASS) == nwItemClass.NOVEL
-    assert parser.rdEnum("main", "blabla", nwItemClass.NO_CLASS) == nwItemClass.NO_CLASS
+    assert parser.getEnum("main", "enum1", nwItemClass.NO_CLASS) == nwItemClass.NOVEL
+    assert parser.getEnum("main", "blabla", nwItemClass.NO_CLASS) == nwItemClass.NO_CLASS

@@ -62,7 +62,7 @@ from novelwriter.common import (
 from novelwriter.constants import nwFiles, nwQuotes, nwUnicode, trStats
 from novelwriter.enum import nwTheme
 from novelwriter.error import formatException, logException
-from novelwriter.text.conffile import NConfigParser, NTomlParser
+from novelwriter.text.configfile import NConfigParser, NTomlParser, T_ConfData
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -775,8 +775,7 @@ class Config:
             return True
 
         try:
-            with open(confPath, mode="r", encoding="utf-8") as inFile:
-                parser.read_file(inFile)
+            parser.read(confPath)
         except Exception as exc:
             logger.error("Could not load config file")
             logException()
@@ -924,17 +923,17 @@ class Config:
         """Save the current preferences to file."""
         logger.debug("Saving config file")
 
-        parser = NTomlParser()
+        config: T_ConfData = {}
 
-        parser["Meta"] = {
+        config["Meta"] = {
             "timestamp": formatTimeStamp(time()),
         }
 
-        parser["Main"] = {
-            "font": self.guiFont.toString(),
+        config["Main"] = {
+            "font": self.guiFont,
             "lightTheme": self.lightTheme,
             "darkTheme": self.darkTheme,
-            "themeMode": self.themeMode.name,
+            "themeMode": self.themeMode,
             "icons": self.iconTheme,
             "iconColTree": self.iconColTree,
             "iconColDocs": self.iconColDocs,
@@ -947,7 +946,7 @@ class Config:
             "vimMode": self.vimMode,
         }
 
-        parser["Sizes"] = {
+        config["Sizes"] = {
             "mainWindow": self.mainWinSize,
             "welcome": self.welcomeWinSize,
             "preferences": self.prefsWinSize,
@@ -959,7 +958,7 @@ class Config:
             "moveMainWin": self.moveMainWin,
         }
 
-        parser["Project"] = {
+        config["Project"] = {
             "autoSaveProject": self.autoSaveProj,
             "autoSaveDoc": self.autoSaveDoc,
             "emphLabels": self.emphLabels,
@@ -971,8 +970,8 @@ class Config:
             "lastAuthor": self._lastAuthor,
         }
 
-        parser["Editor"] = {
-            "textFont": self.textFont.toString(),
+        config["Editor"] = {
+            "textFont": self.textFont,
             "width": self.textWidth,
             "margin": self.textMargin,
             "tabWidth": self.tabWidth,
@@ -1019,7 +1018,7 @@ class Config:
             "userIdleTime": self.userIdleTime,
         }
 
-        parser["State"] = {
+        config["State"] = {
             "showDetailsPanel": self.showDetailsPanel,
             "showViewerPanel": self.showViewerPanel,
             "showEditToolBar": self.showEditToolBar,
@@ -1043,8 +1042,8 @@ class Config:
         # Write config file
         cnfPath = self._confPath / nwFiles.CONF_FILE
         try:
-            with open(cnfPath, mode="w", encoding="utf-8") as outFile:
-                parser.write(outFile)
+            parser = NTomlParser()
+            parser.write(cnfPath, config)
         except Exception as exc:
             logger.error("Could not save config file")
             logException()
