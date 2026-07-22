@@ -496,18 +496,18 @@ def testTextPatterns_DialogParserEnglish():
     parser.initParser()
     assert parser.enabled is True
 
-    # Positions:   0                 18
-    assert parser("“Simple dialogue.”") == [
+    # Positions:   0                           18
+    assert parser("\u201cSimple dialogue.\u201d") == [
         (0, 18),
     ]
 
-    # Positions:   0                 18
-    assert parser("“Simple dialogue,” argued John.") == [
+    # Positions:   0                           18
+    assert parser("\u201cSimple dialogue,\u201d argued John.") == [
         (0, 18),
     ]
 
-    # Positions:   0                 18            32                      56
-    assert parser("“Simple dialogue,” argued John, “is not always so easy.”") == [
+    # Positions:   0                           18            32                                56
+    assert parser("\u201cSimple dialogue,\u201d argued John, \u201cis not always so easy.\u201d") == [
         (0, 18),
         (32, 56),
     ]
@@ -517,20 +517,20 @@ def testTextPatterns_DialogParserEnglish():
     CONFIG.narratorBreak = nwUnicode.U_EMDASH
     parser.initParser()
 
-    # Positions:   0                 18              34                      58
-    assert parser("“Simple dialogue, — argued John, — is not always so easy.”") == [
+    # Positions:   0                      18                        34                           58
+    assert parser("\u201cSimple dialogue, \u2014 argued John, \u2014 is not always so easy.\u201d") == [
         (0, 18),
         (34, 58),
     ]
 
-    # Positions:   0                 18            32                      56
-    assert parser("“Simple dialogue, —argued John—, is not always so easy.”") == [
+    # Positions:   0                      18                      32                           56
+    assert parser("\u201cSimple dialogue, \u2014argued John\u2014, is not always so easy.\u201d") == [
         (0, 18),
         (32, 56),
     ]
 
-    # Positions:   0                              31
-    assert parser("“Simple dialogue, —argued John”") == [
+    # Positions:   0                                             31
+    assert parser("\u201cSimple dialogue, \u2014argued John\u201d") == [
         (0, 31),
     ]
 
@@ -553,19 +553,19 @@ def testTextPatterns_DialogParserSpanish():
     parser = DialogParser()
     parser.initParser()
 
-    # Positions:   0                 18                                  54              70
-    assert parser("—No te preocupes. —Cerró la puerta y salió corriendo—. Volveré pronto.") == [
+    # Positions:   0                      18                                           54               70
+    assert parser("\u2014No te preocupes. \u2014Cerró la puerta y salió corriendo\u2014. Volveré pronto.") == [
         (0, 18),
         (54, 70),
     ]
 
-    # Positions:   0             14
-    assert parser("«Tengo hambre», pensó Pedro.") == [
+    # Positions:   0                       14
+    assert parser("\u00abTengo hambre\u00bb, pensó Pedro.") == [
         (0, 14),
     ]
 
-    # Positions:   0               16
-    assert parser("—Puedes hacerlo —le dije y pensé «pero te costará mucho trabajo».") == [
+    # Positions:   0                    16
+    assert parser("\u2014Puedes hacerlo \u2014le dije y pensé \u00abpero te costará mucho trabajo\u00bb.") == [
         (0, 16),
     ]
 
@@ -585,24 +585,24 @@ def testTextPatterns_DialogParserPortuguese():
     parser = DialogParser()
     parser.initParser()
 
-    # Positions:   0                    21
-    assert parser("— Está ficando tarde.") == [
+    # Positions:   0                         21
+    assert parser("\u2014 Está ficando tarde.") == [
         (0, 21),
     ]
 
-    # Positions:   0           12
-    assert parser("— Ainda não — ela responde.") == [
+    # Positions:   0                12
+    assert parser("\u2014 Ainda não \u2014 ela responde.") == [
         (0, 12),
     ]
 
-    # Positions:   0           12               29                  49
-    assert parser("— Tudo bem? — ele pergunta. — Você falou com ele?") == [
+    # Positions:   0                12                         29                  49
+    assert parser("\u2014 Tudo bem? \u2014 ele pergunta. \u2014 Você falou com ele?") == [
         (0, 12),
         (29, 49),
     ]
 
-    # Positions:   0           12               29                  49
-    assert parser("— Tudo bem? — ele pergunta —. Você falou com ele?") == [
+    # Positions:   0                12                         29                  49
+    assert parser("\u2014 Tudo bem? \u2014 ele pergunta \u2014. Você falou com ele?") == [
         (0, 12),
         (29, 49),
     ]
@@ -627,13 +627,13 @@ def testTextPatterns_DialogParserPolish():
     # This is what an example dialogue might look like using Polish punctuation rules
     # See discussion #1976
 
-    assert parser("– Example statement – someone said. And he added: – Another example statement.") == [
+    assert parser("\u2013 Example statement \u2013 someone said. And he added: \u2013 Another example statement.") == [
         (0, 20),
         (50, 78),
     ]
 
     assert parser(
-        "– Oh my! – It would be nice if only the statements were highlighted, without "
+        "\u2013 Oh my! \u2013 It would be nice if only the statements were highlighted, without "
         "any narration. In a paragraph where there is only a short statement and then "
         "a lot happens, this would be especially justified."
     ) == [
@@ -642,7 +642,7 @@ def testTextPatterns_DialogParserPolish():
 
     assert parser(
         "There are also sometimes paragraphs that start with a narrative, and only then "
-        "someone shouts out the words: – Oooh! Look!"
+        "someone shouts out the words: \u2013 Oooh! Look!"
     ) == [
         (109, 122),
     ]

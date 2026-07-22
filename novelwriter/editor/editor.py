@@ -1111,7 +1111,7 @@ class GuiDocEditor(QTextEdit):
             SHARED.info(
                 [
                     self.tr("Document Details"),
-                    "–" * 40,
+                    "\u2013" * 40,
                     self.tr("Created: {0}").format(self._nwDocument.createdDate),
                     self.tr("Updated: {0}").format(self._nwDocument.updatedDate),
                 ],

@@ -629,7 +629,7 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
 
     # Dialogue is not highlighted in notes
     syntax._isNovel = False
-    doc.setPlainText("Text with “dialogue” in a note.\n")
+    doc.setPlainText("Text with \u201cdialogue\u201d in a note.\n")
     syntax.rehighlight()
 
     pieces, formats = getFragments(syntax)

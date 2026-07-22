@@ -125,14 +125,14 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Double Quotes
     mainMenu.aFmtDQuote.activate(QAction.ActionEvent.Trigger)
-    fmtStr = "“Pellentesque” nec erat ut nulla posuere commodo."
+    fmtStr = "\u201cPellentesque\u201d nec erat ut nulla posuere commodo."
     assert docEditor.getText()[x : x + 49] == fmtStr
     mainMenu.aEditUndo.activate(QAction.ActionEvent.Trigger)
     assert docEditor.getText()[x : x + 47] == cleanText
 
     # Single Quotes
     mainMenu.aFmtSQuote.activate(QAction.ActionEvent.Trigger)
-    fmtStr = "‘Pellentesque’ nec erat ut nulla posuere commodo."
+    fmtStr = "\u2018Pellentesque\u2019 nec erat ut nulla posuere commodo."
     assert docEditor.getText()[x : x + 49] == fmtStr
     mainMenu.aEditUndo.activate(QAction.ActionEvent.Trigger)
     assert docEditor.getText()[x : x + 47] == cleanText
@@ -299,7 +299,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     mainMenu.aFmtReplSng.activate(QAction.ActionEvent.Trigger)
     assert docEditor.getText() == (
         "### New Text\n\n"
-        "Text with ‘single’ quotes and ‘tricky stuff’s’.\n\n"
+        "Text with \u2018single\u2019 quotes and \u2018tricky stuff\u2019s\u2019.\n\n"
         'Also text with "double" quotes which are "less tricky".\n\n'
     )
 
@@ -307,8 +307,8 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     mainMenu.aFmtReplDbl.activate(QAction.ActionEvent.Trigger)
     assert docEditor.getText() == (
         "### New Text\n\n"
-        "Text with ‘single’ quotes and ‘tricky stuff’s’.\n\n"
-        "Also text with “double” quotes which are “less tricky”.\n\n"
+        "Text with \u2018single\u2019 quotes and \u2018tricky stuff\u2019s\u2019.\n\n"
+        "Also text with \u201cdouble\u201d quotes which are \u201cless tricky\u201d.\n\n"
     )
 
     # Remove in-paragraph line breaks

@@ -943,8 +943,8 @@ def testCommon_makeFileNameSafe():
     assert makeFileNameSafe("One Two") == "One Two"
     assert makeFileNameSafe("One,Two") == "One,Two"
     assert makeFileNameSafe("One-Two") == "One-Two"
-    assert makeFileNameSafe("One–Two") == "One–Two"
-    assert makeFileNameSafe("One—Two") == "One—Two"
+    assert makeFileNameSafe("One\u2013Two") == "One\u2013Two"
+    assert makeFileNameSafe("One\u2014Two") == "One\u2014Two"
     assert makeFileNameSafe("Bob's Story") == "Bob's Story"
 
     # Unicode

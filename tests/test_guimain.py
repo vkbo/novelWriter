@@ -579,7 +579,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
     # Syntax Highlighting
     CONFIG.dialogStyle = 3
-    CONFIG.dialogLine = "–"
+    CONFIG.dialogLine = "\u2013"
     CONFIG.altDialogOpen = "<|"
     CONFIG.altDialogClose = "|>"
 
@@ -808,7 +808,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Narrator Break
-    CONFIG.narratorBreak = "–"
+    CONFIG.narratorBreak = "\u2013"
     docEditor = nwGUI.docEditor
     docEditor._qDocument.syntaxHighlighter.initHighlighter()
 
