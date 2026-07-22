@@ -92,6 +92,40 @@ def testGuiTheme_ParseColor():
     assert theme.parseColor("255, 0, 0, 127").getRgb() == (255, 0, 0, 127)
     assert theme.parseColor("255, 0, 0, 127, 42").getRgb() == (255, 0, 0, 127)  # Truncated
 
+    # Out-of-range numbers must not crash with an OverflowError
+    huge = "9" * 30
+    assert theme.parseColor(f"red:{huge}").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor(f"grey:L{huge}").getRgb() == (255, 255, 255, 255)
+    assert theme.parseColor(f"grey:D{huge}").getRgb() == (1, 1, 1, 255)
+    assert theme.parseColor(f"{huge}, 0, 0").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor(f"-{huge}, 0, 0").getRgb() == (0, 0, 0, 255)
+    assert theme.parseColor(f"0, 0, 0, {huge}").getRgb() == (0, 0, 0, 255)
+
+
+@pytest.mark.gui
+def testGuiTheme_ReadColor():
+    """Test that _readColor tolerates non-string values from a parsed
+    TOML theme file without crashing.
+    """
+    theme = GuiTheme()
+    theme._qColors["red"] = QColor(255, 0, 0)
+
+    # A well-formed string value still works as expected
+    assert theme._readColor({"key": "red"}, "key").getRgb() == (255, 0, 0, 255)
+
+    # A missing key falls back to the "default" name, which is unknown
+    assert theme._readColor({}, "key").getRgb() == (0, 0, 0, 255)
+
+    # TOML native types other than strings must not raise when coerced,
+    # and instead resolve to some harmless fallback colour
+    assert theme._readColor({"key": 42}, "key").getRgb() == (0, 0, 0, 255)
+    assert theme._readColor({"key": 3.14}, "key").getRgb() == (0, 0, 0, 255)
+    assert theme._readColor({"key": True}, "key").getRgb() == (0, 0, 0, 255)
+    assert theme._readColor({"key": False}, "key").getRgb() == (0, 0, 0, 255)
+    assert theme._readColor({"key": [1, 2, 3]}, "key").getRgb() == (0, 2, 0, 255)
+    assert theme._readColor({"key": {"r": 1, "g": 2}}, "key").getRgb() == (0, 0, 0, 255)
+    assert theme._readColor({"key": []}, "key").getRgb() == (0, 0, 0, 255)
+
 
 @pytest.mark.gui
 def testGuiTheme_GenerateColorRange():

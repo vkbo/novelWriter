@@ -622,18 +622,18 @@ class GuiTheme:
             name, _, adjust = value.partition(":")
             color = QColor(self._qColors.get(name.strip(), default))
             if adjust.startswith("L"):
-                color = color.lighter(checkInt(adjust[1:], 100))
+                color = color.lighter(minmax(checkInt(adjust[1:], 100), 0, 10000))
             elif adjust.startswith("D"):
-                color = color.darker(checkInt(adjust[1:], 100))
+                color = color.darker(minmax(checkInt(adjust[1:], 100), 0, 10000))
             else:
-                color.setAlpha(checkInt(adjust, 255))
+                color.setAlpha(minmax(checkInt(adjust, 255), 0, 255))
             return color
         elif "," in value:
             # Integer red, green, blue, alpha
             data = value.split(",")
             result = [0, 0, 0, 255]
             for i in range(min(len(data), 4)):
-                result[i] = checkInt(data[i].strip(), result[i])
+                result[i] = minmax(checkInt(data[i].strip(), result[i]), 0, 255)
             return QColor(*result)
         return default
 
@@ -703,6 +703,12 @@ class GuiTheme:
         self.fadedText = faded
         self.errorText = red
 
+        # Accent Colours
+        self.accentCol = purple
+        self.toggleCol = blue
+        self.searchCol = QColor(orange)
+        self.searchCol.setAlpha(96)
+
         self._guiPalette = palette
 
         # Reset Base Colours and Icons
@@ -755,11 +761,11 @@ class GuiTheme:
         self._setBaseColor("warning", orange)
         self._setBaseColor("error", red)
 
-    def _readColor(self, section: dict[str, str], name: str) -> QColor:
+    def _readColor(self, section: dict[str, Any], name: str) -> QColor:
         """Parse a colour value from a config string."""
-        return self.parseColor(section.get(name, "default"))
+        return self.parseColor(str(section.get(name, "default")))
 
-    def _setPalette(self, section: dict[str, str], name: str, value: QPalette.ColorRole) -> None:
+    def _setPalette(self, section: dict[str, Any], name: str, value: QPalette.ColorRole) -> None:
         """Set a palette colour value from a config string."""
         self._guiPalette.setBrush(value, self._readColor(section, name))
 
