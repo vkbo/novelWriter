@@ -761,12 +761,7 @@ def testConfig_NTomlParserInvalid(fncPath, caplog):
     path2 = fncPath / "invalid_read.toml"
     writeFile(
         path2,
-        (
-            'bad = "not a section"\n'
-            "\n"
-            "[Main]\n"
-            'font = "Sans Serif"\n'
-        ),
+        ('bad = "not a section"\n\n[Main]\nfont = "Sans Serif"\n'),
     )
     reader2 = NTomlParser()
     reader2.read(path2)
