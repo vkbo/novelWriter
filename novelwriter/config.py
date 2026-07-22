@@ -62,7 +62,7 @@ from novelwriter.common import (
 from novelwriter.constants import nwFiles, nwQuotes, nwUnicode, trStats
 from novelwriter.enum import nwTheme
 from novelwriter.error import formatException, logException
-from novelwriter.text.conffile import NConfigParser
+from novelwriter.text.conffile import NConfigParser, NTomlParser
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -758,6 +758,7 @@ class Config:
         self.splashMessage("Loading user configuration ...")
 
         logger.debug("Loading config file")
+        convertOld = False
 
         # if safeExists(path := self._confPath / nwFiles.CONF_FILE):
         #     cnfPath = path
@@ -765,6 +766,7 @@ class Config:
         if safeExists(path := self._confPath / nwFiles.CONF_FILE_OLD):
             cnfPath = path
             conf = NConfigParser()
+            convertOld = True
         else:
             # Initial file, so we just create one from defaults
             self.setGuiFont(None)
@@ -912,13 +914,17 @@ class Config:
         self.narratorBreak = narratorBreak if narratorBreak in nwQuotes.DASHES else ""
         self.narratorDialog = narratorDialog if narratorDialog in nwQuotes.DASHES else ""
 
+        if convertOld:
+            logger.info("Old config file detected, converting to new format")
+            self.saveConfig()
+
         return True
 
     def saveConfig(self) -> bool:
         """Save the current preferences to file."""
         logger.debug("Saving config file")
 
-        conf = NConfigParser()
+        conf = NTomlParser()
 
         conf["Meta"] = {
             "timestamp": formatTimeStamp(time()),
@@ -926,116 +932,116 @@ class Config:
 
         conf["Main"] = {
             "font": self.guiFont.toString(),
-            "lightTheme": str(self.lightTheme),
-            "darkTheme": str(self.darkTheme),
+            "lightTheme": self.lightTheme,
+            "darkTheme": self.darkTheme,
             "themeMode": self.themeMode.name,
-            "icons": str(self.iconTheme),
-            "iconColTree": str(self.iconColTree),
-            "iconColDocs": str(self.iconColDocs),
-            "localisation": str(self.guiLocale),
-            "hideVScroll": str(self.hideVScroll),
-            "hideHScroll": str(self.hideHScroll),
-            "lastNotes": str(self.lastNotes),
-            "nativeFont": str(self.nativeFont),
-            "useCharCount": str(self.useCharCount),
-            "vimMode": str(self.vimMode),
+            "icons": self.iconTheme,
+            "iconColTree": self.iconColTree,
+            "iconColDocs": self.iconColDocs,
+            "localisation": self.guiLocale,
+            "hideVScroll": self.hideVScroll,
+            "hideHScroll": self.hideHScroll,
+            "lastNotes": self.lastNotes,
+            "nativeFont": self.nativeFont,
+            "useCharCount": self.useCharCount,
+            "vimMode": self.vimMode,
         }
 
         conf["Sizes"] = {
-            "mainWindow": self._packList(self.mainWinSize),
-            "welcome": self._packList(self.welcomeWinSize),
-            "preferences": self._packList(self.prefsWinSize),
-            "fontSelect": self._packList(self.fontWinSize),
-            "mainPane": self._packList(self.mainPanePos),
-            "viewPane": self._packList(self.viewPanePos),
-            "outlinePane": self._packList(self.outlinePanePos),
-            "searchPane": self._packList(self.searchPanePos),
-            "moveMainWin": str(self.moveMainWin),
+            "mainWindow": self.mainWinSize,
+            "welcome": self.welcomeWinSize,
+            "preferences": self.prefsWinSize,
+            "fontSelect": self.fontWinSize,
+            "mainPane": self.mainPanePos,
+            "viewPane": self.viewPanePos,
+            "outlinePane": self.outlinePanePos,
+            "searchPane": self.searchPanePos,
+            "moveMainWin": self.moveMainWin,
         }
 
         conf["Project"] = {
-            "autoSaveProject": str(self.autoSaveProj),
-            "autoSaveDoc": str(self.autoSaveDoc),
-            "emphLabels": str(self.emphLabels),
-            "backupPath": str(self._backupPath),
-            "backupOnClose": str(self.backupOnClose),
-            "backupInterval": str(self.backupInterval),
-            "askBeforeBackup": str(self.askBeforeBackup),
-            "askBeforeExit": str(self.askBeforeExit),
-            "lastAuthor": str(self._lastAuthor),
+            "autoSaveProject": self.autoSaveProj,
+            "autoSaveDoc": self.autoSaveDoc,
+            "emphLabels": self.emphLabels,
+            "backupPath": self._backupPath,
+            "backupOnClose": self.backupOnClose,
+            "backupInterval": self.backupInterval,
+            "askBeforeBackup": self.askBeforeBackup,
+            "askBeforeExit": self.askBeforeExit,
+            "lastAuthor": self._lastAuthor,
         }
 
         conf["Editor"] = {
             "textFont": self.textFont.toString(),
-            "width": str(self.textWidth),
-            "margin": str(self.textMargin),
-            "tabWidth": str(self.tabWidth),
-            "lineHeight": str(self.lineHeight),
-            "cursorWidth": str(self.cursorWidth),
-            "lineHighlight": str(self.lineHighlight),
-            "focusWidth": str(self.focusWidth),
-            "hideFocusFooter": str(self.hideFocusFooter),
-            "justify": str(self.doJustify),
-            "autoSelect": str(self.autoSelect),
-            "autoReplace": str(self.doReplace),
-            "repSQuotes": str(self.doReplaceSQuote),
-            "repDQuotes": str(self.doReplaceDQuote),
-            "repDash": str(self.doReplaceDash),
-            "repDots": str(self.doReplaceDots),
-            "autoScroll": str(self.autoScroll),
-            "autoScrollPos": str(self.autoScrollPos),
-            "scrollPastEnd": str(self.scrollPastEnd),
-            "fmtSQuoteOpen": str(self.fmtSQuoteOpen),
-            "fmtSQuoteClose": str(self.fmtSQuoteClose),
-            "fmtDQuoteOpen": str(self.fmtDQuoteOpen),
-            "fmtDQuoteClose": str(self.fmtDQuoteClose),
-            "fmtPadBefore": str(self.fmtPadBefore),
-            "fmtPadAfter": str(self.fmtPadAfter),
-            "fmtPadThin": str(self.fmtPadThin),
-            "spellCheck": str(self.spellLanguage),
-            "showTabsNSpaces": str(self.showTabsNSpaces),
-            "showLineEndings": str(self.showLineEndings),
-            "showMultiSpaces": str(self.showMultiSpaces),
-            "scaleHeadings": str(self.scaleHeadings),
-            "singleStarBold": str(self.singleStarBold),
-            "incNotesWCount": str(self.incNotesWCount),
-            "showFullPath": str(self.showFullPath),
-            "dialogStyle": str(self.dialogStyle),
-            "allowOpenDial": str(self.allowOpenDial),
-            "dialogLine": str(self.dialogLine),
-            "narratorBreak": str(self.narratorBreak),
-            "narratorDialog": str(self.narratorDialog),
-            "altDialogOpen": str(self.altDialogOpen),
-            "altDialogClose": str(self.altDialogClose),
-            "highlightEmph": str(self.highlightEmph),
-            "dottedModCodes": str(self.dottedModCodes),
-            "stopWhenIdle": str(self.stopWhenIdle),
-            "userIdleTime": str(self.userIdleTime),
+            "width": self.textWidth,
+            "margin": self.textMargin,
+            "tabWidth": self.tabWidth,
+            "lineHeight": self.lineHeight,
+            "cursorWidth": self.cursorWidth,
+            "lineHighlight": self.lineHighlight,
+            "focusWidth": self.focusWidth,
+            "hideFocusFooter": self.hideFocusFooter,
+            "justify": self.doJustify,
+            "autoSelect": self.autoSelect,
+            "autoReplace": self.doReplace,
+            "repSQuotes": self.doReplaceSQuote,
+            "repDQuotes": self.doReplaceDQuote,
+            "repDash": self.doReplaceDash,
+            "repDots": self.doReplaceDots,
+            "autoScroll": self.autoScroll,
+            "autoScrollPos": self.autoScrollPos,
+            "scrollPastEnd": self.scrollPastEnd,
+            "fmtSQuoteOpen": self.fmtSQuoteOpen,
+            "fmtSQuoteClose": self.fmtSQuoteClose,
+            "fmtDQuoteOpen": self.fmtDQuoteOpen,
+            "fmtDQuoteClose": self.fmtDQuoteClose,
+            "fmtPadBefore": self.fmtPadBefore,
+            "fmtPadAfter": self.fmtPadAfter,
+            "fmtPadThin": self.fmtPadThin,
+            "spellCheck": self.spellLanguage,
+            "showTabsNSpaces": self.showTabsNSpaces,
+            "showLineEndings": self.showLineEndings,
+            "showMultiSpaces": self.showMultiSpaces,
+            "scaleHeadings": self.scaleHeadings,
+            "singleStarBold": self.singleStarBold,
+            "incNotesWCount": self.incNotesWCount,
+            "showFullPath": self.showFullPath,
+            "dialogStyle": self.dialogStyle,
+            "allowOpenDial": self.allowOpenDial,
+            "dialogLine": self.dialogLine,
+            "narratorBreak": self.narratorBreak,
+            "narratorDialog": self.narratorDialog,
+            "altDialogOpen": self.altDialogOpen,
+            "altDialogClose": self.altDialogClose,
+            "highlightEmph": self.highlightEmph,
+            "dottedModCodes": self.dottedModCodes,
+            "stopWhenIdle": self.stopWhenIdle,
+            "userIdleTime": self.userIdleTime,
         }
 
         conf["State"] = {
-            "showDetailsPanel": str(self.showDetailsPanel),
-            "showViewerPanel": str(self.showViewerPanel),
-            "showEditToolBar": str(self.showEditToolBar),
-            "showSessionTime": str(self.showSessionTime),
-            "viewComments": str(self.viewComments),
-            "viewSynopsis": str(self.viewSynopsis),
-            "viewNotes": str(self.viewNotes),
-            "searchAuto": str(self.searchAuto),
-            "searchCase": str(self.searchCase),
-            "searchWord": str(self.searchWord),
-            "searchRegEx": str(self.searchRegEx),
-            "searchLoop": str(self.searchLoop),
-            "searchNextFile": str(self.searchNextFile),
-            "searchMatchCap": str(self.searchMatchCap),
-            "searchProjAuto": str(self.searchProjAuto),
-            "searchProjCase": str(self.searchProjCase),
-            "searchProjWord": str(self.searchProjWord),
-            "searchProjRegEx": str(self.searchProjRegEx),
+            "showDetailsPanel": self.showDetailsPanel,
+            "showViewerPanel": self.showViewerPanel,
+            "showEditToolBar": self.showEditToolBar,
+            "showSessionTime": self.showSessionTime,
+            "viewComments": self.viewComments,
+            "viewSynopsis": self.viewSynopsis,
+            "viewNotes": self.viewNotes,
+            "searchAuto": self.searchAuto,
+            "searchCase": self.searchCase,
+            "searchWord": self.searchWord,
+            "searchRegEx": self.searchRegEx,
+            "searchLoop": self.searchLoop,
+            "searchNextFile": self.searchNextFile,
+            "searchMatchCap": self.searchMatchCap,
+            "searchProjAuto": self.searchProjAuto,
+            "searchProjCase": self.searchProjCase,
+            "searchProjWord": self.searchProjWord,
+            "searchProjRegEx": self.searchProjRegEx,
         }
 
         # Write config file
-        cnfPath = self._confPath / nwFiles.CONF_FILE_OLD
+        cnfPath = self._confPath / nwFiles.CONF_FILE
         try:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
                 conf.write(outFile)
