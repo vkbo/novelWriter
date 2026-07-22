@@ -31,7 +31,7 @@ from typing import TypeVar
 
 from PyQt6.QtGui import QFont
 
-from novelwriter.common import checkBool, checkFloat, checkInt, checkPath
+from novelwriter.common import checkBool, checkFloat, checkInt, checkPath, checkString
 
 logger = logging.getLogger(__name__)
 
@@ -54,14 +54,6 @@ class NTomlParser:
 
     def __init__(self) -> None:
         self._data: T_ConfData = {}
-
-    def __getitem__(self, section: str) -> T_ConfEntry:
-        """Get the options of a section."""
-        return self._data.setdefault(section, {})
-
-    def has_option(self, section: str, option: str) -> bool:
-        """Check if a section has a given option."""
-        return option in self._data.get(section, {})
 
     def read(self, path: Path) -> None:
         """Read and parse TOML data from a file, mirroring write()."""
@@ -88,59 +80,56 @@ class NTomlParser:
 
     def getStr(self, section: str, option: str, default: str) -> str:
         """Read string value."""
-        value = self._data.get(section, {}).get(option, default)
-        return value if isinstance(value, str) else default
+        return checkString(self._value(section, option), default)
 
     def getInt(self, section: str, option: str, default: int) -> int:
         """Read integer value."""
-        if self.has_option(section, option):
-            return checkInt(self._data[section][option], default)
-        return default
+        return checkInt(self._value(section, option), default)
 
     def getFloat(self, section: str, option: str, default: float) -> float:
         """Read float value."""
-        if self.has_option(section, option):
-            return checkFloat(self._data[section][option], default)
-        return default
+        return checkFloat(self._value(section, option), default)
 
     def getBool(self, section: str, option: str, default: bool) -> bool:
         """Read boolean value."""
-        if self.has_option(section, option):
-            return checkBool(self._data[section][option], default)
-        return default
+        return checkBool(self._value(section, option), default)
 
     def getPath(self, section: str, option: str, default: Path) -> Path:
         """Read a Path value."""
-        value = self._data.get(section, {}).get(option, default)
-        return checkPath(value, default)
+        return checkPath(self._value(section, option), default)
 
     def getStrList(self, section: str, option: str, default: list[str]) -> list[str]:
-        """Read string list."""
+        """Read string list, keeping the length of the default."""
         result = default.copy() if isinstance(default, list) else []
-        if self.has_option(section, option):
-            data = self._data[section][option]
-            if isinstance(data, list):
-                for i in range(min(len(data), len(result))):
-                    result[i] = str(data[i])
+        data = self._value(section, option)
+        if isinstance(data, list):
+            for i in range(min(len(data), len(result))):
+                result[i] = str(data[i])
         return result
 
     def getIntList(self, section: str, option: str, default: list[int]) -> list[int]:
-        """Read integer list."""
+        """Read integer list, keeping the length of the default."""
         result = default.copy() if isinstance(default, list) else []
-        if self.has_option(section, option):
-            data = self._data[section][option]
-            if isinstance(data, list):
-                for i in range(min(len(data), len(result))):
-                    result[i] = checkInt(data[i], result[i])
+        data = self._value(section, option)
+        if isinstance(data, list):
+            for i in range(min(len(data), len(result))):
+                result[i] = checkInt(data[i], result[i])
         return result
 
     def getEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
         """Read enum value."""
-        if self.has_option(section, option):
-            data = self._data[section][option]
-            if isinstance(data, str):
-                return type(default).__members__.get(data.upper(), default)
+        data = self._value(section, option)
+        if isinstance(data, str):
+            return type(default).__members__.get(data.upper(), default)
         return default
+
+    ##
+    # Internal Functions
+    ##
+
+    def _value(self, section: str, option: str) -> T_ConfValue | None:
+        """Look up a raw value, or None if the section or option is unset."""
+        return self._data.get(section, {}).get(option)
 
     @staticmethod
     def _dump(value: T_ConfValue) -> str:
