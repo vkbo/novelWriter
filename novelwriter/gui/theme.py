@@ -22,8 +22,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
+import tomllib
 
-from configparser import ConfigParser
 from dataclasses import dataclass
 from math import ceil
 from typing import TYPE_CHECKING, Any, Final
@@ -351,8 +351,8 @@ class GuiTheme:
         """Initialise themes."""
         CONFIG.splashMessage("Scanning for colour themes ...")
         themes: list[Path] = []
-        _listContent(themes, CONFIG.assetPath("themes"), ".conf")
-        _listContent(themes, CONFIG.dataPath("themes"), ".conf")
+        _listContent(themes, CONFIG.assetPath("themes"), ".toml")
+        _listContent(themes, CONFIG.dataPath("themes"), ".toml")
         self._scanThemes(themes)
 
         self.iconCache.initIcons()
@@ -405,9 +405,9 @@ class GuiTheme:
 
         CONFIG.splashMessage(f"Loading colour theme: {entry.name}")
         logger.info("Loading GUI theme '%s'", theme)
-        parser = ConfigParser()
         try:
-            parser.read(entry.path, encoding="utf-8")
+            with open(entry.path, mode="rb") as fileObj:
+                data = tomllib.load(fileObj)
         except Exception:
             logger.error("Could not read file: %s", entry.path)
             logException()
@@ -417,122 +417,115 @@ class GuiTheme:
         self._resetTheme()
 
         # Main
-        sec = "Main"
         meta = ThemeMeta()
-        if parser.has_section(sec):
-            meta.name = parser.get(sec, "name", fallback="")
-            meta.mode = parser.get(sec, "mode", fallback="light")
-            meta.author = parser.get(sec, "author", fallback="")
-            meta.credit = parser.get(sec, "credit", fallback="")
-            meta.url = parser.get(sec, "url", fallback="")
+        if section := data.get("Main"):
+            meta.name = section.get("name", "")
+            meta.mode = section.get("mode", "light")
+            meta.author = section.get("author", "")
+            meta.credit = section.get("credit", "")
+            meta.url = section.get("url", "")
 
         self._meta = meta
 
         # Base
-        sec = "Base"
-        if parser.has_section(sec):
-            self._setBaseColor("base", self._readColor(parser, sec, "base"))
-            self._setBaseColor("default", self._readColor(parser, sec, "default"))
-            self._setBaseColor("faded", self._readColor(parser, sec, "faded"))
-            self._setBaseColor("red", self._readColor(parser, sec, "red"))
-            self._setBaseColor("orange", self._readColor(parser, sec, "orange"))
-            self._setBaseColor("yellow", self._readColor(parser, sec, "yellow"))
-            self._setBaseColor("green", self._readColor(parser, sec, "green"))
-            self._setBaseColor("cyan", self._readColor(parser, sec, "cyan"))
-            self._setBaseColor("blue", self._readColor(parser, sec, "blue"))
-            self._setBaseColor("purple", self._readColor(parser, sec, "purple"))
+        if section := data.get("Base"):
+            self._setBaseColor("base", self._readColor(section, "base"))
+            self._setBaseColor("default", self._readColor(section, "default"))
+            self._setBaseColor("faded", self._readColor(section, "faded"))
+            self._setBaseColor("red", self._readColor(section, "red"))
+            self._setBaseColor("orange", self._readColor(section, "orange"))
+            self._setBaseColor("yellow", self._readColor(section, "yellow"))
+            self._setBaseColor("green", self._readColor(section, "green"))
+            self._setBaseColor("cyan", self._readColor(section, "cyan"))
+            self._setBaseColor("blue", self._readColor(section, "blue"))
+            self._setBaseColor("purple", self._readColor(section, "purple"))
 
         # Project
-        sec = "Project"
-        if parser.has_section(sec):
-            self._setBaseColor("root", self._readColor(parser, sec, "root"))
-            self._setBaseColor("folder", self._readColor(parser, sec, "folder"))
-            self._setBaseColor("file", self._readColor(parser, sec, "file"))
-            self._setBaseColor("title", self._readColor(parser, sec, "title"))
-            self._setBaseColor("chapter", self._readColor(parser, sec, "chapter"))
-            self._setBaseColor("scene", self._readColor(parser, sec, "scene"))
-            self._setBaseColor("note", self._readColor(parser, sec, "note"))
-            self._setBaseColor("active", self._readColor(parser, sec, "active"))
-            self._setBaseColor("inactive", self._readColor(parser, sec, "inactive"))
-            self._setBaseColor("disabled", self._readColor(parser, sec, "disabled"))
+        if section := data.get("Project"):
+            self._setBaseColor("root", self._readColor(section, "root"))
+            self._setBaseColor("folder", self._readColor(section, "folder"))
+            self._setBaseColor("file", self._readColor(section, "file"))
+            self._setBaseColor("title", self._readColor(section, "title"))
+            self._setBaseColor("chapter", self._readColor(section, "chapter"))
+            self._setBaseColor("scene", self._readColor(section, "scene"))
+            self._setBaseColor("note", self._readColor(section, "note"))
+            self._setBaseColor("active", self._readColor(section, "active"))
+            self._setBaseColor("inactive", self._readColor(section, "inactive"))
+            self._setBaseColor("disabled", self._readColor(section, "disabled"))
 
         # Icon
-        sec = "Icon"
-        if parser.has_section(sec):
-            self._setBaseColor("tool", self._readColor(parser, sec, "tool"))
-            self._setBaseColor("sidebar", self._readColor(parser, sec, "sidebar"))
-            self._setBaseColor("accept", self._readColor(parser, sec, "accept"))
-            self._setBaseColor("reject", self._readColor(parser, sec, "reject"))
-            self._setBaseColor("action", self._readColor(parser, sec, "action"))
-            self._setBaseColor("altaction", self._readColor(parser, sec, "altaction"))
-            self._setBaseColor("apply", self._readColor(parser, sec, "apply"))
-            self._setBaseColor("create", self._readColor(parser, sec, "create"))
-            self._setBaseColor("destroy", self._readColor(parser, sec, "destroy"))
-            self._setBaseColor("reset", self._readColor(parser, sec, "reset"))
-            self._setBaseColor("add", self._readColor(parser, sec, "add"))
-            self._setBaseColor("change", self._readColor(parser, sec, "change"))
-            self._setBaseColor("remove", self._readColor(parser, sec, "remove"))
-            self._setBaseColor("shortcode", self._readColor(parser, sec, "shortcode"))
-            self._setBaseColor("markdown", self._readColor(parser, sec, "markdown"))
-            self._setBaseColor("systemio", self._readColor(parser, sec, "systemio"))
-            self._setBaseColor("info", self._readColor(parser, sec, "info"))
-            self._setBaseColor("warning", self._readColor(parser, sec, "warning"))
-            self._setBaseColor("error", self._readColor(parser, sec, "error"))
+        if section := data.get("Icon"):
+            self._setBaseColor("tool", self._readColor(section, "tool"))
+            self._setBaseColor("sidebar", self._readColor(section, "sidebar"))
+            self._setBaseColor("accept", self._readColor(section, "accept"))
+            self._setBaseColor("reject", self._readColor(section, "reject"))
+            self._setBaseColor("action", self._readColor(section, "action"))
+            self._setBaseColor("altaction", self._readColor(section, "altaction"))
+            self._setBaseColor("apply", self._readColor(section, "apply"))
+            self._setBaseColor("create", self._readColor(section, "create"))
+            self._setBaseColor("destroy", self._readColor(section, "destroy"))
+            self._setBaseColor("reset", self._readColor(section, "reset"))
+            self._setBaseColor("add", self._readColor(section, "add"))
+            self._setBaseColor("change", self._readColor(section, "change"))
+            self._setBaseColor("remove", self._readColor(section, "remove"))
+            self._setBaseColor("shortcode", self._readColor(section, "shortcode"))
+            self._setBaseColor("markdown", self._readColor(section, "markdown"))
+            self._setBaseColor("systemio", self._readColor(section, "systemio"))
+            self._setBaseColor("info", self._readColor(section, "info"))
+            self._setBaseColor("warning", self._readColor(section, "warning"))
+            self._setBaseColor("error", self._readColor(section, "error"))
 
         # Palette
-        sec = "Palette"
-        if parser.has_section(sec):
-            self._setPalette(parser, sec, "window", QPalette.ColorRole.Window)
-            self._setPalette(parser, sec, "windowtext", QPalette.ColorRole.WindowText)
-            self._setPalette(parser, sec, "base", QPalette.ColorRole.Base)
-            self._setPalette(parser, sec, "alternatebase", QPalette.ColorRole.AlternateBase)
-            self._setPalette(parser, sec, "text", QPalette.ColorRole.Text)
-            self._setPalette(parser, sec, "tooltipbase", QPalette.ColorRole.ToolTipBase)
-            self._setPalette(parser, sec, "tooltiptext", QPalette.ColorRole.ToolTipText)
-            self._setPalette(parser, sec, "button", QPalette.ColorRole.Button)
-            self._setPalette(parser, sec, "buttontext", QPalette.ColorRole.ButtonText)
-            self._setPalette(parser, sec, "brighttext", QPalette.ColorRole.BrightText)
-            self._setPalette(parser, sec, "highlight", QPalette.ColorRole.Highlight)
-            self._setPalette(parser, sec, "highlightedtext", QPalette.ColorRole.HighlightedText)
-            self._setPalette(parser, sec, "link", QPalette.ColorRole.Link)
-            self._setPalette(parser, sec, "linkvisited", QPalette.ColorRole.LinkVisited)
-            self.accentCol = self._readColor(parser, sec, "accent")  # Special handling 'til Qt 6.6
-            self.toggleCol = self._readColor(parser, sec, "toggle")
-            self.searchCol = self._readColor(parser, sec, "searchmatch")
+        if section := data.get("Palette"):
+            self._setPalette(section, "window", QPalette.ColorRole.Window)
+            self._setPalette(section, "windowtext", QPalette.ColorRole.WindowText)
+            self._setPalette(section, "base", QPalette.ColorRole.Base)
+            self._setPalette(section, "alternatebase", QPalette.ColorRole.AlternateBase)
+            self._setPalette(section, "text", QPalette.ColorRole.Text)
+            self._setPalette(section, "tooltipbase", QPalette.ColorRole.ToolTipBase)
+            self._setPalette(section, "tooltiptext", QPalette.ColorRole.ToolTipText)
+            self._setPalette(section, "button", QPalette.ColorRole.Button)
+            self._setPalette(section, "buttontext", QPalette.ColorRole.ButtonText)
+            self._setPalette(section, "brighttext", QPalette.ColorRole.BrightText)
+            self._setPalette(section, "highlight", QPalette.ColorRole.Highlight)
+            self._setPalette(section, "highlightedtext", QPalette.ColorRole.HighlightedText)
+            self._setPalette(section, "link", QPalette.ColorRole.Link)
+            self._setPalette(section, "linkvisited", QPalette.ColorRole.LinkVisited)
+            self.accentCol = self._readColor(section, "accent")  # Special handling 'til Qt 6.6
+            self.toggleCol = self._readColor(section, "toggle")
+            self.searchCol = self._readColor(section, "searchmatch")
 
         # GUI
-        sec = "GUI"
-        if parser.has_section(sec):
-            self.helpText = self._readColor(parser, sec, "helptext")
-            self.fadedText = self._readColor(parser, sec, "fadedtext")
-            self.errorText = self._readColor(parser, sec, "errortext")
+        if section := data.get("GUI"):
+            self.helpText = self._readColor(section, "helptext")
+            self.fadedText = self._readColor(section, "fadedtext")
+            self.errorText = self._readColor(section, "errortext")
 
         # Syntax
-        sec = "Syntax"
         self.syntaxTheme = SyntaxColors()
-        if parser.has_section(sec):
-            self.syntaxTheme.back = self._readColor(parser, sec, "background")
-            self.syntaxTheme.text = self._readColor(parser, sec, "text")
-            self.syntaxTheme.line = self._readColor(parser, sec, "line")
-            self.syntaxTheme.link = self._readColor(parser, sec, "link")
-            self.syntaxTheme.head = self._readColor(parser, sec, "headertext")
-            self.syntaxTheme.headH = self._readColor(parser, sec, "headertag")
-            self.syntaxTheme.emph = self._readColor(parser, sec, "emphasis")
-            self.syntaxTheme.space = self._readColor(parser, sec, "whitespace")
-            self.syntaxTheme.dialN = self._readColor(parser, sec, "dialog")
-            self.syntaxTheme.dialA = self._readColor(parser, sec, "altdialog")
-            self.syntaxTheme.hidden = self._readColor(parser, sec, "hidden")
-            self.syntaxTheme.note = self._readColor(parser, sec, "note")
-            self.syntaxTheme.code = self._readColor(parser, sec, "shortcode")
-            self.syntaxTheme.key = self._readColor(parser, sec, "keyword")
-            self.syntaxTheme.tag = self._readColor(parser, sec, "tag")
-            self.syntaxTheme.val = self._readColor(parser, sec, "value")
-            self.syntaxTheme.opt = self._readColor(parser, sec, "optional")
-            self.syntaxTheme.spell = self._readColor(parser, sec, "spellcheckline")
-            self.syntaxTheme.error = self._readColor(parser, sec, "errorline")
-            self.syntaxTheme.repTag = self._readColor(parser, sec, "replacetag")
-            self.syntaxTheme.mod = self._readColor(parser, sec, "modifier")
-            self.syntaxTheme.mark = self._readColor(parser, sec, "texthighlight")
+        if section := data.get("Syntax"):
+            self.syntaxTheme.back = self._readColor(section, "background")
+            self.syntaxTheme.text = self._readColor(section, "text")
+            self.syntaxTheme.line = self._readColor(section, "line")
+            self.syntaxTheme.link = self._readColor(section, "link")
+            self.syntaxTheme.head = self._readColor(section, "headertext")
+            self.syntaxTheme.headH = self._readColor(section, "headertag")
+            self.syntaxTheme.emph = self._readColor(section, "emphasis")
+            self.syntaxTheme.space = self._readColor(section, "whitespace")
+            self.syntaxTheme.dialN = self._readColor(section, "dialog")
+            self.syntaxTheme.dialA = self._readColor(section, "altdialog")
+            self.syntaxTheme.hidden = self._readColor(section, "hidden")
+            self.syntaxTheme.note = self._readColor(section, "note")
+            self.syntaxTheme.code = self._readColor(section, "shortcode")
+            self.syntaxTheme.key = self._readColor(section, "keyword")
+            self.syntaxTheme.tag = self._readColor(section, "tag")
+            self.syntaxTheme.val = self._readColor(section, "value")
+            self.syntaxTheme.opt = self._readColor(section, "optional")
+            self.syntaxTheme.spell = self._readColor(section, "spellcheckline")
+            self.syntaxTheme.error = self._readColor(section, "errorline")
+            self.syntaxTheme.repTag = self._readColor(section, "replacetag")
+            self.syntaxTheme.mod = self._readColor(section, "modifier")
+            self.syntaxTheme.mark = self._readColor(section, "texthighlight")
 
         # Update Dependant Colours
         # Based on: https://github.com/qt/qtbase/blob/dev/src/gui/kernel/qplatformtheme.cpp
@@ -762,13 +755,13 @@ class GuiTheme:
         self._setBaseColor("warning", orange)
         self._setBaseColor("error", red)
 
-    def _readColor(self, parser: ConfigParser, section: str, name: str) -> QColor:
+    def _readColor(self, section: dict[str, str], name: str) -> QColor:
         """Parse a colour value from a config string."""
-        return self.parseColor(parser.get(section, name, fallback="default"))
+        return self.parseColor(section.get(name, "default"))
 
-    def _setPalette(self, parser: ConfigParser, section: str, name: str, value: QPalette.ColorRole) -> None:
+    def _setPalette(self, section: dict[str, str], name: str, value: QPalette.ColorRole) -> None:
         """Set a palette colour value from a config string."""
-        self._guiPalette.setBrush(value, self._readColor(parser, section, name))
+        self._guiPalette.setBrush(value, self._readColor(section, name))
 
     def _buildStyleSheets(self, palette: QPalette) -> None:
         """Build default style sheets."""
@@ -794,15 +787,14 @@ class GuiTheme:
 
     def _scanThemes(self, files: list[Path]) -> None:
         """Scan the GUI themes folder and list all themes."""
-        parser = ConfigParser()
         data: dict[str, tuple[str, str, bool, Path]] = {}
         keys = []
         for file in files:
             try:
-                parser.clear()
-                parser.read(file, encoding="utf-8")
-                name = parser.get("Main", "name", fallback="")
-                mode = parser.get("Main", "mode", fallback="").lower()
+                with open(file, mode="rb") as fileObj:
+                    section = tomllib.load(fileObj).get("Main", {})
+                name = section.get("name", "")
+                mode = section.get("mode", "").lower()
                 if name and mode in ("light", "dark"):
                     key = file.stem
                     prefix = "*" if key.startswith("default") else ""
