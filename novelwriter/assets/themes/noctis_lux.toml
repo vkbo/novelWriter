@@ -98,13 +98,13 @@ highlightedText = "default"
 link            = "#00c6e0"
 linkVisited     = "blue"
 accent          = "#00b368"
-toggle          = "#00b36867"
-searchMatch     = "orange:64"
 
 [GUI]
-helpText  = "#fa8900"
-fadedText = "faded"
-errorText = "#ff530f"
+helpText    = "#fa8900"
+fadedText   = "faded"
+errorText   = "#ff530f"
+toggle      = "#00b36867"
+searchMatch = "orange:64"
 
 [Syntax]
 background     = "base"
