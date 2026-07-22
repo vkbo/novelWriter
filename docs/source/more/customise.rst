@@ -14,8 +14,8 @@ Colour Themes
 =============
 
 Adding your own colour themes is relatively easy, although it requires that you manually edit
-config files with colour values. The themes are defined by simple plain text config files with meta
-data and colour settings.
+config files with colour values. The themes are defined in plain text files with meta data and
+colour settings, using the toml format,
 
 In order to make your own versions, first copy one of the existing files to your local computer and
 modify it as you like.
@@ -204,8 +204,30 @@ There are several ways to enter colour values:
    if the theme is included in the app, but not for user themes.
 
 .. versionadded:: 26.2
-   The file format was converted from conf to toml, and a number of the colour settings were renamed to camelCase
-   format. In addition, the ``toggle`` and ``searchMatch`` settings were added to the ``[Palette]`` section.
+   The ``toggle`` and ``searchMatch`` settings were added to the ``[Palette]`` section. The file
+   format was also converted from conf to toml, and a number of the colour settings were renamed to
+   camelCase format. The following values were renamed:
+
+   * ``altaction`` to ``altAction``
+   * ``systemio`` to ``systemIO``
+   * ``windowtext`` to ``windowText``
+   * ``alternatebase`` to ``alternateBase``
+   * ``tooltipbase`` to ``tooltipBase``
+   * ``tooltiptext`` to ``tooltipText``
+   * ``buttontext`` to ``buttonText``
+   * ``brighttext`` to ``brightText``
+   * ``highlightedtext`` to ``highlightedText``
+   * ``linkvisited`` to ``linkVisited``
+   * ``helptext`` to ``helpText``
+   * ``fadedtext`` to ``fadedText``
+   * ``errortext`` to ``errorText``
+   * ``headertext`` to ``headerText``
+   * ``headertag`` to ``headerTag``
+   * ``altdialog`` to ``altDialog``
+   * ``spellcheckline`` to ``spellCheckLine``
+   * ``errorline`` to ``errorLine``
+   * ``replacetag`` to ``replaceTag``
+   * ``texthighlight`` to ``textHighlight``
 
 
 Icon Themes
