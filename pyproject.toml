@@ -119,7 +119,6 @@ ignore = [
     "PLW0717", # too-many-statements-in-try-clause
     "PLW2901", # redefined-loop-name
     "RET505",  # superfluous-else-return
-    "RUF001",  # ambiguous-unicode-character-string
     "RUF015",  # unnecessary-iterable-allocation-for-first-element
     "RUF067",  # non-empty-init-module
     "RUF105",  # noqa-comments
