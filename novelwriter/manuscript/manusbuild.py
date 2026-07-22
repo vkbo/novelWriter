@@ -187,7 +187,7 @@ class GuiManuscriptBuild(NDialog):
         self.buildBox.setVerticalSpacing(4)
 
         # Dialog Buttons
-        self.btnOpen = NPushButton(self, self.tr("Open Folder"), bSz, "browse:systemio")
+        self.btnOpen = NPushButton(self, self.tr("Open Folder"), bSz, "browse:system")
         self.btnOpen.setAutoDefault(False)
 
         self.btnBuild = SHARED.theme.getStandardButton(nwStandardButton.BUILD, self)

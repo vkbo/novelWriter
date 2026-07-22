@@ -592,25 +592,25 @@ class _SearchFilters(NExpandablePanel):
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["headings"]),
             "text:includeHeadings",
-            icon="filter:altaction",
+            icon="filter:option",
             default=True,
         )
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["meta"]),
             "text:includeMeta",
-            icon="filter:altaction",
+            icon="filter:option",
             default=True,
         )
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["comments"]),
             "text:includeComments",
-            icon="filter:altaction",
+            icon="filter:option",
             default=True,
         )
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["text"]),
             "text:includeBody",
-            icon="filter:altaction",
+            icon="filter:option",
             default=True,
         )
         self.filterOpt.addSeparator()

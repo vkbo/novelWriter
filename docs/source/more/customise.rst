@@ -85,7 +85,7 @@ A colour theme ``.toml`` file consists of the following settings:
    accept    = "green"
    reject    = "red"
    action    = "blue"
-   altAction = "orange"
+   option    = "orange"
    apply     = "green"
    create    = "yellow"
    destroy   = "faded"
@@ -95,7 +95,7 @@ A colour theme ``.toml`` file consists of the following settings:
    remove    = "red"
    shortcode = "default"
    markdown  = "orange"
-   systemIO  = "yellow"
+   system    = "yellow"
    info      = "blue"
    warning   = "orange"
    error     = "red"
@@ -208,8 +208,8 @@ There are several ways to enter colour values:
    format was also converted from conf to toml, and a number of the colour settings were renamed to
    camelCase format. The following values were renamed:
 
-   * ``altaction`` to ``altAction``
-   * ``systemio`` to ``systemIO``
+   * ``altaction`` to ``option``
+   * ``systemio`` to ``system``
    * ``windowtext`` to ``windowText``
    * ``alternatebase`` to ``alternateBase``
    * ``tooltipbase`` to ``tooltipBase``

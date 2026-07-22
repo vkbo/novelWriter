@@ -32,6 +32,7 @@ from PyQt6.QtCore import QEvent, QMimeData, QPoint, QPointF, QRect, Qt, QThreadP
 from PyQt6.QtGui import (
     QAction,
     QClipboard,
+    QColor,
     QDesktopServices,
     QDragEnterEvent,
     QDragMoveEvent,
@@ -960,6 +961,80 @@ def testGuiDocEditor_FormatChecking(qtbot, monkeypatch, nwGUI, projPath, mockRnd
     CONFIG.showMultiSpaces = False
     docEditor._beginCheckPass()
     assert docEditor._formatSelections == []
+
+
+@pytest.mark.gui
+def testGuiDocEditor_UpdateSyntaxColors(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """A theme change must immediately re-colour any extra selections
+    that already exist, rather than waiting for the cursor to move or
+    for the spell/format check cache to be invalidated by an edit.
+    """
+    monkeypatch.setattr(SHARED, "runInThreadPool", lambda r: r.run())
+
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
+
+    text = "### A Scene\n\nA  double space, and a trailing space \n"
+    docEditor.replaceText(text)
+    blockPos = text.index("A  double")
+
+    # Build a format error selection
+    CONFIG.showMultiSpaces = True
+    docEditor._beginCheckPass()
+    data = docEditor.textCursor().document().findBlock(blockPos).userData()
+    assert isinstance(data, TextBlockData)
+    assert data.formatErrors != []
+
+    # Build a spell error selection
+    SHARED.project.data.setSpellCheck(True)
+    data._spellErrors = [(0, 1, "A")]
+    docEditor._updateCheckSelections()
+    assert docEditor._spellSelections != []
+
+    # Build a search match selection
+    docEditor.highlightSearchSelections([blockPos], [blockPos + 1])
+    assert len(docEditor._searchSelections) == 1
+
+    # Build the current line highlight selection
+    CONFIG.lineHighlight = True
+    docEditor.setCursorPosition(blockPos)
+    assert docEditor._selection.cursor.position() == blockPos
+
+    # Change the theme colours and refresh the syntax colours only,
+    # without moving the cursor or editing the document
+    SHARED.theme.syntaxTheme.error = QColor(1, 2, 3)
+    SHARED.theme.syntaxTheme.spell = QColor(10, 11, 12)
+    SHARED.theme.searchCol = QColor(4, 5, 6)
+    SHARED.theme.syntaxTheme.line = QColor(7, 8, 9)
+    docEditor.updateSyntaxColors()
+
+    formatSel = next(
+        s
+        for s in docEditor.extraSelections()
+        if s.format.underlineStyle() == QTextCharFormat.UnderlineStyle.SingleUnderline
+    )
+    assert formatSel.format.underlineColor() == QColor(1, 2, 3)
+
+    spellSel = next(
+        s
+        for s in docEditor.extraSelections()
+        if s.format.underlineStyle() == QTextCharFormat.UnderlineStyle.SpellCheckUnderline
+    )
+    assert spellSel.format.underlineColor() == QColor(10, 11, 12)
+
+    searchSel = next(
+        s
+        for s in docEditor.extraSelections()
+        if s.cursor.selectionStart() == blockPos and s.cursor.selectionEnd() == blockPos + 1
+    )
+    assert searchSel.format.background().color() == QColor(4, 5, 6)
+
+    lineSel = docEditor.extraSelections()[0]
+    assert lineSel.cursor.hasSelection() is False
+    assert lineSel.format.background().color() == QColor(7, 8, 9)
 
 
 @pytest.mark.gui

@@ -37,7 +37,6 @@ from novelwriter.types import (
     QtSizeFixed,
     QtSolidLine,
     QtTransparent,
-    QtWhite,
 )
 
 logger = logging.getLogger(__name__)
@@ -135,7 +134,22 @@ class NColorRangeProgress(QProgressBar):
     A custom widget that paints a progress bar with custom styling and text.
     """
 
-    __slots__ = ("_bBrush", "_bPen", "_bRect", "_lPen", "_oRect", "_pRange", "_pScale", "_point", "_tColor", "_text")
+    __slots__ = (
+        "_bBrush",
+        "_bPen",
+        "_bRect",
+        "_lPen",
+        "_oRect",
+        "_pEnd",
+        "_pMid",
+        "_pRange",
+        "_pScale",
+        "_pStart",
+        "_point",
+        "_tColor",
+        "_tHColor",
+        "_text",
+    )
 
     def __init__(self, parent: QWidget, width: int, height: int, point: int) -> None:
         super().__init__(parent=parent)
@@ -164,6 +178,7 @@ class NColorRangeProgress(QProgressBar):
         self._bPen = QPen(self._bBrush.color())
         self._lPen = QPen(palette.alternateBase(), 2 * self._point, QtSolidLine, QtRoundCap)
         self._tColor = palette.text().color()
+        self._tHColor = palette.base().color()
 
         self.setBarRangeColors(self._pStart, self._pEnd, self._pMid, steps=self._pScale)
         self.setValue(self.value())  # Triggers a redraw
@@ -218,7 +233,7 @@ class NColorRangeProgress(QProgressBar):
 
         painter.save()
         painter.setClipRect(barRect)
-        painter.setPen(QtWhite)
+        painter.setPen(self._tHColor)
         painter.drawText(self._bRect, QtAlignCenter, text)
         painter.restore()
 

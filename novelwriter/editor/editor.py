@@ -559,6 +559,16 @@ class GuiDocEditor(QTextEdit):
         self._searchFormat = QTextCharFormat()
         self._searchFormat.setBackground(SHARED.theme.searchCol)
 
+        for selection in self._searchSelections:
+            selection.format = self._searchFormat
+        for _, selections in self._selCacheSpell.values():
+            for selection in selections:
+                selection.format = self._spellErrFormat
+        for _, selections in self._selCacheFormat.values():
+            for selection in selections:
+                selection.format = self._formatErrFormat
+        self._applyExtraSelections()
+
     def initEditor(self) -> None:
         """Initialise or re-initialise the editor with the user's
         settings. This function is both called when the editor is
