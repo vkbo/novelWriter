@@ -76,11 +76,11 @@ from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwStyles, nw
 from novelwriter.core.document import ProjectDocument
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.editor.completer import CommandCompleter
-from novelwriter.editor.editfooter import GuiDocEditFooter
-from novelwriter.editor.editheader import GuiDocEditHeader
 from novelwriter.editor.editordocument import GuiTextDocument
 from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.edittoolbar import GuiDocToolBar
+from novelwriter.editor.footer import GuiDocEditFooter
+from novelwriter.editor.header import GuiDocEditHeader
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE
 from novelwriter.editor.hovercard import GuiDocHoverCard
 from novelwriter.editor.runnables import T_TextCheckPayload, TextCheckDispatcher, WordCounterDispatcher

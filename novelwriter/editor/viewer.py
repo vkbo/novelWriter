@@ -42,6 +42,9 @@ from PyQt6.QtWidgets import QApplication, QFrame, QMenu, QTextBrowser, QWidget
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, fontMatcher, qtAddAction, qtLambda
 from novelwriter.constants import nwConst, nwStyles, nwUnicode
+from novelwriter.editor.footer import GuiDocViewFooter
+from novelwriter.editor.header import GuiDocViewHeader
+from novelwriter.editor.history import GuiDocViewHistory
 from novelwriter.editor.hovercard import GuiDocHoverCard
 from novelwriter.enum import nwChange, nwComment, nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
@@ -57,9 +60,6 @@ from novelwriter.types import (
     QtSelectDocument,
     QtSelectWord,
 )
-from novelwriter.viewer.viewfooter import GuiDocViewFooter
-from novelwriter.viewer.viewheader import GuiDocViewHeader
-from novelwriter.viewer.viewhistory import GuiDocViewHistory
 
 logger = logging.getLogger(__name__)
 

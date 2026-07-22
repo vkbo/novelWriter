@@ -51,6 +51,8 @@ from novelwriter.dialogs.preferences import GuiNeedsUpdate, GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.editor.editor import GuiDocEditor
+from novelwriter.editor.viewer import GuiDocViewer
+from novelwriter.editor.viewerpanel import GuiDocViewerPanel
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwView
 from novelwriter.extensions.progressbars import NProgressSimple
 from novelwriter.gui.itemdetails import GuiItemDetails
@@ -66,8 +68,6 @@ from novelwriter.tools.dictionaries import GuiDictionaries
 from novelwriter.tools.noveldetails import GuiNovelDetails
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.writingstats import GuiWritingStats
-from novelwriter.viewer.viewer import GuiDocViewer
-from novelwriter.viewer.viewerpanel import GuiDocViewerPanel
 
 logger = logging.getLogger(__name__)
 
