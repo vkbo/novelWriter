@@ -41,7 +41,7 @@ from PyQt6.QtGui import (
     QPalette,
     QPixmap,
 )
-from PyQt6.QtWidgets import QApplication, QWidget
+from PyQt6.QtWidgets import QApplication, QToolTip, QWidget
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, minmax, safeIsFile
@@ -604,6 +604,7 @@ class GuiTheme:
 
         # Finalise
         QApplication.setPalette(self._guiPalette)
+        QToolTip.setPalette(self._guiPalette)  # Fixes an issue with desktop overrides on Linux, see #2871
         self._buildStyleSheets(self._guiPalette)
 
         return True
