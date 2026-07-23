@@ -33,7 +33,7 @@ from PyQt6.QtWidgets import QApplication, QHBoxLayout, QLabel, QStatusBar, QWidg
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatPercent, formatTime, languageName
 from novelwriter.constants import nwConst, nwLabels, nwStats, trStats
-from novelwriter.extensions.modified import NClickableLabel
+from novelwriter.extensions.modified import NClickableLabel, NIconToolButton
 from novelwriter.extensions.progressbars import NColorRangeProgress
 from novelwriter.extensions.statusled import StatusLED
 
@@ -56,6 +56,7 @@ class GuiMainStatus(QStatusBar):
         self._debugInfo = False
 
         iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         pPx = SHARED.theme.getTextWidth("0" * 18)
 
         self.messageBox = _MessageWidget(self)
@@ -65,20 +66,26 @@ class GuiMainStatus(QStatusBar):
         # =================
 
         # The Daily Progress Bar
-        self.sessBar = NColorRangeProgress(self, pPx, iPx + 4, 1)
-        self.sessBar.setValue(0)
-        self.sessBar.setMaximum(1)
-        self.sessBar.setVisible(False)
-        self.sessBar.setBarRangeColors(start="red", mid="yellow", end="green")
-        self.addPermanentWidget(self.sessBar)
+        self.dayReset = NIconToolButton(self, iSz, "revert:reset")
+        self.dayReset.setToolTip(self.tr("Reset Daily Progress"))
+        self.dayReset.setVisible(False)
+        self.dayReset.clicked.connect(self._resetDailyProgress)
+        self.addPermanentWidget(self.dayReset)
+
+        self.dayProg = NColorRangeProgress(self, pPx, iPx + 4, 1)
+        self.dayProg.setValue(0)
+        self.dayProg.setMaximum(1)
+        self.dayProg.setVisible(False)
+        self.dayProg.setBarRangeColors(start="red", mid="yellow", end="green")
+        self.addPermanentWidget(self.dayProg)
 
         # The Project Progress Bar
-        self.projBar = NColorRangeProgress(self, pPx, iPx + 4, 1)
-        self.projBar.setValue(0)
-        self.projBar.setMaximum(1)
-        self.projBar.setVisible(False)
-        self.projBar.setBarColor("blue")
-        self.addPermanentWidget(self.projBar)
+        self.projProg = NColorRangeProgress(self, pPx, iPx + 4, 1)
+        self.projProg.setValue(0)
+        self.projProg.setMaximum(1)
+        self.projProg.setVisible(False)
+        self.projProg.setBarColor("blue")
+        self.addPermanentWidget(self.projProg)
 
         # The Spell Checker Language
         self.langIcon = QLabel("", self)
@@ -153,8 +160,9 @@ class GuiMainStatus(QStatusBar):
 
     def clearStatus(self) -> None:
         """Reset all widgets on the status bar to default values."""
-        self.sessBar.setVisible(False)
-        self.projBar.setVisible(False)
+        self.dayReset.setVisible(False)
+        self.dayProg.setVisible(False)
+        self.projProg.setVisible(False)
         self.updateGoals(0, 0)
 
         self.setRefTime(-1.0)
@@ -181,8 +189,9 @@ class GuiMainStatus(QStatusBar):
         self.docIcon.setColors(colNone, colSaved, colUnsaved)
         self.projIcon.setColors(colNone, colSaved, colUnsaved)
 
-        self.sessBar.refreshTheme()
-        self.projBar.refreshTheme()
+        self.dayReset.refreshTheme()
+        self.dayProg.refreshTheme()
+        self.projProg.refreshTheme()
 
     ##
     #  Setters
@@ -221,22 +230,24 @@ class GuiMainStatus(QStatusBar):
         data = SHARED.project.data
 
         if (dailyTarget := data.getEffectiveDailyGoal()) > 0:
-            self.sessBar.setVisible(True)
-            self.sessBar.setMaximum(dailyTarget)
-            self.sessBar.setValue(min(sProg, dailyTarget))
-            self.sessBar.setCentreText(formatPercent(sProg, divisor=dailyTarget, prec=1))
-            self.sessBar.setToolTip(self.tr("Daily Progress: {0}/{1}").format(f"{sProg:n}", f"{dailyTarget:n}"))
+            self.dayReset.setVisible(True)
+            self.dayProg.setVisible(True)
+            self.dayProg.setMaximum(dailyTarget)
+            self.dayProg.setValue(min(sProg, dailyTarget))
+            self.dayProg.setCentreText(formatPercent(sProg, divisor=dailyTarget, prec=1))
+            self.dayProg.setToolTip(self.tr("Daily Progress: {0}/{1}").format(f"{sProg:n}", f"{dailyTarget:n}"))
         else:
-            self.sessBar.setVisible(False)
+            self.dayReset.setVisible(False)
+            self.dayProg.setVisible(False)
 
         if (projTarget := data.targetWordCount) > 0:
-            self.projBar.setVisible(True)
-            self.projBar.setMaximum(projTarget)
-            self.projBar.setValue(min(pProg, projTarget))
-            self.projBar.setCentreText(formatPercent(pProg, divisor=projTarget, prec=1))
-            self.projBar.setToolTip(self.tr("Project Progress: {0}/{1}").format(f"{pProg:n}", f"{projTarget:n}"))
+            self.projProg.setVisible(True)
+            self.projProg.setMaximum(projTarget)
+            self.projProg.setValue(min(pProg, projTarget))
+            self.projProg.setCentreText(formatPercent(pProg, divisor=projTarget, prec=1))
+            self.projProg.setToolTip(self.tr("Project Progress: {0}/{1}").format(f"{pProg:n}", f"{projTarget:n}"))
         else:
-            self.projBar.setVisible(False)
+            self.projProg.setVisible(False)
 
     def updateTime(self, idleTime: float = 0.0) -> None:
         """Update the session clock."""
@@ -289,6 +300,13 @@ class GuiMainStatus(QStatusBar):
         state = not CONFIG.showSessionTime
         self.timeText.setVisible(state)
         CONFIG.showSessionTime = state
+
+    @pyqtSlot()
+    def _resetDailyProgress(self) -> None:
+        """Ask for confirmation and reset the daily progress counter."""
+        if SHARED.question(self.tr("Do you want to reset the daily progress count?")):
+            SHARED.project.data.resetDailyProgress()
+            self.initProjectSettings()
 
     ##
     #  Debug

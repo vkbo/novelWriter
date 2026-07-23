@@ -493,3 +493,16 @@ class ProjectData:
             count = checkInt(cNotes, 0)
             self._initCounts[3] = count
             self._currCounts[3] = count
+
+    ##
+    #  Methods
+    ##
+
+    def resetDailyProgress(self) -> None:
+        """Reset the daily progress counter to zero without affecting
+        the overall project target progress.
+        """
+        self._dailyLastDate = date.today()
+        self._dailyLastCount = self._targetInitCount - self._targetLastCount
+        self.setDailyProgress(self._targetLastCount)
+        self._project.setProjectChanged(True)

@@ -131,12 +131,29 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     SHARED.project.data.setDailyTarget(500, False)
     SHARED.project.data.setProjectTarget(2000, None)
     status.updateGoals(100, 50)
-    assert status.sessBar.isVisible() is True
-    assert status.sessBar.maximum() == 500
-    assert status.sessBar.value() == 50
-    assert status.projBar.isVisible() is True
-    assert status.projBar.maximum() == 2000
-    assert status.projBar.value() == 100
+    assert status.dayProg.isVisible() is True
+    assert status.dayProg.maximum() == 500
+    assert status.dayProg.value() == 50
+    assert status.projProg.isVisible() is True
+    assert status.projProg.maximum() == 2000
+    assert status.projProg.value() == 100
+
+    # Reset Daily Progress
+    assert status.dayReset.isVisible() is True
+    SHARED.project.data.setDailyProgress(150)
+    assert SHARED.project.data.dailyProgress == 150
+
+    # Declining the confirmation leaves the progress untouched
+    with monkeypatch.context() as mp:
+        mp.setattr(SHARED, "question", lambda *a, **k: False)
+        status._resetDailyProgress()
+    assert SHARED.project.data.dailyProgress == 150
+
+    # Confirming resets the progress to zero
+    with monkeypatch.context() as mp:
+        mp.setattr(SHARED, "question", lambda *a, **k: True)
+        status._resetDailyProgress()
+    assert SHARED.project.data.dailyProgress == 0
 
     # Set message
     status.messageBox.setMessage("Hi!", "info", 10000)
