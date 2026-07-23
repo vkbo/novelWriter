@@ -52,7 +52,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter, qtAddAction, qtLambda, simplified
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import CUSTOM_COL, ItemStatus, StatusEntry
-from novelwriter.enum import nwStandardButton, nwStatusShape, nwToolButton
+from novelwriter.enum import nwItemClass, nwStandardButton, nwStatusShape, nwToolButton
 from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton, NSpinBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
@@ -215,9 +215,11 @@ class GuiProjectSettings(NDialog):
         targetDeadline = targetDeadline if self.goalsPage.targetDeadlineEnabled.isChecked() else None
         dailyGoalAuto = self.goalsPage.dailyGoalAuto.isChecked()
         dailyGoal = self.goalsPage.dailyGoal.value()
+        targetSkipRoots = [handle for handle, switch in self.goalsPage.skipRoots.items() if not switch.isChecked()]
 
         project.data.setProjectTarget(targetWordCount, targetDeadline)
         project.data.setDailyTarget(dailyGoal, dailyGoalAuto)
+        project.data.setTargetSkipRoots(targetSkipRoots)
 
         if self.statusPage.changed:
             logger.debug("Updating status labels")
@@ -255,6 +257,8 @@ class GuiProjectSettings(NDialog):
 
 
 class _SettingsPage(NScrollableForm):
+    """General Project Settings."""
+
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
@@ -329,12 +333,16 @@ class _SettingsPage(NScrollableForm):
 
 
 class _GoalsPage(NScrollableForm):
+    """Project Writing Goals."""
+
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         data = SHARED.project.data
         self.setHelpTextStyle(SHARED.theme.helpText)
-        self.setRowIndent(0)
+
+        # Writing Goals
+        self.addGroupLabel(self.tr("Writing Goals"))
 
         # Project Goals
         self.targetWordCount = NSpinBox(self, minVal=0, maxVal=9999999, step=1000)
@@ -387,10 +395,22 @@ class _GoalsPage(NScrollableForm):
         self.targetDeadlineEnabled.toggled.connect(self.targetDeadline.setEnabled)
         self.targetDeadlineEnabled.toggled.connect(self.dailyGoalAuto.setEnabled)
 
+        # Skip Roots
+        self.addGroupLabel(self.tr("Included Novel Root Folders"))
+
+        self.skipRoots: dict[str, NSwitch] = {}
+        for handle, item in SHARED.project.tree.iterRoots(nwItemClass.NOVEL):
+            switch = NSwitch(self)
+            switch.setChecked(handle not in data.targetSkipRoots)
+            self.skipRoots[handle] = switch
+            self.addRow(item.itemName, switch)
+
         self.finalise()
 
 
 class _StatusPage(NFixedPage):
+    """Project Status or Importance Settings."""
+
     C_DATA = 0
     C_LABEL = 0
     C_USAGE = 1
@@ -780,6 +800,8 @@ class _StatusPage(NFixedPage):
 
 
 class _ReplacePage(NFixedPage):
+    """Project Auto-Replace Settings."""
+
     C_KEY = 0
     C_REPL = 1
 

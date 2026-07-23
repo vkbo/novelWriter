@@ -24,6 +24,7 @@ from __future__ import annotations
 import logging
 import uuid
 
+from collections.abc import Sequence
 from datetime import date
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -78,6 +79,7 @@ class ProjectData:
         "_spellLang",
         "_status",
         "_targetDeadline",
+        "_targetSkipRoots",
         "_targetWordCount",
         "_titleFormat",
         "_uuid",
@@ -97,17 +99,20 @@ class ProjectData:
 
         # Project Settings
         self._doBackup = True
+        self._language = None
+        self._spellCheck = False
+        self._spellLang = None
+
+        # Writing Target
         self._targetWordCount = 0
         self._targetDeadline = None
+        self._targetSkipRoots: set[str] = set()
         self._remainingWordCount = 0
         self._dailyGoal = 0
         self._dailyGoalAuto = False
         self._dailyProgress = 0
         self._dailyLastCount = 0
         self._dailyLastDate = None
-        self._language = None
-        self._spellCheck = False
-        self._spellLang = None
 
         # Project Dictionaries
         self._initCounts = [0, 0, 0, 0]
@@ -183,6 +188,11 @@ class ProjectData:
     def targetDeadline(self) -> date | None:
         """Return the project deadline."""
         return self._targetDeadline
+
+    @property
+    def targetSkipRoots(self) -> set[str]:
+        """Return the set of target skip root handles."""
+        return self._targetSkipRoots
 
     @property
     def dailyGoal(self) -> int:
@@ -342,6 +352,12 @@ class ProjectData:
         if wCount != self._targetWordCount or deadline != self._targetDeadline:
             self._targetWordCount = checkInt(wCount, 0)
             self._targetDeadline = checkDateNone(deadline, None)
+            self._project.setProjectChanged(True)
+
+    def setTargetSkipRoots(self, value: Sequence[str]) -> None:
+        """Set the target skip root handles dictionary."""
+        if isinstance(value, Sequence):
+            self._targetSkipRoots = {str(handle) for handle in value}
             self._project.setProjectChanged(True)
 
     def setDailyTarget(self, value: Any, auto: Any) -> None:

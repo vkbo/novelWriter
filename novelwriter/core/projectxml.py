@@ -44,6 +44,8 @@ from novelwriter.common import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from novelwriter.core.projectdata import ProjectData
     from novelwriter.core.status import ItemStatus
 
@@ -276,6 +278,8 @@ class ProjectXMLReader:
             elif xItem.tag == "dailyTarget":
                 data.setDailyTarget(xItem.text, xItem.attrib.get("auto"))
                 data.setDailyTargetCurrent(xItem.attrib.get("last"), xItem.attrib.get("date"))
+            elif xItem.tag == "targetSkipRoots":
+                data.setTargetSkipRoots(self._parseSequenceText(xItem))
             elif xItem.tag == "status":
                 self._parseStatusImport(xItem, data.itemStatus)
             elif xItem.tag == "importance":
@@ -447,7 +451,13 @@ class ProjectXMLReader:
                     color = f"{red}, {green}, {blue}"
                 sObject.add(key, xEntry.text or "", color, shape, count)
 
-    def _parseDictKeyText(self, xItem: ET.Element) -> dict:
+    def _parseSequenceText(self, xItem: ET.Element) -> list[str]:
+        """Parse a dictionary stored with key as an attribute and the
+        value as the text property.
+        """
+        return [checkString(xEntry.text, "") for xEntry in xItem if xEntry.tag == "entry"]
+
+    def _parseDictKeyText(self, xItem: ET.Element) -> dict[str, str]:
         """Parse a dictionary stored with key as an attribute and the
         value as the text property.
         """
@@ -522,6 +532,7 @@ class ProjectXMLWriter:
         self._packSingleValue(xSettings, "spellChecking", data.spellLang, attrib={"auto": yesNo(data.spellCheck)})
         self._packSingleValue(xSettings, "projectTarget", str(data.targetWordCount), attrib=targetAttr)
         self._packSingleValue(xSettings, "dailyTarget", str(data.dailyGoal), attrib=dailyAttr)
+        self._packListValues(xSettings, "targetSkipRoots", data.targetSkipRoots)
         self._packDictKeyValue(xSettings, "lastHandle", data.lastHandle)
         self._packDictKeyValue(xSettings, "autoReplace", data.autoReplace)
 
@@ -575,7 +586,15 @@ class ProjectXMLWriter:
         xItem = ET.SubElement(xParent, name, attrib=attrib or {})
         xItem.text = str(value) or ""
 
-    def _packDictKeyValue(self, xParent: ET.Element, name: str, data: dict) -> None:
+    def _packListValues(self, xParent: ET.Element, name: str, data: list | tuple | set) -> None:
+        """Pack the entries of a sequence into an XML element."""
+        xItem = ET.SubElement(xParent, name)
+        for value in data:
+            if len(str(value)) > 0:
+                xEntry = ET.SubElement(xItem, "entry")
+                xEntry.text = str(value) or ""
+
+    def _packDictKeyValue(self, xParent: ET.Element, name: str, data: Mapping[str, str | None]) -> None:
         """Pack the entries of a dictionary into an XML element."""
         xItem = ET.SubElement(xParent, name)
         for key, value in data.items():
