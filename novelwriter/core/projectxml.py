@@ -44,6 +44,8 @@ from novelwriter.common import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from novelwriter.core.projectdata import ProjectData
     from novelwriter.core.status import ItemStatus
 
@@ -273,15 +275,18 @@ class ProjectXMLReader:
                 data.setSpellCheck(xItem.attrib.get("auto"))
             elif xItem.tag == "projectTarget":
                 data.setProjectTarget(xItem.text, xItem.attrib.get("date"))
+                data.setInitTargetCount(xItem.attrib.get("last"))
             elif xItem.tag == "dailyTarget":
                 data.setDailyTarget(xItem.text, xItem.attrib.get("auto"))
-                data.setDailyTargetCurrent(xItem.attrib.get("last"), xItem.attrib.get("date"))
+                data.setInitDailyTarget(xItem.attrib.get("last"), xItem.attrib.get("date"))
+            elif xItem.tag == "targetSkipRoots":
+                data.setInitTargetSkipRoots(self._parseSequenceText(xItem))
             elif xItem.tag == "status":
                 self._parseStatusImport(xItem, data.itemStatus)
             elif xItem.tag == "importance":
                 self._parseStatusImport(xItem, data.itemImport)
             elif xItem.tag == "lastHandle":
-                data.setLastHandles(self._parseDictKeyText(xItem))
+                data.setInitLastHandles(self._parseDictKeyText(xItem))
             elif xItem.tag == "autoReplace":
                 if self._version >= 0x0102:
                     data.setAutoReplace(self._parseDictKeyText(xItem))
@@ -447,7 +452,13 @@ class ProjectXMLReader:
                     color = f"{red}, {green}, {blue}"
                 sObject.add(key, xEntry.text or "", color, shape, count)
 
-    def _parseDictKeyText(self, xItem: ET.Element) -> dict:
+    def _parseSequenceText(self, xItem: ET.Element) -> list[str]:
+        """Parse a dictionary stored with key as an attribute and the
+        value as the text property.
+        """
+        return [checkString(xEntry.text, "") for xEntry in xItem if xEntry.tag == "entry"]
+
+    def _parseDictKeyText(self, xItem: ET.Element) -> dict[str, str]:
         """Parse a dictionary stored with key as an attribute and the
         value as the text property.
         """
@@ -509,6 +520,7 @@ class ProjectXMLWriter:
         # Save Project Settings
         targetAttr = {
             "date": data.targetDeadline.isoformat() if isinstance(data.targetDeadline, datetime.date) else "None",
+            "last": str(data.targetLastCount),
         }
         dailyAttr = {
             "auto": yesNo(data.dailyGoalAuto),
@@ -522,6 +534,7 @@ class ProjectXMLWriter:
         self._packSingleValue(xSettings, "spellChecking", data.spellLang, attrib={"auto": yesNo(data.spellCheck)})
         self._packSingleValue(xSettings, "projectTarget", str(data.targetWordCount), attrib=targetAttr)
         self._packSingleValue(xSettings, "dailyTarget", str(data.dailyGoal), attrib=dailyAttr)
+        self._packListValues(xSettings, "targetSkipRoots", data.targetSkipRoots)
         self._packDictKeyValue(xSettings, "lastHandle", data.lastHandle)
         self._packDictKeyValue(xSettings, "autoReplace", data.autoReplace)
 
@@ -575,10 +588,18 @@ class ProjectXMLWriter:
         xItem = ET.SubElement(xParent, name, attrib=attrib or {})
         xItem.text = str(value) or ""
 
-    def _packDictKeyValue(self, xParent: ET.Element, name: str, data: dict) -> None:
+    def _packListValues(self, xParent: ET.Element, name: str, data: list | tuple | set) -> None:
+        """Pack the entries of a sequence into an XML element."""
+        xItem = ET.SubElement(xParent, name)
+        for value in data:
+            if len(str(value)) > 0:  # pragma: no branch
+                xEntry = ET.SubElement(xItem, "entry")
+                xEntry.text = str(value) or ""
+
+    def _packDictKeyValue(self, xParent: ET.Element, name: str, data: Mapping[str, str | None]) -> None:
         """Pack the entries of a dictionary into an XML element."""
         xItem = ET.SubElement(xParent, name)
         for key, value in data.items():
-            if len(key) > 0:
+            if len(key) > 0:  # pragma: no branch
                 xEntry = ET.SubElement(xItem, "entry", attrib={"key": key})
                 xEntry.text = str(value) or ""

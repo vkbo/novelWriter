@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="26.2a1" hexVersion="0x260200a1" fileVersion="1.5" fileRevision="7" timeStamp="2026-07-20 17:43:20">
+<novelWriterXML appVersion="26.2a1" hexVersion="0x260200a1" fileVersion="1.5" fileRevision="7" timeStamp="2026-07-23 16:18:10">
   <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="1" autoCount="0" editTime="0">
     <name>Test Project A</name>
     <author>Jane Doe</author>
@@ -8,8 +8,9 @@
     <doBackup>yes</doBackup>
     <language>en_GB</language>
     <spellChecking auto="no">None</spellChecking>
-    <projectTarget date="None">0</projectTarget>
+    <projectTarget date="None" last="0">0</projectTarget>
     <dailyTarget auto="no" last="0" date="2026-07-19">0</dailyTarget>
+    <targetSkipRoots />
     <lastHandle>
       <entry key="editor">None</entry>
       <entry key="viewer">None</entry>

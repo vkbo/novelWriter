@@ -8,8 +8,9 @@
     <doBackup>yes</doBackup>
     <language>en_GB</language>
     <spellChecking auto="yes">en_GB</spellChecking>
-    <projectTarget date="None">0</projectTarget>
+    <projectTarget date="None" last="0">0</projectTarget>
     <dailyTarget auto="no" last="0" date="2022-10-25">0</dailyTarget>
+    <targetSkipRoots />
     <lastHandle>
       <entry key="editor">None</entry>
       <entry key="viewer">None</entry>

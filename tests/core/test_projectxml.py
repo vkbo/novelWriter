@@ -170,9 +170,7 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert data.targetDeadline == date.fromisoformat("2026-08-20")
     assert data.dailyGoal == 1000
     assert data.dailyGoalAuto is False
-    # The fixture's daily target date (2026-07-20) is stale by the time this
-    # test runs, so the loaded reference count must be discarded and the
-    # date bumped to today rather than kept as the stale loaded value
+    assert data.targetSkipRoots == {"d2d81f4831814"}
     assert data._dailyLastDate == date.today()
     assert data._dailyLastCount == 0
 
