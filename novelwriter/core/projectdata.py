@@ -24,7 +24,6 @@ from __future__ import annotations
 import logging
 import uuid
 
-from collections.abc import Sequence
 from datetime import date
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -41,6 +40,8 @@ from novelwriter.common import (
 from novelwriter.core.status import ItemStatus
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -356,31 +357,23 @@ class ProjectData:
             self._doBackup = checkBool(value, False)
             self._project.setProjectChanged(True)
 
-    def setProjectTarget(self, wCount: str | int | None, deadline: str | date | None, last: str | None = None) -> None:
+    def setProjectTarget(self, count: str | int | None, deadline: str | date | None) -> None:
         """Set the project goal."""
-        if wCount != self._targetWordCount or deadline != self._targetDeadline:
-            self._targetWordCount = checkInt(wCount, 0)
+        if count != self._targetWordCount or deadline != self._targetDeadline:
+            self._targetWordCount = checkInt(count, 0)
             self._targetDeadline = checkDateNone(deadline, None)
-            if last is not None:
-                self._targetInitCount = checkInt(last, 0)
-                self._targetLastCount = self._targetInitCount
             self._project.setProjectChanged(True)
 
-    def setTargetSkipRoots(self, value: Sequence[str], init: bool = False) -> None:
+    def setTargetSkipRoots(self, updated: list[str]) -> None:
         """Set the target skip root handles dictionary."""
-        if isinstance(value, Sequence):
-            current = self._targetSkipRoots
-            updated = {str(handle) for handle in value}
-            if init:
-                self._targetSkipRoots = updated
-            elif updated != current:
-                self._targetSkipRoots = updated
-                oldCount = self._targetLastCount
-                self._project.updateCounts()
-                if self._targetLastCount != oldCount:
-                    self._targetInitCount += self._targetLastCount - oldCount
-                    self.setDailyProgress(self._targetLastCount)
-                self._project.setProjectChanged(True)
+        if updated != self._targetSkipRoots:
+            self._targetSkipRoots = set(updated)
+            oldCount = self._targetLastCount
+            self._project.updateCounts()
+            if self._targetLastCount != oldCount:
+                self._targetInitCount += self._targetLastCount - oldCount
+                self.setDailyProgress(self._targetLastCount)
+            self._project.setProjectChanged(True)
 
     def setDailyTarget(self, value: Any, auto: Any) -> None:
         """Set the daily goal."""
@@ -388,15 +381,6 @@ class ProjectData:
             self._dailyGoal = checkInt(value, 0)
             self._dailyGoalAuto = checkBool(auto, False)
             self._project.setProjectChanged(True)
-
-    def setDailyTargetCurrent(self, value: Any, last: Any) -> None:
-        """Set the current daily goal."""
-        if (lastDate := checkDateNone(last, None)) == date.today():
-            self._dailyLastCount = checkInt(value, self._dailyLastCount)
-            self._dailyLastDate = lastDate
-        else:
-            self._dailyLastCount = 0
-            self._dailyLastDate = date.today()
 
     def setDailyProgress(self, count: int) -> None:
         """Set the current daily goal progress."""
@@ -437,35 +421,6 @@ class ProjectData:
             self._lastHandle[component] = checkStringNone(value, None)
             self._project.setProjectChanged(True)
 
-    def setLastHandles(self, value: dict) -> None:
-        """Set the full last handles dictionary to a new set of values.
-        This is intended to be used at project load.
-        """
-        if isinstance(value, dict):
-            for key, entry in value.items():
-                if key in self._lastHandle:
-                    self._lastHandle[key] = str(entry) if isHandle(entry) else None
-            self._project.setProjectChanged(True)
-
-    def setInitCounts(self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None) -> None:
-        """Set the count totals for novel and note files."""
-        if wNovel is not None:
-            count = checkInt(wNovel, 0)
-            self._initCounts[0] = count
-            self._currCounts[0] = count
-        if wNotes is not None:
-            count = checkInt(wNotes, 0)
-            self._initCounts[1] = count
-            self._currCounts[1] = count
-        if cNovel is not None:
-            count = checkInt(cNovel, 0)
-            self._initCounts[2] = count
-            self._currCounts[2] = count
-        if cNotes is not None:
-            count = checkInt(cNotes, 0)
-            self._initCounts[3] = count
-            self._currCounts[3] = count
-
     def setCurrCounts(self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None) -> None:
         """Set the count totals for novel and note files."""
         if wNovel is not None:
@@ -485,3 +440,55 @@ class ProjectData:
                 if isinstance(entry, str):
                     self._autoReplace[key] = simplified(entry)
             self._project.setProjectChanged(True)
+
+    ##
+    #  XML Init Setters
+    ##
+
+    def setInitLastHandles(self, value: dict) -> None:
+        """Set the full last handles dictionary to a new set of values.
+        This is intended to be used at project load.
+        """
+        if isinstance(value, dict):
+            for key, entry in value.items():
+                if key in self._lastHandle:
+                    self._lastHandle[key] = str(entry) if isHandle(entry) else None
+            self._project.setProjectChanged(True)
+
+    def setInitTargetCount(self, value: str | None) -> None:
+        """Set the initial target count."""
+        count = checkInt(value, 0)
+        self._targetInitCount = count
+        self._targetLastCount = count
+
+    def setInitTargetSkipRoots(self, value: Sequence[str]) -> None:
+        """Set the initial target skip root handles dictionary."""
+        self._targetSkipRoots = {str(handle) for handle in value}
+
+    def setInitDailyTarget(self, value: Any, last: Any) -> None:
+        """Set the initial daily goal."""
+        if (lastDate := checkDateNone(last, None)) == date.today():
+            self._dailyLastCount = checkInt(value, self._dailyLastCount)
+            self._dailyLastDate = lastDate
+        else:
+            self._dailyLastCount = 0
+            self._dailyLastDate = date.today()
+
+    def setInitCounts(self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None) -> None:
+        """Set the count totals for novel and note files."""
+        if wNovel is not None:
+            count = checkInt(wNovel, 0)
+            self._initCounts[0] = count
+            self._currCounts[0] = count
+        if wNotes is not None:
+            count = checkInt(wNotes, 0)
+            self._initCounts[1] = count
+            self._currCounts[1] = count
+        if cNovel is not None:
+            count = checkInt(cNovel, 0)
+            self._initCounts[2] = count
+            self._currCounts[2] = count
+        if cNotes is not None:
+            count = checkInt(cNotes, 0)
+            self._initCounts[3] = count
+            self._currCounts[3] = count

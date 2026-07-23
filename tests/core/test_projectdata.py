@@ -94,7 +94,7 @@ def testProjectData_Language(mockGUI):
 
 @pytest.mark.core
 def testProjectData_LastHandle(mockGUI):
-    """Test the setLastHandle and setLastHandles setters."""
+    """Test the setLastHandle and setInitLastHandles setters."""
     project = MockProject()
     data = ProjectData(project)  # type: ignore
 
@@ -107,13 +107,13 @@ def testProjectData_LastHandle(mockGUI):
     data.setLastHandle("0123456789abc", "editor")
     assert data.getLastHandle("editor") == "0123456789abc"
 
-    # setLastHandles requires a dict
+    # setInitLastHandles requires a dict
     project.changed = 0
-    data.setLastHandles(["not", "a", "dict"])  # type: ignore
+    data.setInitLastHandles(["not", "a", "dict"])  # type: ignore
     assert project.changed == 0
 
     # Unknown keys in the dict are skipped, known keys are updated
-    data.setLastHandles({"unknownKey": "0123456789abc", "editor": "0123456789abd"})
+    data.setInitLastHandles({"unknownKey": "0123456789abc", "editor": "0123456789abd"})
     assert data.getLastHandle("editor") == "0123456789abd"
 
 
@@ -150,7 +150,7 @@ def testProjectData_AutoReplace(mockGUI):
 
 @pytest.mark.core
 def testProjectData_DailyTargetCurrent(monkeypatch, mockGUI):
-    """Test the setDailyTargetCurrent setter. A stored reference count
+    """Test the setInitDailyTarget setter. A stored reference count
     must only be restored when it was recorded on the same day; a count
     from any other day is stale and must be discarded so it cannot leak
     into today's progress calculation.
@@ -162,18 +162,18 @@ def testProjectData_DailyTargetCurrent(monkeypatch, mockGUI):
     data = ProjectData(project)  # type: ignore
 
     # A record from the same day is restored as-is
-    data.setDailyTargetCurrent(60, "2026-07-22")
+    data.setInitDailyTarget(60, "2026-07-22")
     assert data.dailyLastCount == 60
     assert data._dailyLastDate == date(2026, 7, 22)
 
     # A record from an earlier day is stale and discarded, and the date
     # is bumped to today so it isn't mistaken for a fresh record later
-    data.setDailyTargetCurrent(100, "2026-07-20")
+    data.setInitDailyTarget(100, "2026-07-20")
     assert data.dailyLastCount == 0
     assert data._dailyLastDate == date(2026, 7, 22)
 
     # A missing/invalid date is treated the same as a stale record
-    data.setDailyTargetCurrent(100, None)
+    data.setInitDailyTarget(100, None)
     assert data.dailyLastCount == 0
     assert data._dailyLastDate == date(2026, 7, 22)
 
@@ -181,7 +181,7 @@ def testProjectData_DailyTargetCurrent(monkeypatch, mockGUI):
     # loaded. The stale count must not offset today's progress
     data = ProjectData(project)  # type: ignore
     data.setInitCounts(wNovel=500)
-    data.setDailyTargetCurrent(100, "2026-07-20")
+    data.setInitDailyTarget(100, "2026-07-20")
     data.setDailyProgress(500)
     assert data.dailyProgress == 0
 
@@ -221,7 +221,7 @@ def testProjectData_DailyProgress(monkeypatch, mockGUI):
     data = ProjectData(project)  # type: ignore
     data.setProjectTarget(1000, None)
     data.setInitCounts(wNovel=560)
-    data.setDailyTargetCurrent(60, "2026-07-20")
+    data.setInitDailyTarget(60, "2026-07-20")
 
     # No new typing yet, so progress should still read 60, and the
     # remaining count must match the earlier session, not be reduced by

@@ -274,18 +274,19 @@ class ProjectXMLReader:
                 data.setSpellLang(xItem.text)
                 data.setSpellCheck(xItem.attrib.get("auto"))
             elif xItem.tag == "projectTarget":
-                data.setProjectTarget(xItem.text, xItem.attrib.get("date"), xItem.attrib.get("last"))
+                data.setProjectTarget(xItem.text, xItem.attrib.get("date"))
+                data.setInitTargetCount(xItem.attrib.get("last"))
             elif xItem.tag == "dailyTarget":
                 data.setDailyTarget(xItem.text, xItem.attrib.get("auto"))
-                data.setDailyTargetCurrent(xItem.attrib.get("last"), xItem.attrib.get("date"))
+                data.setInitDailyTarget(xItem.attrib.get("last"), xItem.attrib.get("date"))
             elif xItem.tag == "targetSkipRoots":
-                data.setTargetSkipRoots(self._parseSequenceText(xItem), init=True)
+                data.setInitTargetSkipRoots(self._parseSequenceText(xItem))
             elif xItem.tag == "status":
                 self._parseStatusImport(xItem, data.itemStatus)
             elif xItem.tag == "importance":
                 self._parseStatusImport(xItem, data.itemImport)
             elif xItem.tag == "lastHandle":
-                data.setLastHandles(self._parseDictKeyText(xItem))
+                data.setInitLastHandles(self._parseDictKeyText(xItem))
             elif xItem.tag == "autoReplace":
                 if self._version >= 0x0102:
                     data.setAutoReplace(self._parseDictKeyText(xItem))
