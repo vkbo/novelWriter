@@ -26,7 +26,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QEvent, QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QColor, QPainter, QPaintEvent, QPalette
+from PyQt6.QtGui import QPainter, QPaintEvent, QPalette
 from PyQt6.QtWidgets import (
     QApplication,
     QComboBox,
@@ -39,6 +39,7 @@ from PyQt6.QtWidgets import (
     QSpinBox,
     QSplitter,
     QSplitterHandle,
+    QTabBar,
     QTabWidget,
     QToolButton,
     QTreeView,
@@ -47,7 +48,7 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwStandardButton
-from novelwriter.types import QtHexArgb, QtMouseLeft, QtMouseMiddle, QtRoleAccept, QtRoleReject
+from novelwriter.types import QtAlignCenter, QtHexArgb, QtMouseLeft, QtMouseMiddle, QtRoleAccept, QtRoleReject
 
 if TYPE_CHECKING:
     from enum import Enum
@@ -393,19 +394,54 @@ class NTabWidget(QTabWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
         self.setDocumentMode(True)
-        self.currentChanged.connect(self._updateTabColors)
+        self.setTabBar(NTabBar(self))
 
     def refreshTheme(self) -> None:
         """Refresh the tab colours for theme updates."""
-        self._updateTabColors(self.currentIndex())
-
-    @pyqtSlot(int)
-    def _updateTabColors(self, index: int) -> None:
-        """Highlight the currently selected tab with the theme highlight colour."""
         if tabBar := self.tabBar():  # pragma: no branch
-            hCol = self.palette().highlight().color()
-            for i in range(tabBar.count()):
-                tabBar.setTabTextColor(i, hCol if i == index else QColor())
+            tabBar.update()
+
+
+class NTabBar(QTabBar):
+    """Custom: Modified QTabBar.
+
+    A tab bar that highlights the currently selected tab's label
+    using the app theme.
+    """
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+
+    def tabSizeHint(self, index: int) -> QSize:
+        """Reduce the tab height by shrinking the margin above and below the text."""
+        size = super().tabSizeHint(index)
+        return QSize(size.width(), size.height() - 4)
+
+    def paintEvent(self, event: QPaintEvent | None) -> None:
+        """Highlight the currently selected tab with the theme highlight colour."""
+        painter = QPainter(self)
+        palette = self.palette()
+        selected = self.currentIndex()
+
+        for i in range(self.count()):
+            if not self.isTabVisible(i):
+                continue
+
+            rect = self.tabRect(i)
+            rR = rect.right()
+            rL = rect.left()
+            rT = rect.top()
+            if rR < 0 or rL > self.width():
+                continue
+
+            if i == selected:
+                painter.fillRect(rect, palette.alternateBase())
+                painter.setPen(palette.highlight().color())
+                painter.drawLine(rL, rT, rR, rT)
+            else:
+                painter.setPen(palette.text().color())
+
+            painter.drawText(rect, QtAlignCenter, self.tabText(i))
 
 
 class NClickableLabel(QLabel):
