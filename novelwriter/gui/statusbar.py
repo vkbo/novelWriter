@@ -54,8 +54,6 @@ class GuiMainStatus(QStatusBar):
         self._refTime = -1.0
         self._userIdle = False
         self._debugInfo = False
-        self._sessProg = 0
-        self._projProg = 0
 
         iPx = SHARED.theme.baseIconHeight
         pPx = SHARED.theme.getTextWidth("0" * 18)
@@ -150,12 +148,11 @@ class GuiMainStatus(QStatusBar):
 
     def initProjectSettings(self) -> None:
         """Apply project settings."""
-        self.updateGoals(self._projProg, self._sessProg)
+        data = SHARED.project.data
+        self.updateGoals(data.targetLastCount, data.dailyProgress)
 
     def clearStatus(self) -> None:
         """Reset all widgets on the status bar to default values."""
-        self._sessProg = 0
-        self._projProg = 0
         self.sessBar.setVisible(False)
         self.projBar.setVisible(False)
         self.updateGoals(0, 0)
@@ -222,8 +219,6 @@ class GuiMainStatus(QStatusBar):
     def updateGoals(self, pProg: int, sProg: int) -> None:
         """Update the current project and session goals."""
         data = SHARED.project.data
-        self._projProg = pProg
-        self._sessProg = sProg
 
         if (dailyTarget := data.getEffectiveDailyGoal()) > 0:
             self.sessBar.setVisible(True)

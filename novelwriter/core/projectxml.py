@@ -279,7 +279,7 @@ class ProjectXMLReader:
                 data.setDailyTarget(xItem.text, xItem.attrib.get("auto"))
                 data.setDailyTargetCurrent(xItem.attrib.get("last"), xItem.attrib.get("date"))
             elif xItem.tag == "targetSkipRoots":
-                data.setTargetSkipRoots(self._parseSequenceText(xItem))
+                data.setTargetSkipRoots(self._parseSequenceText(xItem), init=True)
             elif xItem.tag == "status":
                 self._parseStatusImport(xItem, data.itemStatus)
             elif xItem.tag == "importance":

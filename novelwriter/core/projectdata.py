@@ -366,17 +366,20 @@ class ProjectData:
                 self._targetLastCount = self._targetInitCount
             self._project.setProjectChanged(True)
 
-    def setTargetSkipRoots(self, value: Sequence[str]) -> None:
+    def setTargetSkipRoots(self, value: Sequence[str], init: bool = False) -> None:
         """Set the target skip root handles dictionary."""
         if isinstance(value, Sequence):
-            updated = {str(handle) for handle in value}
             current = self._targetSkipRoots
-            if updated != current:
+            updated = {str(handle) for handle in value}
+            if init:
                 self._targetSkipRoots = updated
-                oldTarget = self._targetLastCount
+            elif updated != current:
+                self._targetSkipRoots = updated
+                oldCount = self._targetLastCount
                 self._project.updateCounts()
-                if self._targetLastCount != oldTarget:
-                    self._targetInitCount += self._targetLastCount - oldTarget
+                if self._targetLastCount != oldCount:
+                    self._targetInitCount += self._targetLastCount - oldCount
+                    self.setDailyProgress(self._targetLastCount)
                 self._project.setProjectChanged(True)
 
     def setDailyTarget(self, value: Any, auto: Any) -> None:
