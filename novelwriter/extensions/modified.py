@@ -422,10 +422,9 @@ class NTabBar(QTabBar):
         painter = QPainter(self)
         palette = self.palette()
         selected = self.currentIndex()
-        order = [i for i in range(self.count()) if i != selected] + [selected]
 
-        for i in order:
-            if i < 0 or not self.isTabVisible(i):
+        for i in range(self.count()):
+            if not self.isTabVisible(i):
                 continue
 
             rect = self.tabRect(i)
