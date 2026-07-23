@@ -227,6 +227,17 @@ def testProjectData_TargetSkipRoots(mockGUI, mockRnd, fncPath, ipsumText):
     assert data.dailyProgress == writtenWords
     assert data._targetInitCount == startWords
 
+    # Excluding an empty root is still a change in roots, but since it
+    # has no words, the reference count and the baseline are untouched
+    thirdRoot = project.newRoot(nwItemClass.NOVEL)
+    project.setProjectChanged(False)
+    data.setTargetSkipRoots([thirdRoot])
+    assert project.projChanged is True
+    assert data.targetSkipRoots == {thirdRoot}
+    assert data.targetLastCount == newWords
+    assert data.dailyProgress == writtenWords
+    assert data._targetInitCount == startWords
+
 
 @pytest.mark.core
 def testProjectData_DailyTargetCurrent(monkeypatch, mockGUI):
