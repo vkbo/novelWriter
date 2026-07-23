@@ -441,6 +441,15 @@ class ProjectItem:
         """Check if item is a novel document."""
         return self._layout == nwItemLayout.DOCUMENT
 
+    def isDailyTarget(self) -> bool:
+        """Check if item is a daily target item."""
+        return (
+            self._active
+            and self._class == nwItemClass.NOVEL
+            and self._layout == nwItemLayout.DOCUMENT
+            and self._root not in self._project.data.targetSkipRoots
+        )
+
     ##
     #  Special Setters
     ##

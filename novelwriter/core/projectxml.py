@@ -274,7 +274,7 @@ class ProjectXMLReader:
                 data.setSpellLang(xItem.text)
                 data.setSpellCheck(xItem.attrib.get("auto"))
             elif xItem.tag == "projectTarget":
-                data.setProjectTarget(xItem.text, xItem.attrib.get("date"))
+                data.setProjectTarget(xItem.text, xItem.attrib.get("date"), xItem.attrib.get("last"))
             elif xItem.tag == "dailyTarget":
                 data.setDailyTarget(xItem.text, xItem.attrib.get("auto"))
                 data.setDailyTargetCurrent(xItem.attrib.get("last"), xItem.attrib.get("date"))
@@ -519,6 +519,7 @@ class ProjectXMLWriter:
         # Save Project Settings
         targetAttr = {
             "date": data.targetDeadline.isoformat() if isinstance(data.targetDeadline, datetime.date) else "None",
+            "last": str(data.targetLastCount),
         }
         dailyAttr = {
             "auto": yesNo(data.dailyGoalAuto),

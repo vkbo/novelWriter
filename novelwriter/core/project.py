@@ -567,9 +567,9 @@ class NWProject:
 
     def updateCounts(self) -> None:
         """Update the total word and character count values."""
-        wNovel, wNotes, cNovel, cNotes = self._tree.sumCounts()
+        wNovel, wNotes, cNovel, cNotes, dailyWords = self._tree.sumCounts()
         self._data.setCurrCounts(wNovel=wNovel, wNotes=wNotes, cNovel=cNovel, cNotes=cNotes)
-        self._data.setDailyProgress(wNovel)
+        self._data.setDailyProgress(dailyWords)
 
     def countStatus(self) -> None:
         """Count how many times the various status flags are used in the

@@ -1284,7 +1284,7 @@ class GuiMain(QMainWindow):
                     cTotal = data.currCounts[0]
 
             self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
-            self.mainStatus.updateGoals(data.currCounts[0], data.dailyProgress)
+            self.mainStatus.updateGoals(data.targetLastCount, data.dailyProgress)
 
     @pyqtSlot(int)
     def _mainStackChanged(self, index: int) -> None:

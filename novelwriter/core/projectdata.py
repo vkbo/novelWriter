@@ -79,6 +79,8 @@ class ProjectData:
         "_spellLang",
         "_status",
         "_targetDeadline",
+        "_targetInitCount",
+        "_targetLastCount",
         "_targetSkipRoots",
         "_targetWordCount",
         "_titleFormat",
@@ -105,6 +107,8 @@ class ProjectData:
 
         # Writing Target
         self._targetWordCount = 0
+        self._targetInitCount = 0
+        self._targetLastCount = 0
         self._targetDeadline = None
         self._targetSkipRoots: set[str] = set()
         self._remainingWordCount = 0
@@ -183,6 +187,11 @@ class ProjectData:
     def targetWordCount(self) -> int:
         """Return the project goal."""
         return self._targetWordCount
+
+    @property
+    def targetLastCount(self) -> int:
+        """Return the last recorded target count."""
+        return self._targetLastCount
 
     @property
     def targetDeadline(self) -> date | None:
@@ -347,18 +356,28 @@ class ProjectData:
             self._doBackup = checkBool(value, False)
             self._project.setProjectChanged(True)
 
-    def setProjectTarget(self, wCount: Any, deadline: Any) -> None:
+    def setProjectTarget(self, wCount: str | int | None, deadline: str | date | None, last: str | None = None) -> None:
         """Set the project goal."""
         if wCount != self._targetWordCount or deadline != self._targetDeadline:
             self._targetWordCount = checkInt(wCount, 0)
             self._targetDeadline = checkDateNone(deadline, None)
+            if last is not None:
+                self._targetInitCount = checkInt(last, 0)
+                self._targetLastCount = self._targetInitCount
             self._project.setProjectChanged(True)
 
     def setTargetSkipRoots(self, value: Sequence[str]) -> None:
         """Set the target skip root handles dictionary."""
         if isinstance(value, Sequence):
-            self._targetSkipRoots = {str(handle) for handle in value}
-            self._project.setProjectChanged(True)
+            updated = {str(handle) for handle in value}
+            current = self._targetSkipRoots
+            if updated != current:
+                self._targetSkipRoots = updated
+                oldTarget = self._targetLastCount
+                self._project.updateCounts()
+                if self._targetLastCount != oldTarget:
+                    self._targetInitCount += self._targetLastCount - oldTarget
+                self._project.setProjectChanged(True)
 
     def setDailyTarget(self, value: Any, auto: Any) -> None:
         """Set the daily goal."""
@@ -384,9 +403,10 @@ class ProjectData:
             self._dailyLastCount -= self._dailyProgress
             self._dailyLastDate = date.today()
 
-        offset = self._initCounts[0] - self._dailyLastCount
+        offset = self._targetInitCount - self._dailyLastCount
         self._dailyProgress = count - offset
         self._remainingWordCount = self._targetWordCount - offset
+        self._targetLastCount = count
 
     def setLanguage(self, value: str | None) -> None:
         """Set the project language."""
