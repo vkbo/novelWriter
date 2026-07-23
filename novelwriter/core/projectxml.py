@@ -592,7 +592,7 @@ class ProjectXMLWriter:
         """Pack the entries of a sequence into an XML element."""
         xItem = ET.SubElement(xParent, name)
         for value in data:
-            if len(str(value)) > 0:
+            if len(str(value)) > 0:  # pragma: no branch
                 xEntry = ET.SubElement(xItem, "entry")
                 xEntry.text = str(value) or ""
 
@@ -600,6 +600,6 @@ class ProjectXMLWriter:
         """Pack the entries of a dictionary into an XML element."""
         xItem = ET.SubElement(xParent, name)
         for key, value in data.items():
-            if len(key) > 0:
+            if len(key) > 0:  # pragma: no branch
                 xEntry = ET.SubElement(xItem, "entry", attrib={"key": key})
                 xEntry.text = str(value) or ""

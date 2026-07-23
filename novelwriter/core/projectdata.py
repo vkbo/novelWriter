@@ -366,8 +366,9 @@ class ProjectData:
 
     def setTargetSkipRoots(self, updated: list[str]) -> None:
         """Set the target skip root handles dictionary."""
-        if updated != self._targetSkipRoots:
-            self._targetSkipRoots = set(updated)
+        skipRoots = {str(handle) for handle in updated}
+        if skipRoots != self._targetSkipRoots:
+            self._targetSkipRoots = skipRoots
             oldCount = self._targetLastCount
             self._project.updateCounts()
             if self._targetLastCount != oldCount:
@@ -445,7 +446,7 @@ class ProjectData:
     #  XML Init Setters
     ##
 
-    def setInitLastHandles(self, value: dict) -> None:
+    def setInitLastHandles(self, value: Any) -> None:
         """Set the full last handles dictionary to a new set of values.
         This is intended to be used at project load.
         """
@@ -455,7 +456,7 @@ class ProjectData:
                     self._lastHandle[key] = str(entry) if isHandle(entry) else None
             self._project.setProjectChanged(True)
 
-    def setInitTargetCount(self, value: str | None) -> None:
+    def setInitTargetCount(self, value: Any) -> None:
         """Set the initial target count."""
         count = checkInt(value, 0)
         self._targetInitCount = count
