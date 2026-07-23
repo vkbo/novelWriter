@@ -438,13 +438,14 @@ class ProjectTree:
 
         return True
 
-    def sumCounts(self) -> tuple[int, int, int, int, int]:
+    def sumCounts(self) -> tuple[int, int, int, int, int, int]:
         """Loop over all entries and add up the word and char counts."""
         novelWords = 0
         notesWords = 0
         novelChars = 0
         notesChars = 0
-        dailyWords = 0
+        sessionWords = 0
+        targetWords = 0
         for item in self._items.values():
             if item.itemLayout == nwItemLayout.NOTE:
                 notesWords += item.wordCount
@@ -452,9 +453,12 @@ class ProjectTree:
             elif item.itemLayout == nwItemLayout.DOCUMENT:
                 novelWords += item.wordCount
                 novelChars += item.charCount
-            if item.isDailyTarget():
-                dailyWords += item.wordCount
-        return novelWords, notesWords, novelChars, notesChars, dailyWords
+
+            wTarget, wSession = item.dailyProgress()
+            sessionWords += wSession
+            targetWords += wTarget
+
+        return novelWords, notesWords, novelChars, notesChars, sessionWords, targetWords
 
     ##
     #  Tree Item Methods

@@ -155,21 +155,17 @@ def testProjectData_AutoReplace(mockGUI):
 @pytest.mark.core
 def testProjectData_TargetSkipRoots(mockGUI, mockRnd, fncPath, ipsumText):
     """Test the setTargetSkipRoots setter against a real project tree.
-    Excluding a root folder causes a step change in the daily reference
-    count, so the target baseline must be corrected by the same amount
-    to keep today's progress continuous, and re-setting the same roots
-    must be a no-op.
+    The daily progress is tracked per item from the session baseline,
+    so excluding or including a root only changes today's progress by
+    what was actually written in that root this session, not by its
+    full word count, and re-setting the same roots must be a no-op.
     """
     project = NWProject()
     buildTestProject(project, fncPath)
-    data = project.data
     tree = project.tree
 
-    # A project file loaded with no skip roots set starts out empty
-    data.setInitTargetSkipRoots([])
-    assert data.targetSkipRoots == set()
-
-    # Add a second Novel root folder with a file of lorem ipsum text
+    # Add a second Novel root folder with a file of lorem ipsum text,
+    # written before the session baseline below is established
     secondRoot = project.newRoot(nwItemClass.NOVEL)
     secondDoc = project.newFile("Second Chapter", secondRoot) or ""
     project.storage.getDocument(secondDoc).writeDocument("## Second Chapter\n\n" + ipsumText[0])
@@ -178,12 +174,20 @@ def testProjectData_TargetSkipRoots(mockGUI, mockRnd, fncPath, ipsumText):
     secondWords = tree[secondDoc].wordCount  # type: ignore
     assert secondWords > 0
 
-    # Establish a baseline as if the project had just been loaded, with
-    # both Novel roots counted, and nothing written yet this session
-    startWords = tree.sumCounts()[0]
-    data.setInitTargetCount(startWords)
+    # Reload the project so the per-item session baseline is set to the
+    # word counts as they stand now, as if the project had just been
+    # opened with both Novel roots counted. The daily progress carried
+    # over from the earlier in-memory build isn't relevant here, so it
+    # is explicitly reset to a known-zero starting point
+    project.saveProject(autoSave=True)
+    assert project.openProject(fncPath) is True
+    data = project.data
+    tree = project.tree
     data.setProjectTarget(10000, None)
-    project.updateCounts()
+    data.resetDailyProgress()
+
+    startWords = tree.sumCounts()[5]
+    assert data.targetSkipRoots == set()
     assert data.dailyProgress == 0
     assert data.targetLastCount == startWords
 
@@ -195,20 +199,19 @@ def testProjectData_TargetSkipRoots(mockGUI, mockRnd, fncPath, ipsumText):
     project.updateCounts()
 
     writtenWords = data.dailyProgress
-    newWords = tree.sumCounts()[0]
+    newWords = tree.sumCounts()[5]
     assert writtenWords > 0
     assert data.targetLastCount == newWords
 
-    # Excluding the second root drops the reference count by its word
-    # count. The baseline must shift by the same amount so that today's
-    # progress, made entirely in the other root, stays continuous
+    # Excluding the second root drops the project total by its word
+    # count, but since none of those words were written this session,
+    # today's progress is unaffected
     project.setProjectChanged(False)
     data.setTargetSkipRoots([secondRoot])
     assert project.projChanged is True
     assert data.targetSkipRoots == {secondRoot}
     assert data.targetLastCount == newWords - secondWords
     assert data.dailyProgress == writtenWords
-    assert data._targetInitCount == startWords - secondWords
 
     # Setting the same root again, even wrapped in a fresh list, is a no-op
     project.setProjectChanged(False)
@@ -218,17 +221,16 @@ def testProjectData_TargetSkipRoots(mockGUI, mockRnd, fncPath, ipsumText):
     assert data.dailyProgress == writtenWords
 
     # Re-including the root restores the total, and progress is still
-    # continuous across the second step change
+    # unaffected since none of its words were written this session
     project.setProjectChanged(False)
     data.setTargetSkipRoots([])
     assert project.projChanged is True
     assert data.targetSkipRoots == set()
     assert data.targetLastCount == newWords
     assert data.dailyProgress == writtenWords
-    assert data._targetInitCount == startWords
 
     # Excluding an empty root is still a change in roots, but since it
-    # has no words, the reference count and the baseline are untouched
+    # has no words, the total and progress are untouched
     thirdRoot = project.newRoot(nwItemClass.NOVEL)
     project.setProjectChanged(False)
     data.setTargetSkipRoots([thirdRoot])
@@ -236,7 +238,6 @@ def testProjectData_TargetSkipRoots(mockGUI, mockRnd, fncPath, ipsumText):
     assert data.targetSkipRoots == {thirdRoot}
     assert data.targetLastCount == newWords
     assert data.dailyProgress == writtenWords
-    assert data._targetInitCount == startWords
 
 
 @pytest.mark.core
@@ -273,16 +274,17 @@ def testProjectData_DailyTargetCurrent(monkeypatch, mockGUI):
     data = ProjectData(project)  # type: ignore
     data.setInitTargetCount(500)
     data.setInitDailyTarget(100, "2026-07-20")
-    data.setDailyProgress(500)
+    data.setDailyProgress(0, 500)
     assert data.dailyProgress == 0
 
 
 @pytest.mark.core
 def testProjectData_DailyProgress(monkeypatch, mockGUI):
-    """Test the setDailyProgress setter. The daily progress and the
-    remaining project word count must survive across sessions on the
-    same day, and must be recalculated when the clock ticks over to a
-    new day.
+    """Test the setDailyProgress setter. The daily word count passed in
+    is the cumulative session change since the project was last loaded,
+    not the change since the previous call, so it must be combined with
+    the carried-over daily baseline to survive across sessions on the
+    same day, and be recalculated when the clock ticks over to a new day.
     """
     monkeypatch.setattr(projectdata, "date", _FakeDate)
     _FakeDate._today = date(2026, 7, 20)
@@ -292,16 +294,16 @@ def testProjectData_DailyProgress(monkeypatch, mockGUI):
     data.setProjectTarget(1000, None)
     data.setInitTargetCount(500)
 
-    # First update of a session with no prior daily record: the progress
-    # is measured from the initial count, and the remaining word count is
+    # First update of a session with no prior daily record and nothing
+    # written yet: the progress is zero, and the remaining word count is
     # the full target less what already existed at the start of the day
-    data.setDailyProgress(500)
+    data.setDailyProgress(0, 500)
     assert data.dailyProgress == 0
     assert data._remainingWordCount == 500
 
-    # As the session progresses, the progress grows, but the remaining
-    # count for the day stays fixed at the start-of-day value
-    data.setDailyProgress(560)
+    # As the session progresses, the progress grows by the session word
+    # count, but the remaining count for the day stays fixed
+    data.setDailyProgress(60, 560)
     assert data.dailyProgress == 60
     assert data._remainingWordCount == 500
 
@@ -314,30 +316,32 @@ def testProjectData_DailyProgress(monkeypatch, mockGUI):
     data.setInitTargetCount(560)
     data.setInitDailyTarget(60, "2026-07-20")
 
-    # No new typing yet, so progress should still read 60, and the
-    # remaining count must match the earlier session, not be reduced by
-    # the 60 words a second time
-    data.setDailyProgress(560)
+    # No new typing yet in this session, so progress should still read
+    # 60, and the remaining count must match the earlier session, not
+    # be reduced by the 60 words a second time
+    data.setDailyProgress(0, 560)
     assert data.dailyProgress == 60
     assert data.dailyLastCount == 60
     assert data._remainingWordCount == 500
 
     # More words are added in the second session
-    data.setDailyProgress(600)
+    data.setDailyProgress(40, 600)
     assert data.dailyProgress == 100
     assert data._remainingWordCount == 500
 
     # The clock ticks over to the next day mid-session. Progress resets
     # for the new day, and the remaining count drops by the full amount
-    # written the previous day (100 words)
+    # written the previous day (100 words). The session word count keeps
+    # accumulating from the same session baseline, so 5 more words typed
+    # after the rollover means 45 in total this session
     _FakeDate._today = date(2026, 7, 21)
-    data.setDailyProgress(605)
+    data.setDailyProgress(45, 605)
     assert data.dailyProgress == 5
     assert data._remainingWordCount == 400
     assert data._dailyLastDate == date(2026, 7, 21)
 
     # Further typing on the new day accumulates from the new baseline
-    data.setDailyProgress(615)
+    data.setDailyProgress(55, 615)
     assert data.dailyProgress == 15
     assert data._remainingWordCount == 400
 
@@ -355,7 +359,7 @@ def testProjectData_EffectiveDailyGoal(monkeypatch, mockGUI):
     data = ProjectData(project)  # type: ignore
     data.setProjectTarget(1000, date(2026, 7, 24))
     data.setInitTargetCount(400)
-    data.setDailyProgress(400)
+    data.setDailyProgress(0, 400)
     assert data._remainingWordCount == 600
 
     # With automatic calculation off, the fixed goal is always returned
@@ -369,16 +373,16 @@ def testProjectData_EffectiveDailyGoal(monkeypatch, mockGUI):
 
     # When the deadline is today, all the remaining words are due today
     data.setProjectTarget(1000, date(2026, 7, 20))
-    data.setDailyProgress(400)
+    data.setDailyProgress(0, 400)
     assert data.getEffectiveDailyGoal() == 600
 
     # When the deadline has passed, fall back to the fixed daily goal
     data.setProjectTarget(1000, date(2026, 7, 19))
-    data.setDailyProgress(400)
+    data.setDailyProgress(0, 400)
     assert data.getEffectiveDailyGoal() == 50
 
     # When the remaining word count isn't positive, also fall back
     data.setProjectTarget(400, date(2026, 7, 24))
-    data.setDailyProgress(400)
+    data.setDailyProgress(0, 400)
     assert data._remainingWordCount == 0
     assert data.getEffectiveDailyGoal() == 50

@@ -92,8 +92,8 @@ class ProjectItem:
         self._wordCount = 0  # Current word count
         self._paraCount = 0  # Current paragraph count
         self._cursorPos = 0  # Last cursor position
-        self._wordInit = 0  # Initial character count
-        self._charInit = 0  # Initial word count
+        self._charInit = 0  # Initial character count
+        self._wordInit = 0  # Initial word count
 
     def __repr__(self) -> str:
         """Return a string representation of the item."""
@@ -181,7 +181,7 @@ class ProjectItem:
 
     @property
     def initCount(self) -> int:
-        return self._wordInit if CONFIG.useCharCount else self._charInit
+        return self._charInit if CONFIG.useCharCount else self._wordInit
 
     @property
     def cursorPos(self) -> int:
@@ -270,8 +270,8 @@ class ProjectItem:
             self._paraCount = 0
             self._cursorPos = 0
 
-        self._wordInit = self._charCount
-        self._charInit = self._wordCount
+        self._charInit = self._charCount
+        self._wordInit = self._wordCount
 
         return True
 
@@ -295,8 +295,8 @@ class ProjectItem:
         new._wordCount = source._wordCount
         new._paraCount = source._paraCount
         new._cursorPos = source._cursorPos
-        new._wordInit = source._wordInit
         new._charInit = source._charInit
+        new._wordInit = source._wordInit
         return new
 
     ##
@@ -441,14 +441,18 @@ class ProjectItem:
         """Check if item is a novel document."""
         return self._layout == nwItemLayout.DOCUMENT
 
-    def isDailyTarget(self) -> bool:
-        """Check if item is a daily target item."""
-        return (
+    def dailyProgress(self) -> tuple[int, int]:
+        """Return the total word count and session change for items
+        included in the project goal.
+        """
+        if (
             self._active
             and self._class == nwItemClass.NOVEL
             and self._layout == nwItemLayout.DOCUMENT
             and self._root not in self._project.data.targetSkipRoots
-        )
+        ):
+            return self._wordCount, self._wordCount - self._wordInit
+        return 0, 0
 
     ##
     #  Special Setters

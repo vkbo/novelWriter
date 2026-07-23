@@ -183,9 +183,9 @@ def testProjectItem_Setters(mockGUI, mockRnd, fncPath):
     item._wordInit = 12
     item._charInit = 34
     CONFIG.useCharCount = False
-    assert item.initCount == 34
-    CONFIG.useCharCount = True
     assert item.initCount == 12
+    CONFIG.useCharCount = True
+    assert item.initCount == 34
     CONFIG.useCharCount = False
 
     # CursorPos
