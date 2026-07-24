@@ -53,6 +53,7 @@ class ProjectItem:
         "_charInit",
         "_class",
         "_cursorPos",
+        "_dailyTarget",
         "_expanded",
         "_handle",
         "_heading",
@@ -94,6 +95,9 @@ class ProjectItem:
         self._cursorPos = 0  # Last cursor position
         self._charInit = 0  # Initial character count
         self._wordInit = 0  # Initial word count
+
+        # Internals
+        self._dailyTarget = False  # Whether the item is included in the project goal
 
     def __repr__(self) -> str:
         """Return a string representation of the item."""
@@ -273,6 +277,8 @@ class ProjectItem:
         self._charInit = self._charCount
         self._wordInit = self._wordCount
 
+        self._updateDailyTarget()
+
         return True
 
     @classmethod
@@ -297,6 +303,7 @@ class ProjectItem:
         new._cursorPos = source._cursorPos
         new._charInit = source._charInit
         new._wordInit = source._wordInit
+        new._dailyTarget = source._dailyTarget
         return new
 
     ##
@@ -445,12 +452,7 @@ class ProjectItem:
         """Return the total word count and session change for items
         included in the project goal.
         """
-        if (
-            self._active
-            and self._class == nwItemClass.NOVEL
-            and self._layout == nwItemLayout.DOCUMENT
-            and self._root not in self._project.data.targetSkipRoots
-        ):
+        if self._dailyTarget and self._root not in self._project.data.targetSkipRoots:
             return self._wordCount, self._wordCount - self._wordInit
         return 0, 0
 
@@ -472,12 +474,12 @@ class ProjectItem:
         if self._layout == nwItemLayout.NO_LAYOUT:
             # If no layout is set, pick one
             if self.isNovelLike():
-                self._layout = nwItemLayout.DOCUMENT
+                self.setLayout(nwItemLayout.DOCUMENT)
             else:
-                self._layout = nwItemLayout.NOTE
+                self.setLayout(nwItemLayout.NOTE)
         elif not self.documentAllowed():
             # Change layout to note if it is not in an allowed folder
-            self._layout = nwItemLayout.NOTE
+            self.setLayout(nwItemLayout.NOTE)
 
         if self._status is None:
             self.setStatus("New")  # This forces a default value lookup
@@ -514,6 +516,10 @@ class ProjectItem:
         else:
             self._root = None
 
+        if self._dailyTarget:
+            # May have moved between skipped/non-skipped roots
+            self._project.markCountsDirty()
+
     def setOrder(self, order: Any) -> None:
         """Set the item order, and ensure that it is valid. This value
         is purely a meta value, and not actually used by novelWriter at
@@ -544,6 +550,7 @@ class ProjectItem:
         else:
             logger.error("Unrecognised item class '%s'", value)
             self._class = nwItemClass.NO_CLASS
+        self._processDailyTarget()
 
     def setLayout(self, value: Any) -> None:
         """Set the item layout from either a proper nwItemLayout, or set
@@ -556,6 +563,7 @@ class ProjectItem:
         else:
             logger.error("Unrecognised item layout '%s'", value)
             self._layout = nwItemLayout.NO_LAYOUT
+        self._processDailyTarget()
 
     def setStatus(self, value: Any) -> None:
         """Set the item status by looking it up in the valid status
@@ -575,6 +583,7 @@ class ProjectItem:
             self._active = state
         else:
             self._active = False
+        self._processDailyTarget()
 
     def setExpanded(self, state: Any) -> None:
         """Set the expanded status of an item in the project tree."""
@@ -619,3 +628,22 @@ class ProjectItem:
             self._cursorPos = max(0, position)
         else:
             self._cursorPos = 0
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _updateDailyTarget(self) -> None:
+        """Update whether the item is included in the project goal. This
+        does not check if the item is skipped.
+        """
+        self._dailyTarget = self._active and self._class == nwItemClass.NOVEL and self._layout == nwItemLayout.DOCUMENT
+
+    def _processDailyTarget(self) -> None:
+        """Update the daily target status of the item and notify the
+        project of any changes.
+        """
+        oldStatus = self._dailyTarget
+        self._updateDailyTarget()
+        if oldStatus != self._dailyTarget:
+            self._project.markCountsDirty()

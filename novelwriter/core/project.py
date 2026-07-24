@@ -78,6 +78,7 @@ class NWProject:
 
     __slots__ = (
         "_changed",
+        "_countsDirty",
         "_data",
         "_index",
         "_langData",
@@ -105,6 +106,7 @@ class NWProject:
         self._changed = False  # The project has unsaved changes
         self._valid = False  # The project was successfully loaded
         self._state = NWProjectState.UNKNOWN
+        self._countsDirty = False  # The word counts need to be recalculated
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -180,6 +182,11 @@ class NWProject:
     def currentTotalCount(self) -> int:
         """Return the current total word count from the tree."""
         return self._tree.model.root.count
+
+    @property
+    def countsDirty(self) -> bool:
+        """Return whether the word counts need to be recalculated."""
+        return self._countsDirty
 
     ##
     #  Item Methods
@@ -570,6 +577,13 @@ class NWProject:
         wNovel, wNotes, cNovel, cNotes, wSession, wTarget = self._tree.sumCounts()
         self._data.setCurrCounts(wNovel=wNovel, wNotes=wNotes, cNovel=cNovel, cNotes=cNotes)
         self._data.setDailyProgress(wSession, wTarget)
+        self._countsDirty = False
+
+    def markCountsDirty(self) -> None:
+        """Flag that an item's goal eligibility has changed, so the word
+        counts are stale and must be recalculated.
+        """
+        self._countsDirty = True
 
     def countStatus(self) -> None:
         """Count how many times the various status flags are used in the

@@ -1263,7 +1263,7 @@ class GuiMain(QMainWindow):
             self.mainStatus.updateGoals(0, 0)
 
         currentTotalCount = SHARED.project.currentTotalCount
-        if self._lastTotalCount != currentTotalCount:
+        if self._lastTotalCount != currentTotalCount or SHARED.project.countsDirty:
             self._lastTotalCount = currentTotalCount
 
             data = SHARED.project.data
