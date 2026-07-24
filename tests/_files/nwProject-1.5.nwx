@@ -8,7 +8,7 @@
     <doBackup>no</doBackup>
     <language>en_GB</language>
     <spellChecking auto="yes">None</spellChecking>
-    <projectTarget date="2026-08-20" last="1137">100000</projectTarget>
+    <projectTarget date="2026-08-20" last="0">100000</projectTarget>
     <dailyTarget auto="no" last="0" date="2026-07-20">1000</dailyTarget>
     <targetSkipRoots>
       <entry>d2d81f4831814</entry>

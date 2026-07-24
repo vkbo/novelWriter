@@ -449,10 +449,6 @@ class ProjectData:
                     self._lastHandle[key] = str(entry) if isHandle(entry) else None
             self._project.setProjectChanged(True)
 
-    def setInitTargetCount(self, value: Any) -> None:
-        """Set the initial target count."""
-        self._targetLastCount = checkInt(value, 0)
-
     def setInitTargetSkipRoots(self, value: Sequence[str]) -> None:
         """Set the initial target skip root handles dictionary."""
         self._targetSkipRoots = {str(handle) for handle in value}
