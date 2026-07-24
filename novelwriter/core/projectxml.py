@@ -275,7 +275,6 @@ class ProjectXMLReader:
                 data.setSpellCheck(xItem.attrib.get("auto"))
             elif xItem.tag == "projectTarget":
                 data.setProjectTarget(xItem.text, xItem.attrib.get("date"))
-                data.setInitTargetCount(xItem.attrib.get("last"))
             elif xItem.tag == "dailyTarget":
                 data.setDailyTarget(xItem.text, xItem.attrib.get("auto"))
                 data.setInitDailyTarget(xItem.attrib.get("last"), xItem.attrib.get("date"))

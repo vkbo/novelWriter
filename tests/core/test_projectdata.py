@@ -272,7 +272,6 @@ def testProjectData_DailyTargetCurrent(monkeypatch, mockGUI):
     # End-to-end: a project file with a daily target set two days ago is
     # loaded. The stale count must not offset today's progress
     data = ProjectData(project)  # type: ignore
-    data.setInitTargetCount(500)
     data.setInitDailyTarget(100, "2026-07-20")
     data.setDailyProgress(0, 500)
     assert data.dailyProgress == 0
@@ -292,7 +291,6 @@ def testProjectData_DailyProgress(monkeypatch, mockGUI):
     project = MockProject()
     data = ProjectData(project)  # type: ignore
     data.setProjectTarget(1000, None)
-    data.setInitTargetCount(500)
 
     # First update of a session with no prior daily record and nothing
     # written yet: the progress is zero, and the remaining word count is
@@ -313,7 +311,6 @@ def testProjectData_DailyProgress(monkeypatch, mockGUI):
     # 60-word progress forward
     data = ProjectData(project)  # type: ignore
     data.setProjectTarget(1000, None)
-    data.setInitTargetCount(560)
     data.setInitDailyTarget(60, "2026-07-20")
 
     # No new typing yet in this session, so progress should still read
@@ -358,7 +355,6 @@ def testProjectData_EffectiveDailyGoal(monkeypatch, mockGUI):
     project = MockProject()
     data = ProjectData(project)  # type: ignore
     data.setProjectTarget(1000, date(2026, 7, 24))
-    data.setInitTargetCount(400)
     data.setDailyProgress(0, 400)
     assert data._remainingWordCount == 600
 
