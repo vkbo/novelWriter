@@ -80,7 +80,6 @@ class ProjectData:
         "_spellLang",
         "_status",
         "_targetDeadline",
-        "_targetInitCount",
         "_targetLastCount",
         "_targetSkipRoots",
         "_targetWordCount",
@@ -108,7 +107,6 @@ class ProjectData:
 
         # Writing Target
         self._targetWordCount = 0
-        self._targetInitCount = 0
         self._targetLastCount = 0
         self._targetDeadline = None
         self._targetSkipRoots: set[str] = set()
@@ -369,11 +367,7 @@ class ProjectData:
         skipRoots = {str(handle) for handle in updated}
         if skipRoots != self._targetSkipRoots:
             self._targetSkipRoots = skipRoots
-            oldCount = self._targetLastCount
             self._project.updateCounts()
-            if self._targetLastCount != oldCount:
-                self._targetInitCount += self._targetLastCount - oldCount
-                self.setDailyProgress(self._targetLastCount)
             self._project.setProjectChanged(True)
 
     def setDailyTarget(self, value: Any, auto: Any) -> None:
@@ -383,18 +377,17 @@ class ProjectData:
             self._dailyGoalAuto = checkBool(auto, False)
             self._project.setProjectChanged(True)
 
-    def setDailyProgress(self, count: int) -> None:
-        """Set the current daily goal progress."""
+    def setDailyProgress(self, session: int, target: int) -> None:
+        """Set the current daily and project goal progress."""
         if self._dailyLastDate != date.today():
             # The date has changed since the last update or was not set.
             # In either case, we shift to a new day with new counts.
             self._dailyLastCount -= self._dailyProgress
             self._dailyLastDate = date.today()
 
-        offset = self._targetInitCount - self._dailyLastCount
-        self._dailyProgress = count - offset
-        self._remainingWordCount = self._targetWordCount - offset
-        self._targetLastCount = count
+        self._dailyProgress = self._dailyLastCount + session
+        self._remainingWordCount = self._targetWordCount - (target - self._dailyProgress)
+        self._targetLastCount = target
 
     def setLanguage(self, value: str | None) -> None:
         """Set the project language."""
@@ -458,9 +451,7 @@ class ProjectData:
 
     def setInitTargetCount(self, value: Any) -> None:
         """Set the initial target count."""
-        count = checkInt(value, 0)
-        self._targetInitCount = count
-        self._targetLastCount = count
+        self._targetLastCount = checkInt(value, 0)
 
     def setInitTargetSkipRoots(self, value: Sequence[str]) -> None:
         """Set the initial target skip root handles dictionary."""
@@ -503,6 +494,7 @@ class ProjectData:
         the overall project target progress.
         """
         self._dailyLastDate = date.today()
-        self._dailyLastCount = self._targetInitCount - self._targetLastCount
-        self.setDailyProgress(self._targetLastCount)
+        self._dailyLastCount -= self._dailyProgress
+        self._dailyProgress = 0
+        self._remainingWordCount = self._targetWordCount - self._targetLastCount
         self._project.setProjectChanged(True)

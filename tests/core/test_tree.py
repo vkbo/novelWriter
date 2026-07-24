@@ -680,7 +680,7 @@ def testProjectTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
     ]
 
     # Refresh All
-    assert tree.sumCounts() == (9, 0, 40, 0, 9)
+    assert tree.sumCounts() == (9, 0, 40, 0, 9, 9)
     assert tree.model.root.count == 9
 
     # Items with no layout (e.g. folders created directly) are not counted
@@ -688,7 +688,7 @@ def testProjectTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
     assert noLayoutHandle is not None
     tree[noLayoutHandle].setLayout(nwItemLayout.NO_LAYOUT)  # type: ignore
     tree[noLayoutHandle].setWordCount(99)  # type: ignore
-    assert tree.sumCounts() == (9, 0, 40, 0, 9)
+    assert tree.sumCounts() == (9, 0, 40, 0, 9, 9)
     tree.remove(noLayoutHandle)
 
     for node in tree.nodes.values():

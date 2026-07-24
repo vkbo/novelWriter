@@ -140,7 +140,8 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Reset Daily Progress
     assert status.dayReset.isVisible() is True
-    SHARED.project.data.setDailyProgress(150)
+    SHARED.project.data.resetDailyProgress()
+    SHARED.project.data.setDailyProgress(150, 150)
     assert SHARED.project.data.dailyProgress == 150
 
     # Declining the confirmation leaves the progress untouched

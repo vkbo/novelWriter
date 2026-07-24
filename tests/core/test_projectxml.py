@@ -49,6 +49,9 @@ class MockProject:
     def setProjectChanged(self, *a):
         """Fake project method."""
 
+    def markCountsDirty(self):
+        """Fake project method."""
+
 
 @pytest.fixture(autouse=True)
 def mockVersion(monkeypatch):
